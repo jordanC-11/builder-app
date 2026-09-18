@@ -27,6 +27,25 @@ freezing core, and facilities gets two opposite tickets about one floor.
 
 ---
 
+## Quick start
+
+No build step, no server, no dependencies.
+
+```
+git clone https://github.com/jordanC-11/builder-app.git
+cd builder-app
+```
+
+- **Run the app:** open `src/app.html` in a browser. It starts in local-only mode
+  (votes stay in your tab) with an empty board — add a spot to begin.
+- **Watch the video:** open `src/explainer.html`, press **Present** (or `F`).
+  It's a self-playing 2:30 page; screen-record it if you need an MP4.
+
+Both files load two Google Fonts, so they look best online but still work
+offline with fallback fonts.
+
+---
+
 ## Contents
 
 ```
