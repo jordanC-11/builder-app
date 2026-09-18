@@ -177,6 +177,36 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   border:1.5px solid currentColor;
 }
 .count{color:var(--muted);font-size:14px;margin-top:5px}
+.chip.split{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- balance bar (cold / comfortable / warm) ---------- */
+.bal{margin-top:14px}
+.balbar{
+  display:flex;height:16px;border-radius:99px;overflow:hidden;gap:2px;
+  background:var(--line-soft);
+}
+.bseg{display:block;height:100%;min-width:0;transition:flex .35s cubic-bezier(.3,.8,.3,1)}
+.bseg.cold{background:var(--c-2)}
+.bseg.nice{background:var(--c0)}
+.bseg.warm{background:var(--c2)}
+.bal.split .balbar{outline:1.5px dashed var(--ink);outline-offset:3px}
+.balkey{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px;font-size:14px;color:var(--muted)}
+.balkey .bk{display:inline-flex;align-items:baseline;gap:5px;white-space:nowrap}
+.balkey .bk b{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:20px;letter-spacing:-.02em;line-height:1;
+}
+.balkey .bk.cold b{color:var(--c-2)}
+.balkey .bk.nice b{color:var(--c0)}
+.balkey .bk.warm b{color:var(--c2)}
+.balkey .bk.zero{opacity:.5}
+.balkey .bk.zero b{color:var(--muted)}
+.bal.small{margin-top:7px}
+.bal.small .balbar{height:8px;gap:1.5px}
+.bal.small.split .balbar{outline-width:1px;outline-offset:2px}
+.bal.small .balkey{gap:10px;margin-top:5px;font-size:12px}
+.bal.small .balkey .bk{gap:3px}
+.bal.small .balkey .bk b{font-family:inherit;font-weight:700;font-size:13px;letter-spacing:-.01em}
 .hint{
   margin-top:14px;padding:13px 14px;border-radius:11px;
   background:var(--surface-2);border:1px dashed var(--line);
@@ -201,8 +231,8 @@ label.fieldlab{font-size:14px;color:var(--muted)}
 .zrow:hover{background:var(--surface-2)}
 .zrow:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
 .zrow.here{background:var(--surface-2)}
-.zname{font-weight:600;font-size:15.5px;letter-spacing:-.01em}
-.zmeta{font-size:13px;color:var(--muted);margin-top:2px}
+.zname{display:block;font-weight:600;font-size:15.5px;letter-spacing:-.01em}
+.zmeta{display:block;font-size:13px;color:var(--muted);margin-top:2px}
 .zfloor{
   font-size:11.5px;font-weight:600;color:var(--muted);
   border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-right:7px;
@@ -373,6 +403,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
       <span class="vtext" id="roVerdict"></span>
       <span class="chip" id="roChip" hidden></span>
     </div>
+    <div id="roBal"></div>
     <div class="count" id="roCount"></div>
     <div class="hint" id="roHint" hidden></div>
     <div class="statusrow">
@@ -544,6 +575,29 @@ label.fieldlab{font-size:14px;color:var(--muted)}
       h+='</div>';
     }
     h+='</div>';
+    return h;
+  }
+
+  /* ---------------- balance bar (cold / comfortable / warm) ---------------- */
+  function balanceHTML(t, opts){
+    opts = opts || {};
+    if(!t.n) return "";
+    var parts=[
+      {k:"cold", n:t.cold, lab:"cold"},
+      {k:"nice", n:t.nice, lab:opts.small ? "ok" : "comfortable"},
+      {k:"warm", n:t.hot,  lab:"warm"}
+    ];
+    var h='<div class="bal'+(opts.small?" small":"")+(t.split?" split":"")+'" role="img" aria-label="'+
+      t.cold+' cold, '+t.nice+' comfortable, '+t.hot+' warm'+(t.split?' \u2014 split':'')+'">';
+    h+='<div class="balbar">';
+    parts.forEach(function(p){
+      if(p.n>0) h+='<span class="bseg '+p.k+'" style="flex:'+p.n+'"></span>';
+    });
+    h+='</div><div class="balkey">';
+    parts.forEach(function(p){
+      h+='<span class="bk '+p.k+(p.n?"":" zero")+'"><b>'+p.n+'</b>'+p.lab+'</span>';
+    });
+    h+='</div></div>';
     return h;
   }
 
@@ -884,14 +938,14 @@ label.fieldlab{font-size:14px;color:var(--muted)}
       $("roSub").textContent = t.n ? "Last vote "+ago(t.newest)+"." : "Be the first to say something.";
       $("roStrip").innerHTML = stripHTML(t,{big:true});
       $("roVerdict").textContent = v.text;
+      $("roVerdict").style.color = (v.tone && !t.split) ? "var("+SCALE[v.tone+2].css+")" : "";
       var chip=$("roChip");
       if(t.split){
-        chip.hidden=false; chip.textContent="Split";
-        chip.style.color="var(--muted)";
-      } else chip.hidden=true;
+        chip.hidden=false; chip.textContent="Split"; chip.classList.add("split");
+      } else { chip.hidden=true; chip.classList.remove("split"); }
+      $("roBal").innerHTML = balanceHTML(t);
       $("roCount").textContent = t.n===0 ? "" :
-        t.n+(t.n===1?" person":" people")+" in the last two hours \u00B7 "+
-        t.cold+" cold, "+t.nice+" comfortable, "+t.hot+" warm";
+        t.n+(t.n===1?" person":" people")+" in the last two hours";
 
       $("statusSel").value = z.status || "";
       $("statusWhen").textContent = z.status && z.statusAt ? "updated "+ago(z.statusAt) : "";
@@ -936,7 +990,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
           '<span><span class="zname">'+
             (r.z.floor?'<span class="zfloor">'+esc(r.z.floor)+'</span>':'')+
             esc(r.z.name)+'</span>'+
-          '<span class="zmeta">'+esc(meta)+'</span></span>'+
+          '<span class="zmeta">'+esc(meta)+'</span>'+balanceHTML(r.t,{small:true})+'</span>'+
           '<span>'+stripHTML(r.t,{big:false})+'</span>'+
         '</button>';
       }).join("");
