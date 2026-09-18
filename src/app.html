@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermocracy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EDF0;
+  --surface:#FFFFFF;
+  --surface-2:#F3F7F9;
+  --ink:#14242C;
+  --muted:#5F737D;
+  --line:#CDD9DF;
+  --line-soft:#E1E9ED;
+  --c-2:#2A6DB5;
+  --c-1:#5FA3C4;
+  --c0:#3B9B78;
+  --c1:#DE9036;
+  --c2:#C64C2C;
+  --focus:#14242C;
+  --shadow:0 1px 0 rgba(20,36,44,.06), 0 6px 20px -12px rgba(20,36,44,.35);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#101A1F;
+    --surface:#17242B;
+    --surface-2:#1D2D35;
+    --ink:#E6EEF1;
+    --muted:#93A6AF;
+    --line:#2C3F49;
+    --line-soft:#223139;
+    --c-2:#5D9EE0;
+    --c-1:#78BBD8;
+    --c0:#56BC93;
+    --c1:#E8A757;
+    --c2:#E07152;
+    --focus:#E6EEF1;
+    --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#101A1F; --surface:#17242B; --surface-2:#1D2D35;
+  --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
+  --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
+  --focus:#E6EEF1;
+  --shadow:0 1px 0 rgba(0,0,0,.3), 0 8px 24px -14px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:860px;margin:0 auto;padding:22px 18px 72px}
+
+/* ---------- header ---------- */
+.top{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:26px}
+.logo{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:800;font-size:clamp(28px,6vw,38px);
+  letter-spacing:-.025em;line-height:1;margin:0;
+}
+.tag{color:var(--muted);font-size:15px}
+.ramp{
+  height:5px;border-radius:99px;margin:14px 0 26px;
+  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
+}
+
+/* ---------- panels ---------- */
+.panel{
+  background:var(--surface);
+  border:1px solid var(--line-soft);
+  border-radius:14px;
+  padding:20px;
+  box-shadow:var(--shadow);
+  margin-bottom:18px;
+}
+.panel h2{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:700;font-size:20px;letter-spacing:-.015em;
+  margin:0 0 4px;
+}
+.sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+
+/* ---------- spot picker ---------- */
+.spotrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+select,input[type=text]{
+  font:inherit;font-size:15px;color:var(--ink);
+  background:var(--surface-2);
+  border:1px solid var(--line);
+  border-radius:9px;padding:9px 11px;
+  max-width:100%;
+}
+select{min-width:210px}
+label.fieldlab{font-size:14px;color:var(--muted)}
+
+/* ---------- vote buttons ---------- */
+.votes{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:7px;
+}
+.vote{
+  font:inherit;cursor:pointer;
+  background:var(--surface-2);
+  border:1.5px solid var(--line);
+  border-radius:11px;
+  padding:13px 4px 10px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  color:var(--ink);
+  transition:transform .12s ease, border-color .12s ease, background .12s ease;
+}
+.vote .face{font-size:25px;line-height:1}
+.vote .lab{font-size:12px;font-weight:500;letter-spacing:-.01em;text-align:center}
+.vote:hover{border-color:var(--tint)}
+.vote:active{transform:scale(.96)}
+.vote[aria-pressed="true"]{
+  border-color:var(--tint);
+  background:color-mix(in srgb, var(--tint) 14%, var(--surface));
+  border-width:2px;
+}
+.vote:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.castline{margin:12px 0 0;font-size:14px;color:var(--muted);min-height:21px}
+
+/* ---------- the strip (dot plot) ---------- */
+.strip{position:relative}
+.bands{
+  display:grid;grid-template-columns:repeat(5,1fr);
+  align-items:end;gap:3px;
+  height:var(--h,74px);
+}
+.band{
+  position:relative;height:100%;
+  display:flex;flex-direction:column-reverse;align-items:center;gap:3px;
+  padding-bottom:3px;
+  border-radius:8px 8px 0 0;
+  background:color-mix(in srgb, var(--tint) 8%, transparent);
+}
+.dot{
+  width:var(--d,13px);height:var(--d,13px);border-radius:50%;
+  background:var(--tint);flex:0 0 auto;
+}
+.more{font-size:10px;font-weight:600;color:var(--tint);line-height:1}
+.axis{
+  height:4px;border-radius:99px;margin-top:5px;
+  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
+}
+.needle{
+  position:absolute;bottom:-9px;width:2px;height:16px;border-radius:2px;
+  background:var(--ink);transform:translateX(-1px);
+  transition:left .35s cubic-bezier(.3,.8,.3,1);
+}
+.needle.split{
+  background:repeating-linear-gradient(to bottom,var(--ink) 0 3px,transparent 3px 6px);
+}
+.ticks{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+  margin-top:11px;font-size:11.5px;color:var(--muted);text-align:center;
+}
+.ticks span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- verdict ---------- */
+.verdict{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:16px}
+.verdict .vtext{
+  font-family:"Bricolage Grotesque",sans-serif;
+  font-weight:700;font-size:19px;letter-spacing:-.015em;
+}
+.chip{
+  font-size:12px;font-weight:600;padding:3px 9px;border-radius:99px;
+  border:1.5px solid currentColor;
+}
+.count{color:var(--muted);font-size:14px;margin-top:5px}
+.hint{
+  margin-top:14px;padding:13px 14px;border-radius:11px;
+  background:var(--surface-2);border:1px dashed var(--line);
+  font-size:14px;color:var(--ink);
+}
+.hint b{font-weight:600}
+.linkbtn{
+  font:inherit;font-size:14px;font-weight:600;color:var(--ink);
+  background:none;border:none;padding:0;margin-top:7px;
+  cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+  text-decoration-thickness:1.5px;display:block;
+}
+.linkbtn:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:3px}
+
+/* ---------- zone list ---------- */
+.zlist{display:flex;flex-direction:column;gap:2px}
+.zrow{
+  display:grid;grid-template-columns:1fr 190px;gap:16px;align-items:center;
+  padding:13px 10px;border-radius:10px;border:none;background:none;
+  text-align:left;font:inherit;color:var(--ink);cursor:pointer;width:100%;
+}
+.zrow:hover{background:var(--surface-2)}
+.zrow:focus-visible{outline:2px solid var(--focus);outline-offset:-2px}
+.zrow.here{background:var(--surface-2)}
+.zname{font-weight:600;font-size:15.5px;letter-spacing:-.01em}
+.zmeta{font-size:13px;color:var(--muted);margin-top:2px}
+.zfloor{
+  font-size:11.5px;font-weight:600;color:var(--muted);
+  border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-right:7px;
+  white-space:nowrap;
+}
+.zstrip{--h:34px;--d:9px}
+.empty{
+  padding:26px 16px;text-align:center;color:var(--muted);font-size:15px;
+  border:1px dashed var(--line);border-radius:11px;
+}
+
+/* ---------- add spot ---------- */
+.addform{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end}
+.addform .f{display:flex;flex-direction:column;gap:5px;flex:1 1 150px}
+.btn{
+  font:inherit;font-weight:600;font-size:15px;cursor:pointer;
+  background:var(--ink);color:var(--paper);
+  border:none;border-radius:9px;padding:10px 17px;
+}
+.btn:active{transform:scale(.98)}
+.btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.btn[disabled]{opacity:.45;cursor:default}
+
+/* ---------- heatmap ---------- */
+.floors{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.ftab{
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  background:var(--surface-2);color:var(--muted);
+  border:1.5px solid var(--line);border-radius:99px;padding:6px 14px;
+}
+.ftab[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.ftab:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+.plate{
+  position:relative;aspect-ratio:16/11;width:100%;
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:13px;overflow:hidden;
+}
+.plate.placing{cursor:crosshair;border-color:var(--ink);border-style:dashed}
+
+/* floor plan under the heat */
+.planart{position:absolute;inset:0;width:100%;height:100%}
+.planart .shell{fill:none;stroke:color-mix(in srgb,var(--ink) 62%,transparent);stroke-width:1.1}
+.planart .room{
+  fill:color-mix(in srgb,var(--ink) 5%,transparent);
+  stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.6;
+}
+.planart .fix{
+  fill:color-mix(in srgb,var(--ink) 13%,transparent);
+  stroke:color-mix(in srgb,var(--ink) 36%,transparent);stroke-width:.45;
+}
+.planart .desk{fill:none;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.4}
+.planart .mull{stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.55}
+.planart text{
+  fill:color-mix(in srgb,var(--ink) 62%,transparent);
+  font-size:3.2px;font-family:"Instrument Sans",sans-serif;font-weight:500;
+}
+.planimg{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+
+.heat{
+  position:absolute;inset:0;filter:blur(26px);
+  opacity:.82;mix-blend-mode:multiply;pointer-events:none;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .heat{mix-blend-mode:screen;opacity:.66}
+}
+:root[data-theme="dark"] .heat{mix-blend-mode:screen;opacity:.66}
+.blob{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
+.pins{position:absolute;inset:0}
+.pin{
+  position:absolute;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  background:none;border:none;padding:0;cursor:pointer;font:inherit;color:var(--ink);
+}
+.pin .knob{
+  width:11px;height:11px;border-radius:50%;
+  background:var(--surface);border:2.5px solid var(--ink);
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--surface) 70%,transparent);
+}
+.pin .plab{
+  font-size:11.5px;font-weight:600;letter-spacing:-.01em;white-space:nowrap;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  border-radius:5px;padding:2px 6px;
+  max-width:130px;overflow:hidden;text-overflow:ellipsis;
+}
+.pin.sel .knob{background:var(--ink)}
+.pin.sel .plab{background:var(--ink);color:var(--paper)}
+.pin:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:6px}
+.pin .flag{
+  font-size:10.5px;font-weight:700;letter-spacing:.02em;
+  background:var(--ink);color:var(--paper);border-radius:4px;padding:1px 5px;
+}
+.pin.unplaced .knob{border-style:dotted;opacity:.55}
+
+.legend{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  margin-top:13px;font-size:12.5px;color:var(--muted);
+}
+.lramp{
+  width:120px;height:8px;border-radius:99px;
+  background:linear-gradient(90deg,#2A6DB5,#5FA3C4 26%,#3B9B78 50%,#DE9036 74%,#C64C2C);
+}
+.lswatch{
+  width:20px;height:8px;border-radius:99px;
+  background:repeating-linear-gradient(45deg,#2A6DB5 0 4px,#C64C2C 4px 8px);
+}
+.hmnote{font-size:13.5px;color:var(--muted);margin:12px 0 0;line-height:1.55}
+
+/* ---------- status control ---------- */
+.statusrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:15px;
+  padding-top:15px;border-top:1px solid var(--line-soft)}
+.statusrow .fieldlab{flex:0 0 auto}
+.sbadge{
+  font-size:11.5px;font-weight:700;letter-spacing:.02em;
+  border-radius:5px;padding:2px 7px;border:1.5px solid var(--line);color:var(--muted);
+}
+
+.foot{color:var(--muted);font-size:13.5px;line-height:1.65;margin-top:26px}
+.foot p{margin:0 0 7px}
+
+.banner{
+  border:1px solid var(--line);border-radius:11px;padding:12px 14px;
+  background:var(--surface-2);font-size:14px;color:var(--muted);margin-bottom:18px;
+}
+
+@media (max-width:620px){
+  .zrow{grid-template-columns:1fr;gap:9px}
+  .vote{padding:11px 2px 9px}
+  .vote .lab{font-size:11px}
+  .vote .face{font-size:22px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none !important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <h1 class="logo">Thermocracy</h1>
+    <span class="tag">Is it you, or is it the room?</span>
+  </header>
+  <div class="ramp" aria-hidden="true"></div>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <!-- VOTE -->
+  <section class="panel">
+    <h2>How is it right now?</h2>
+    <p class="sub" id="voteSub">Pick where you're sitting, then say how it feels.</p>
+
+    <div class="spotrow">
+      <label class="fieldlab" for="spot">I'm at</label>
+      <select id="spot" aria-label="Your spot"></select>
+    </div>
+
+    <div class="votes" id="voteBtns" role="group" aria-label="How it feels"></div>
+    <p class="castline" id="castline"></p>
+  </section>
+
+  <!-- YOUR ZONE READOUT -->
+  <section class="panel" id="readout" hidden>
+    <h2 id="roTitle">Your spot</h2>
+    <p class="sub" id="roSub"></p>
+    <div id="roStrip"></div>
+    <div class="verdict">
+      <span class="vtext" id="roVerdict"></span>
+      <span class="chip" id="roChip" hidden></span>
+    </div>
+    <div class="count" id="roCount"></div>
+    <div class="hint" id="roHint" hidden></div>
+    <div class="statusrow">
+      <label class="fieldlab" for="statusSel">Facilities status</label>
+      <select id="statusSel" aria-label="Facilities status for this spot">
+        <option value="">Nothing logged</option>
+        <option value="looking">Someone's looking at it</option>
+        <option value="adjusted">Recently adjusted</option>
+      </select>
+      <span class="count" id="statusWhen" style="margin:0"></span>
+    </div>
+  </section>
+
+  <!-- HEATMAP -->
+  <section class="panel">
+    <h2>Heat map</h2>
+    <p class="sub">Where the warm and cold patches actually are. Blue is cold, red is warm, mottled means the spot is arguing with itself.</p>
+    <div class="floors" id="floors" role="group" aria-label="Floor"></div>
+    <div class="plate" id="plate">
+      <div id="planLayer"></div>
+      <div class="heat" id="heat" aria-hidden="true"></div>
+      <div class="pins" id="pins"></div>
+    </div>
+    <div class="legend">
+      <span class="lramp" aria-hidden="true"></span>
+      <span>freezing to roasting</span>
+      <span class="lswatch" aria-hidden="true"></span>
+      <span>split</span>
+      <button class="linkbtn" id="planBtn" style="margin:0 0 0 auto" hidden>Upload this floor's plan</button>
+      <button class="linkbtn" id="placeBtn" style="margin:0">Move spots on the map</button>
+    </div>
+    <input type="file" id="planFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+    <p class="hmnote" id="hmnote"></p>
+  </section>
+
+  <!-- ALL ZONES -->
+  <section class="panel">
+    <h2>Every spot in the building</h2>
+    <p class="sub">Same setpoint, different reality. Sorted by whatever needs looking at most.</p>
+    <div class="zlist" id="zlist"></div>
+  </section>
+
+  <!-- ADD -->
+  <section class="panel">
+    <h2>Add a spot</h2>
+    <p class="sub" id="addSub">If one corner of a floor never matches the rest, give it its own entry.</p>
+    <div class="addform">
+      <div class="f">
+        <label class="fieldlab" for="nFloor">Floor or area</label>
+        <input type="text" id="nFloor" placeholder="Level 7" maxlength="28">
+      </div>
+      <div class="f">
+        <label class="fieldlab" for="nName">Spot</label>
+        <input type="text" id="nName" placeholder="North window seats" maxlength="40">
+      </div>
+      <button class="btn" id="addBtn">Add spot</button>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p>Votes expire after two hours, so what you see is how it feels now, not this morning.</p>
+    <p>One vote per person per spot. Change yours any time the room changes its mind.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var SCALE = [
+    {n:-2, face:"\uD83E\uDD76", lab:"Freezing",  css:"--c-2"},
+    {n:-1, face:"\uD83E\uDDE5", lab:"Chilly",    css:"--c-1"},
+    {n: 0, face:"\uD83D\uDE0C", lab:"Just nice", css:"--c0"},
+    {n: 1, face:"\uD83E\uDEE0", lab:"Warm",      css:"--c1"},
+    {n: 2, face:"\uD83E\uDD75", lab:"Roasting",  css:"--c2"}
+  ];
+  var TTL = 2*60*60*1000;   // votes go stale after 2h
+  var MAXDOT = 6;
+
+  var db=null, userCap=null, uid=null;
+  var zones=[];                 // {id, floor, name}
+  var ballots=new Map();        // voterId -> {zoneId:{n,t}}
+  var localMode=true;           // no db: everything lives in this tab only
+  var writeBlocked=false;
+  var myZone=null;
+  var writeChain=Promise.resolve();
+
+  var $ = function(id){return document.getElementById(id);};
+
+  /* ---------------- tiny helpers ---------------- */
+  function slug(s){
+    var x = s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"");
+    return x.slice(0,40) || ("s"+Date.now().toString(36));
+  }
+  function esc(s){
+    return String(s).replace(/[&<>"']/g,function(c){
+      return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
+    });
+  }
+  function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
+  function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+  /* ---------------- tally ---------------- */
+  function tally(zoneId){
+    var now=Date.now(), c=[0,0,0,0,0], n=0, sum=0, newest=0;
+    ballots.forEach(function(b){
+      var v=b && b[zoneId];
+      if(!v || typeof v.n!=="number") return;
+      if(!v.t || now - v.t > TTL) return;
+      var i=v.n+2; if(i<0||i>4) return;
+      c[i]++; n++; sum+=v.n;
+      if(v.t>newest) newest=v.t;
+    });
+    var cold=c[0]+c[1], hot=c[3]+c[4];
+    var mean = n ? sum/n : 0;
+    var split = n>=4 && Math.min(cold,hot)/n >= 0.25 && (cold+hot)/n >= 0.6;
+    return {c:c, n:n, mean:mean, cold:cold, hot:hot, nice:c[2], split:split, newest:newest};
+  }
+
+  function verdict(t){
+    if(t.n===0) return {text:"No word yet", tone:0};
+    if(t.split) return {text:"The room can't agree", tone:0};
+    if(t.mean<=-1.2) return {text:"Too cold", tone:-2};
+    if(t.mean<=-0.4) return {text:"Leaning cold", tone:-1};
+    if(t.mean< 0.4) return {text:"About right", tone:0};
+    if(t.mean< 1.2) return {text:"Leaning warm", tone:1};
+    return {text:"Too warm", tone:2};
+  }
+
+  function urgency(t){
+    if(t.n===0) return -1;
+    if(t.split) return 1000 + t.n;
+    return Math.abs(t.mean)*40 + Math.min(t.n,20);
+  }
+
+  function ago(ts){
+    if(!ts) return "";
+    var m=Math.round((Date.now()-ts)/60000);
+    if(m<1) return "just now";
+    if(m===1) return "1 min ago";
+    if(m<60) return m+" min ago";
+    var h=Math.round(m/60);
+    return h===1 ? "1 hr ago" : h+" hrs ago";
+  }
+
+  /* ---------------- strip renderer ---------------- */
+  function stripHTML(t, opts){
+    opts = opts || {};
+    var big = !!opts.big;
+    var h='<div class="strip'+(big?"":" zstrip")+'">';
+    h+='<div class="bands"'+(big?"":' style="--h:34px"')+'>';
+    for(var i=0;i<5;i++){
+      var cnt=t.c[i], shown=Math.min(cnt,MAXDOT);
+      h+='<div class="band" style="--tint:var('+SCALE[i].css+')">';
+      for(var d=0;d<shown;d++) h+='<span class="dot"'+(big?"":' style="--d:8px"')+'></span>';
+      if(cnt>MAXDOT) h+='<span class="more">+'+(cnt-MAXDOT)+'</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+    h+='<div class="axis"></div>';
+    if(t.n>0){
+      var pct = ((t.mean+2)/4)*100;
+      pct = Math.max(1.5, Math.min(98.5, pct));
+      h+='<div class="needle'+(t.split?" split":"")+'" style="left:'+pct.toFixed(1)+'%" title="Where the room sits on average"></div>';
+    }
+    if(big){
+      h+='<div class="ticks">';
+      for(var k=0;k<5;k++) h+='<span>'+SCALE[k].lab+'</span>';
+      h+='</div>';
+    }
+    h+='</div>';
+    return h;
+  }
+
+  /* ---------------- floor plan ---------------- */
+  var plans=new Map();          // floor slug -> {assetId,w,h}
+  var assetsCap=null;
+
+  function deskRow(y,xs){
+    return xs.map(function(x){
+      return '<rect class="desk" x="'+x+'" y="'+y+'" width="9" height="5" rx="1"/>'+
+             '<rect class="desk" x="'+x+'" y="'+(y+5)+'" width="9" height="5" rx="1"/>';
+    }).join("");
+  }
+  function mullions(){
+    var s="";
+    for(var x=12;x<=148;x+=8){
+      s+='<line class="mull" x1="'+x+'" y1="4" x2="'+x+'" y2="7.5"/>';
+      s+='<line class="mull" x1="'+x+'" y1="106" x2="'+x+'" y2="102.5"/>';
+    }
+    for(var y=14;y<=96;y+=8){
+      s+='<line class="mull" x1="4" y1="'+y+'" x2="7.5" y2="'+y+'"/>';
+    }
+    return s;
+  }
+  var PLAN_SVG =
+    '<svg class="planart" viewBox="0 0 160 110" preserveAspectRatio="none" aria-hidden="true">'+
+    '<rect class="shell" x="4" y="4" width="152" height="102" rx="2"/>'+
+    mullions()+
+    // service core
+    '<rect class="room" x="58" y="38" width="44" height="34"/>'+
+    '<rect class="fix" x="61" y="41" width="9" height="13"/>'+
+    '<rect class="fix" x="61" y="56" width="9" height="13"/>'+
+    '<rect class="fix" x="73" y="41" width="12" height="13"/>'+
+    '<rect class="fix" x="73" y="56" width="12" height="13"/>'+
+    '<rect class="fix" x="88" y="41" width="11" height="13"/>'+
+    '<rect class="fix" x="88" y="56" width="11" height="13"/>'+
+    '<text x="61.5" y="48.5">Lifts</text>'+
+    '<text x="74" y="48.5">WC</text>'+
+    '<text x="88.8" y="48.5">Stair</text>'+
+    '<text x="88.8" y="63.5">Riser</text>'+
+    // meeting rooms along the east wall
+    '<rect class="room" x="120" y="8" width="34" height="22"/>'+
+    '<rect class="room" x="120" y="34" width="34" height="20"/>'+
+    '<rect class="room" x="120" y="58" width="34" height="20"/>'+
+    '<text x="122.5" y="12.5">Meeting 7-1</text>'+
+    '<text x="122.5" y="38.5">Meeting 7-2</text>'+
+    '<text x="122.5" y="62.5">Meeting 7-3</text>'+
+    // pantry
+    '<rect class="room" x="6" y="78" width="36" height="26"/>'+
+    '<text x="8.5" y="82.5">Pantry</text>'+
+    // desks
+    deskRow(12,[10,21,32,47,58,69,84,95,106])+
+    deskRow(26,[10,21,32,47,58,69,84,95,106])+
+    deskRow(82,[48,59,70,85,96,107])+
+    deskRow(44,[10,21,32])+
+    deskRow(58,[10,21,32])+
+    '</svg>';
+
+  function floorSlug(f){ return slug(f||"unassigned"); }
+
+  function renderPlan(){
+    var layer=$("planLayer");
+    var p = plans.get(floorSlug(curFloor));
+    var want = p && p.assetId ? "img:"+p.assetId : "svg";
+    if(layer.dataset.mode!==want){
+      layer.dataset.mode=want;
+      layer.innerHTML = p && p.assetId
+        ? '<img class="planimg" src="/_blob/'+esc(p.assetId)+'" alt="Floor plan">'
+        : PLAN_SVG;
+    }
+    $("plate").style.aspectRatio = (p && p.w && p.h) ? (p.w+" / "+p.h) : "16 / 11";
+    var btn=$("planBtn");
+    btn.hidden = !assetsCap;
+    if(assetsCap) btn.textContent = p && p.assetId ? "Replace this floor's plan" : "Upload this floor's plan";
+  }
+
+  $("planBtn").addEventListener("click",function(){ $("planFile").click(); });
+  $("planFile").addEventListener("change",function(){
+    var f=this.files && this.files[0];
+    this.value="";
+    if(!f || !assetsCap) return;
+    var slugF=floorSlug(curFloor);
+    $("planBtn").textContent="Uploading\u2026";
+    var img=new Image(), url=URL.createObjectURL(f);
+    img.onload=function(){
+      var w=img.naturalWidth||1600, h=img.naturalHeight||1100;
+      URL.revokeObjectURL(url);
+      assetsCap.upload(f).then(function(res){
+        plans.set(slugF,{assetId:res.id,w:w,h:h});
+        render();
+        if(!localMode && db) return db.doc("plans/"+slugF).set({assetId:res.id,w:w,h:h});
+      }).catch(function(){
+        banner("That plan didn't upload. Try a PNG or JPG under 20 MB.");
+        render();
+      });
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); banner("That file isn't an image the map can read."); render(); };
+    img.src=url;
+  });
+
+  /* ---------------- heat map ---------------- */
+  var HEAT = [[42,109,181],[95,163,196],[59,155,120],[222,144,54],[198,76,44]];
+  var curFloor=null, placing=false;
+
+  function heatColor(mean){
+    var p=Math.max(-2,Math.min(2,mean))+2;      // 0..4
+    var i=Math.min(3,Math.floor(p)), f=p-i;
+    var a=HEAT[i], b=HEAT[i+1];
+    return [0,1,2].map(function(k){ return Math.round(a[k]+(b[k]-a[k])*f); });
+  }
+  function rgba(c,a){ return "rgba("+c[0]+","+c[1]+","+c[2]+","+a+")"; }
+  function blob(x,y,size,c,alpha){
+    return '<div class="blob" style="left:'+x+'%;top:'+y+'%;width:'+size+'%;'+
+      'aspect-ratio:1;background:radial-gradient(circle,'+rgba(c,alpha)+' 0%,'+rgba(c,0)+' 70%)"></div>';
+  }
+
+  function floorsOf(){
+    var seen=[], out=[];
+    zones.forEach(function(z){
+      var f=z.floor||"Unassigned";
+      if(seen.indexOf(f)<0){ seen.push(f); out.push(f); }
+    });
+    return out;
+  }
+
+  function autoPos(z, idx, total){
+    // deterministic fallback so a spot without coordinates still appears
+    var cols=Math.ceil(Math.sqrt(Math.max(total,1)));
+    var r=Math.floor(idx/cols), rows=Math.ceil(total/cols);
+    return {x: (idx%cols + .5)/cols*82 + 9, y: (r+.5)/Math.max(rows,1)*70 + 15, auto:true};
+  }
+
+  function renderHeat(){
+    var fl=floorsOf();
+    if(!fl.length){ curFloor=null; }
+    else if(!curFloor || fl.indexOf(curFloor)<0){
+      var mine = zones.filter(function(z){return z.id===myZone;})[0];
+      curFloor = mine ? (mine.floor||"Unassigned") : fl[0];
+    }
+
+    var tabs=$("floors");
+    tabs.innerHTML = fl.map(function(f){
+      return '<button class="ftab" type="button" data-f="'+esc(f)+'" aria-pressed="'+(f===curFloor)+'">'+esc(f)+'</button>';
+    }).join("");
+    Array.prototype.forEach.call(tabs.children,function(b){
+      b.addEventListener("click",function(){ curFloor=b.dataset.f; render(); });
+    });
+
+    var here = zones.filter(function(z){ return (z.floor||"Unassigned")===curFloor; });
+    renderPlan();
+    var heat=$("heat"), pins=$("pins"), H="", P="", flagged=0;
+
+    here.forEach(function(z,i){
+      var t=tally(z.id);
+      var pos = (typeof z.x==="number" && typeof z.y==="number")
+        ? {x:z.x, y:z.y, auto:false} : autoPos(z,i,here.length);
+
+      if(t.n===0){
+        H += blob(pos.x,pos.y,22,[120,135,143],.16);
+      } else if(t.split){
+        // no single colour is honest here: lay a cold blob and a warm blob side by side
+        flagged++;
+        var wc = 12 + Math.min(t.cold,8)*2.1;
+        var wh = 12 + Math.min(t.hot,8)*2.1;
+        H += blob(pos.x-5, pos.y, wc*2, HEAT[0], .8);
+        H += blob(pos.x+5, pos.y, wh*2, HEAT[4], .8);
+      } else {
+        var c=heatColor(t.mean);
+        var w = 20 + Math.min(t.n,10)*2.6;
+        var strength = .28 + Math.min(Math.abs(t.mean)/2,1)*.6;
+        H += blob(pos.x,pos.y,w*2,c,strength);
+        if(Math.abs(t.mean)>=1.2) flagged++;
+      }
+
+      var flag = t.split ? "SPLIT" : (t.n && Math.abs(t.mean)>=1.2 ? (t.mean<0?"COLD":"HOT") : "");
+      var badge = z.status==="looking" ? "ON IT" : z.status==="adjusted" ? "ADJUSTED" : "";
+      P += '<button class="pin'+(z.id===myZone?" sel":"")+(pos.auto?" unplaced":"")+
+           '" style="left:'+pos.x+'%;top:'+pos.y+'%" data-z="'+esc(z.id)+'" '+
+           'title="'+esc(z.name)+(t.n?" \u2014 "+t.n+" votes":" \u2014 no votes")+'">'+
+           '<span class="knob"></span>'+
+           (flag||badge ? '<span class="flag">'+esc(badge||flag)+'</span>' : '')+
+           '<span class="plab">'+esc(z.name)+'</span></button>';
+    });
+
+    heat.innerHTML=H; pins.innerHTML=P;
+    Array.prototype.forEach.call(pins.children,function(b){
+      b.addEventListener("click",function(e){
+        if(placing) return;
+        e.stopPropagation();
+        myZone=b.dataset.z; lsSet("aw.zone",myZone); render();
+      });
+    });
+
+    $("plate").classList.toggle("placing", placing);
+    $("placeBtn").textContent = placing ? "Done moving spots" : "Move spots on the map";
+    $("hmnote").textContent = placing
+      ? "Click anywhere on the plan to drop \u201C"+(zones.filter(function(z){return z.id===myZone;})[0]||{name:"the selected spot"}).name+"\u201D there."
+      : here.length===0 ? "No spots on this floor yet."
+      : flagged===0 ? "Nothing on this floor is far off. Dotted pins haven\u2019t been placed on the plan yet."
+      : flagged+(flagged===1?" spot needs":" spots need")+" a look. Dotted pins haven\u2019t been placed on the plan yet.";
+  }
+
+  $("placeBtn").addEventListener("click",function(){
+    placing=!placing; render();
+  });
+  $("plate").addEventListener("click",function(e){
+    if(!placing || !myZone) return;
+    var r=this.getBoundingClientRect();
+    var x=Math.round(((e.clientX-r.left)/r.width)*1000)/10;
+    var y=Math.round(((e.clientY-r.top)/r.height)*1000)/10;
+    var z=zones.filter(function(q){return q.id===myZone;})[0];
+    if(!z) return;
+    z.x=Math.max(4,Math.min(96,x)); z.y=Math.max(6,Math.min(94,y));
+    z.floor = z.floor || (curFloor==="Unassigned" ? "" : curFloor);
+    if(!localMode && db){
+      writeChain = writeChain.then(function(){
+        return db.doc("zones/"+z.id).update({x:z.x, y:z.y});
+      }).catch(function(){});
+    }
+    render();
+  });
+
+  $("statusSel").addEventListener("change",function(){
+    var z=zones.filter(function(q){return q.id===myZone;})[0];
+    if(!z) return;
+    z.status=this.value; z.statusAt=Date.now();
+    if(!localMode && db){
+      var v=z.status, at=z.statusAt;
+      writeChain = writeChain.then(function(){
+        return db.doc("zones/"+z.id).update({status:v, statusAt:at});
+      }).catch(function(){});
+    }
+    render();
+  });
+
+  /* ---------------- vote buttons ---------------- */
+  function buildVoteButtons(){
+    var box=$("voteBtns"); box.innerHTML="";
+    SCALE.forEach(function(s){
+      var b=document.createElement("button");
+      b.className="vote"; b.type="button";
+      b.style.setProperty("--tint","var("+s.css+")");
+      b.setAttribute("aria-pressed","false");
+      b.dataset.n=String(s.n);
+      b.innerHTML='<span class="face" aria-hidden="true">'+s.face+'</span><span class="lab">'+s.lab+'</span>';
+      b.addEventListener("click",function(){ cast(s.n); });
+      box.appendChild(b);
+    });
+  }
+
+  function myVote(zoneId){
+    var b = ballots.get(uid||"__local__");
+    var v = b && b[zoneId];
+    if(!v) return null;
+    if(Date.now()-v.t > TTL) return null;
+    return v;
+  }
+
+  // one document per voter at votes/<viewer id>, shaped { v: { zoneId: {n,t} } }
+  function cast(n){
+    if(!myZone || writeBlocked) return;
+    var key = uid || "__local__";
+    var body = Object.assign({}, ballots.get(key) || {});
+    body[myZone] = {n:n, t:Date.now()};
+    ballots.set(key, body);
+    render();
+
+    if(localMode || !db || !uid) return;
+    writeChain = writeChain.then(function(){
+      return db.doc("votes/"+uid).set({v:body});
+    }).catch(function(e){
+      if(e && (e.code==="invalid_argument" || e.code==="not_granted")){
+        writeBlocked=true;
+        banner("Your account can read this board but not vote on it.");
+        render();
+      }
+    });
+  }
+
+  /* ---------------- add a spot ---------------- */
+  function addSpot(floor, name){
+    floor=(floor||"").trim(); name=(name||"").trim();
+    if(!name) return null;
+    var id = slug((floor?floor+"-":"")+name);
+    if(zones.some(function(z){return z.id===id;})) return id;
+    var z={id:id, floor:floor, name:name};
+    zones.push(z);
+    if(!localMode && db){
+      writeChain = writeChain.then(function(){
+        return db.doc("zones/"+id).set({floor:floor, name:name});
+      }).catch(function(){});
+    }
+    return id;
+  }
+
+  /* ---------------- render ---------------- */
+  function render(){
+    // --- spot picker
+    var sel=$("spot");
+    var want = myZone;
+    sel.innerHTML="";
+    if(!zones.length){
+      var o=document.createElement("option");
+      o.textContent="No spots yet — add one below";
+      o.value=""; sel.appendChild(o); sel.disabled=true;
+    }else{
+      sel.disabled=false;
+      zones.forEach(function(z){
+        var o=document.createElement("option");
+        o.value=z.id;
+        o.textContent = z.floor ? z.floor+" \u2014 "+z.name : z.name;
+        sel.appendChild(o);
+      });
+      if(!want || !zones.some(function(z){return z.id===want;})) want=zones[0].id;
+      myZone=want; sel.value=want;
+    }
+
+    // --- vote buttons state
+    var mine = myZone ? myVote(myZone) : null;
+    Array.prototype.forEach.call($("voteBtns").children,function(b){
+      var on = mine && String(mine.n)===b.dataset.n;
+      b.setAttribute("aria-pressed", on?"true":"false");
+      b.disabled = !myZone || writeBlocked;
+      b.style.opacity = (!myZone||writeBlocked) ? ".45" : "";
+    });
+    $("castline").textContent = !myZone ? ""
+      : writeBlocked ? "Voting is off for your account."
+      : mine ? "You said "+SCALE[mine.n+2].lab.toLowerCase()+", "+ago(mine.t)+". Tap again to change it."
+      : "You haven't voted here yet.";
+
+    // --- readout
+    if(myZone){
+      var z = zones.filter(function(x){return x.id===myZone;})[0];
+      var t = tally(myZone);
+      var v = verdict(t);
+      $("readout").hidden=false;
+      $("roTitle").textContent = z.floor ? z.floor+" \u2014 "+z.name : z.name;
+      $("roSub").textContent = t.n ? "Last vote "+ago(t.newest)+"." : "Be the first to say something.";
+      $("roStrip").innerHTML = stripHTML(t,{big:true});
+      $("roVerdict").textContent = v.text;
+      var chip=$("roChip");
+      if(t.split){
+        chip.hidden=false; chip.textContent="Split";
+        chip.style.color="var(--muted)";
+      } else chip.hidden=true;
+      $("roCount").textContent = t.n===0 ? "" :
+        t.n+(t.n===1?" person":" people")+" in the last two hours \u00B7 "+
+        t.cold+" cold, "+t.nice+" comfortable, "+t.hot+" warm";
+
+      $("statusSel").value = z.status || "";
+      $("statusWhen").textContent = z.status && z.statusAt ? "updated "+ago(z.statusAt) : "";
+
+      var hint=$("roHint");
+      if(t.split){
+        hint.hidden=false;
+        hint.innerHTML='<b>'+t.cold+' feel cold and '+t.hot+' feel warm in the same place.</b> '+
+          'That usually means this spot is really two spots \u2014 a window run and a shaded core, or one vent doing all the work. '+
+          'Turning the thermostat will just move the complaint to the other group.'+
+          '<button class="linkbtn" id="splitBtn">Add a narrower spot instead</button>';
+        var sb=$("splitBtn");
+        if(sb) sb.addEventListener("click",function(){
+          $("nFloor").value = z.floor || "";
+          $("nName").value = "";
+          $("nName").focus();
+          $("nName").scrollIntoView({behavior:"smooth", block:"center"});
+        });
+      } else if(t.n>0 && t.n<3){
+        hint.hidden=false;
+        hint.innerHTML='Only '+t.n+(t.n===1?' vote':' votes')+' so far. Get one or two neighbours to tap as well \u2014 one person\u2019s cardigan isn\u2019t a reading.';
+      } else hint.hidden=true;
+    } else {
+      $("readout").hidden=true;
+    }
+
+    // --- all zones
+    var list=$("zlist");
+    if(!zones.length){
+      list.innerHTML='<div class="empty">Nothing here yet. Add the floor you\u2019re on and the board starts filling in.</div>';
+    } else {
+      var rows = zones.map(function(z){
+        var t=tally(z.id);
+        return {z:z, t:t, u:urgency(t)};
+      }).sort(function(a,b){ return b.u - a.u; });
+
+      list.innerHTML = rows.map(function(r){
+        var v=verdict(r.t);
+        var meta = r.t.n===0 ? "Quiet \u2014 no votes in the last two hours"
+          : v.text + " \u00B7 " + r.t.n + (r.t.n===1?" vote":" votes") + " \u00B7 " + ago(r.t.newest);
+        return '<button class="zrow'+(r.z.id===myZone?" here":"")+'" data-z="'+esc(r.z.id)+'">'+
+          '<span><span class="zname">'+
+            (r.z.floor?'<span class="zfloor">'+esc(r.z.floor)+'</span>':'')+
+            esc(r.z.name)+'</span>'+
+          '<span class="zmeta">'+esc(meta)+'</span></span>'+
+          '<span>'+stripHTML(r.t,{big:false})+'</span>'+
+        '</button>';
+      }).join("");
+
+      Array.prototype.forEach.call(list.querySelectorAll(".zrow"),function(btn){
+        btn.addEventListener("click",function(){
+          myZone = btn.dataset.z;
+          lsSet("aw.zone", myZone);
+          render();
+          document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
+        });
+      });
+    }
+
+    renderHeat();
+  }
+
+  function banner(msg){
+    var b=$("banner");
+    b.hidden=false; b.textContent=msg;
+  }
+
+  /* ---------------- wire up ---------------- */
+  buildVoteButtons();
+  myZone = lsGet("aw.zone");
+
+  $("spot").addEventListener("change",function(){
+    myZone=$("spot").value; lsSet("aw.zone",myZone); render();
+  });
+
+  $("addBtn").addEventListener("click",function(){
+    var id = addSpot($("nFloor").value, $("nName").value);
+    if(!id){ $("nName").focus(); return; }
+    $("nFloor").value=""; $("nName").value="";
+    myZone=id; lsSet("aw.zone",id);
+    render();
+    document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
+  });
+  $("nName").addEventListener("keydown",function(e){
+    if(e.key==="Enter") $("addBtn").click();
+  });
+
+  render();
+  setInterval(render, 60000);   // age votes out
+
+  /* ---------------- shared data, if the viewer grants it ---------------- */
+  (async function(){
+    try{
+      db = await (window.claude && window.claude.use ? window.claude.use("db") : Promise.resolve(null));
+      userCap = await (window.claude && window.claude.use ? window.claude.use("user") : Promise.resolve(null));
+      assetsCap = await (window.claude && window.claude.use ? window.claude.use("assets") : Promise.resolve(null));
+    }catch(e){ db=null; }
+
+    if(!db){
+      banner("Running on its own. Votes stay in this browser until the board is opened from its shared link.");
+      return;
+    }
+    localMode=false;
+
+    try{ uid = userCap ? await userCap.id() : null; }catch(e){ uid=null; }
+    if(!uid){
+      writeBlocked=true;
+      banner("Signed-out view \u2014 you can read the board but not vote.");
+    }
+
+    db.collection("zones").onSnapshot(function(snap){
+      zones = snap.docs.map(function(d){
+        var v=d.data()||{};
+        return {
+          id:d.id, floor:String(v.floor||""), name:String(v.name||d.id),
+          x: typeof v.x==="number" ? v.x : undefined,
+          y: typeof v.y==="number" ? v.y : undefined,
+          status: String(v.status||""),
+          statusAt: typeof v.statusAt==="number" ? v.statusAt : 0
+        };
+      }).sort(function(a,b){
+        return (a.floor+a.name).localeCompare(b.floor+b.name, undefined, {numeric:true});
+      });
+      render();
+    }, function(){ banner("Lost the live connection to the board. Reload to try again."); });
+
+    db.collection("plans").onSnapshot(function(snap){
+      plans=new Map();
+      snap.docs.forEach(function(d){
+        var v=d.data()||{};
+        if(v.assetId) plans.set(d.id,{assetId:String(v.assetId),w:Number(v.w)||0,h:Number(v.h)||0});
+      });
+      render();
+    }, function(){});
+
+    db.collection("votes").onSnapshot(function(snap){
+      ballots = new Map();
+      snap.docs.forEach(function(d){
+        var v = (d.data()||{}).v;
+        if(v && typeof v==="object") ballots.set(d.id, v);
+      });
+      render();
+    }, function(){});
+
+    render();
+  })();
+
+})();
+</script>
+</body>
+</html>
