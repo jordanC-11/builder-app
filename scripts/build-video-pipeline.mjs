@@ -26,12 +26,19 @@ const OUTPUT_MP4 = path.join(BUILD_DIR, "thermocracy-slides.mp4");
 
 const PIPER_EXE = path.join(ROOT, "tools", "piper", "piper.exe");
 const PIPER_VOICE = process.env.PIPER_VOICE ||
-  path.join(ROOT, "tools", "piper", "voices", "en_US-lessac-medium.onnx");
+  path.join(ROOT, "tools", "piper", "voices", "en_US-amy-medium.onnx");
 
 const WIDTH = 1920, HEIGHT = 1080, FPS = 30;
-const TAIL_PADDING = 2.3;   // seconds of extra hold after each clip's audio ends
+const TAIL_PADDING = 1.5;   // seconds of extra hold after each clip's audio ends
 const MIN_DURATION = 2.0;   // floor, in case a narration clip is very short
 const FADE = 0.6;           // seconds of fade in/out per slide
+
+// Piper delivery tuning — livelier than Piper's flat defaults (length_scale 1.0,
+// noise_scale 0.667, noise_w 0.8, sentence_silence 0.2s).
+const PIPER_LENGTH_SCALE = 0.92;    // <1.0 speaks faster — reads as more energetic
+const PIPER_NOISE_SCALE = 0.75;     // more natural variation, less flat
+const PIPER_NOISE_W = 0.92;         // more pitch/phoneme-width variation, less monotone
+const PIPER_SENTENCE_SILENCE = 0.15; // shorter inter-sentence pause, tighter pacing
 
 const args = process.argv.slice(2);
 const SKIP_RENDER = args.includes("--skip-render");
@@ -75,7 +82,7 @@ function checkPiper() {
       `Piper binary not found at ${PIPER_EXE}\n` +
       "  Download it (one-time, manual): https://github.com/rhasspy/piper/releases\n" +
       "  Unzip the Windows release so tools/piper/piper.exe exists, and place a voice\n" +
-      "  model (e.g. en_US-lessac-medium.onnx + .onnx.json) under tools/piper/voices/.\n" +
+      "  model (e.g. en_US-amy-medium.onnx + .onnx.json) under tools/piper/voices/.\n" +
       "  See docs/VIDEO-GUIDE.md for details."
     );
   }
@@ -91,7 +98,13 @@ function checkPiper() {
 
 function runPiper(text, outPath) {
   return new Promise((resolve, reject) => {
-    const proc = spawn(PIPER_EXE, ["--model", PIPER_VOICE, "--output_file", outPath]);
+    const proc = spawn(PIPER_EXE, [
+      "--model", PIPER_VOICE, "--output_file", outPath,
+      "--length_scale", String(PIPER_LENGTH_SCALE),
+      "--noise_scale", String(PIPER_NOISE_SCALE),
+      "--noise_w", String(PIPER_NOISE_W),
+      "--sentence_silence", String(PIPER_SENTENCE_SILENCE)
+    ]);
     let stderr = "";
     proc.stderr.on("data", (d) => { stderr += d.toString(); });
     proc.on("error", reject);

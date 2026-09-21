@@ -104,7 +104,7 @@ dependency-free files.
    (`piper_windows_amd64.zip`) and unzip it so `tools/piper/piper.exe` exists.
 2. Download a voice — `.onnx` + `.onnx.json` — from the
    [Piper voices collection](https://huggingface.co/rhasspy/piper-voices)
-   (default used here: `en_US-lessac-medium`) into `tools/piper/voices/`.
+   (default used here: `en_US-amy-medium`) into `tools/piper/voices/`.
 
 `tools/piper/` is gitignored, so this step is needed once per clone/machine.
 

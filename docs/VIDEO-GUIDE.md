@@ -396,7 +396,7 @@ package, so it needs a one-time manual setup:
    `tools/piper/piper.exe` exists (along with its `.dll`s and
    `espeak-ng-data/`).
 2. Download a voice model — `.onnx` + matching `.onnx.json` — from the Piper
-   voices collection (e.g. `en_US-lessac-medium`, the current default) and
+   voices collection (e.g. `en_US-amy-medium`, the current default) and
    place both files under `tools/piper/voices/`.
 3. `tools/piper/` is gitignored (native binary + large model files, not
    source) — every clone needs to redo this setup once.
