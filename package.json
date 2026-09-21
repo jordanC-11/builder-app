@@ -1,0 +1,15 @@
+{
+  "name": "thermocracy-video-pipeline",
+  "private": true,
+  "type": "module",
+  "description": "Build pipeline for src/slides.html: renders slides, generates local voiceover with Piper, and assembles build/thermocracy-slides.mp4. Does not affect src/app.html or src/explainer.html, which remain plain files with no dependencies.",
+  "scripts": {
+    "postinstall": "playwright install chromium",
+    "build-video": "node scripts/build-video-pipeline.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.48.0",
+    "ffmpeg-static": "^5.2.0",
+    "music-metadata": "^10.5.0"
+  }
+}

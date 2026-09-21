@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thermocracy — slides</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EDF0; --surface:#FFFFFF; --surface-2:#F3F7F9;
+  --ink:#14242C; --muted:#5F737D; --line:#CDD9DF; --line-soft:#E1E9ED;
+  --c-2:#2A6DB5; --c-1:#5FA3C4; --c0:#3B9B78; --c1:#DE9036; --c2:#C64C2C;
+  --focus:#14242C;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0C1418; --surface:#17242B; --surface-2:#1D2D35;
+    --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
+    --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
+    --focus:#E6EEF1;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0C1418; --surface:#17242B; --surface-2:#1D2D35;
+  --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
+  --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
+  --focus:#E6EEF1;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.shell{max-width:1040px;margin:0 auto;padding:18px 16px 40px}
+
+.stage{
+  position:relative;width:100%;aspect-ratio:16/9;container-type:inline-size;
+  background:var(--surface);border:1px solid var(--line-soft);
+  border-radius:14px;overflow:hidden;
+}
+/* This deck is static per slide (no timeline), so every reveal state is
+   rendered "already on" and all transitions/animations are suppressed —
+   Playwright screenshots a settled frame, not a mid-transition one. */
+.stage *{transition:none!important;animation:none!important}
+
+.scene{
+  position:absolute;inset:0;padding:4.5cqw 5.5cqw 10cqw;opacity:1;
+  display:flex;flex-direction:column;justify-content:center;
+}
+.eyebrow{font-size:1.5cqw;font-weight:600;color:var(--muted);margin:0 0 1.4cqw}
+h2.big{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:5cqw;letter-spacing:-.03em;line-height:1.02;margin:0 0 2.2cqw;
+}
+.line{font-size:2.4cqw;line-height:1.4;margin:0 0 1.4cqw;max-width:42em}
+.line.dim{color:var(--muted)}
+.line.pop{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
+  font-size:3cqw;letter-spacing:-.02em;margin-top:.8cqw;
+}
+
+.who{display:flex;align-items:center;gap:1.1cqw;margin-bottom:1.6cqw}
+.who .av{
+  width:4cqw;height:4cqw;border-radius:50%;flex:0 0 auto;
+  background:var(--surface-2);border:.18cqw solid var(--line);
+  display:flex;align-items:center;justify-content:center;font-size:2cqw;
+}
+.who .wn{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.3cqw;letter-spacing:-.02em;line-height:1.1}
+.who .wr{font-size:1.5cqw;color:var(--muted);line-height:1.2}
+
+.scene.hero{align-items:flex-start}
+.title{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
+  font-size:8.6cqw;letter-spacing:-.04em;line-height:.95;margin:0;
+}
+.subtitle{font-size:2.5cqw;color:var(--muted);margin:1.5cqw 0 0}
+.bigramp{
+  height:.7cqw;border-radius:99px;margin-top:3.2cqw;width:54%;
+  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
+}
+
+.mock{background:var(--surface-2);border:.14cqw solid var(--line);border-radius:1.1cqw;padding:2.2cqw 2.6cqw 2.4cqw}
+.mockrow{display:flex;align-items:center;gap:1.1cqw;margin-bottom:1.8cqw}
+.mocklab{font-size:1.5cqw;color:var(--muted)}
+.pill{
+  font-size:1.7cqw;font-weight:600;background:var(--surface);
+  border:.15cqw solid var(--line);border-radius:.65cqw;padding:.6cqw 1.1cqw;
+}
+.pill.hot{border-color:var(--ink);box-shadow:0 0 0 .22cqw color-mix(in srgb,var(--ink) 12%,transparent)}
+.vbtns{display:grid;grid-template-columns:repeat(5,1fr);gap:.7cqw;margin-bottom:2.2cqw}
+.vbtn{
+  background:var(--surface);border:.15cqw solid var(--line);border-radius:.8cqw;
+  padding:.9cqw .3cqw .7cqw;text-align:center;
+}
+.vbtn .f{font-size:2.3cqw;line-height:1;display:block}
+.vbtn .l{font-size:1.15cqw;color:var(--muted);display:block;margin-top:.35cqw}
+.vbtn.tapped{
+  border-color:var(--tint);border-width:.28cqw;
+  background:color-mix(in srgb,var(--tint) 14%,var(--surface));transform:scale(.95);
+}
+
+.strip{position:relative}
+.bands{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;height:9.5cqw;align-items:end}
+.band{
+  height:100%;display:flex;flex-direction:column-reverse;align-items:center;
+  gap:.3cqw;padding-bottom:.3cqw;border-radius:.6cqw .6cqw 0 0;
+  background:color-mix(in srgb,var(--tint) 9%,transparent);
+}
+.dot{width:1.35cqw;height:1.35cqw;border-radius:50%;background:var(--tint);flex:0 0 auto}
+.axis{height:.4cqw;border-radius:99px;margin-top:.5cqw;
+  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2))}
+.needle{
+  position:absolute;bottom:-1cqw;width:.26cqw;height:1.8cqw;border-radius:.2cqw;
+  background:var(--ink);opacity:0;
+}
+.needle.show{opacity:1}
+.needle.split{background:repeating-linear-gradient(to bottom,var(--ink) 0 .38cqw,transparent .38cqw .76cqw)}
+.ticks{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;margin-top:1.3cqw;font-size:1.2cqw;color:var(--muted);text-align:center}
+.vrow{display:flex;align-items:center;gap:1cqw;margin-top:1.6cqw;min-height:2.8cqw}
+.vtext{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.2cqw;letter-spacing:-.02em}
+.chip{
+  font-size:1.25cqw;font-weight:600;padding:.2cqw .8cqw;border-radius:99px;
+  border:.15cqw solid var(--muted);color:var(--muted);opacity:0;
+}
+.chip.in{opacity:1}
+.callout,.hintcard{
+  margin-top:1.3cqw;padding:1.2cqw 1.5cqw;border-radius:.8cqw;font-size:1.65cqw;line-height:1.4;
+}
+.callout{background:var(--surface);border:.15cqw solid var(--line)}
+.hintcard{background:var(--surface);border:.15cqw dashed var(--line)}
+.callout b,.hintcard b{font-weight:600}
+
+/* Dense: the mock/vote component packed tighter, same tuning as the
+   original explainer's scene 3 (its densest scene). */
+.scene.dense{padding:3cqw 5.5cqw 6cqw;justify-content:flex-start}
+.scene.dense .who{margin-bottom:1.2cqw}
+.scene.dense .who .av{width:3.6cqw;height:3.6cqw;font-size:1.85cqw}
+.scene.dense .mock{padding:1.6cqw 2.6cqw 1.7cqw}
+.scene.dense .mockrow{margin-bottom:1.3cqw}
+.scene.dense .pill{padding:.45cqw 1.1cqw}
+.scene.dense .vbtns{margin-bottom:1.5cqw}
+.scene.dense .vbtn{padding:.6cqw .3cqw .5cqw}
+.scene.dense .bands{height:6.5cqw}
+.scene.dense .ticks{margin-top:1cqw}
+.scene.dense .vrow{margin-top:1.1cqw;min-height:2.5cqw}
+.scene.dense .callout,.scene.dense .hintcard{margin-top:1cqw;padding:.95cqw 1.4cqw;font-size:1.55cqw;line-height:1.35}
+
+.hmwrap{display:grid;grid-template-columns:1.35fr 1fr;gap:2.2cqw;align-items:start}
+.plate{
+  position:relative;aspect-ratio:16/11;width:100%;
+  background:var(--surface-2);border:.14cqw solid var(--line);
+  border-radius:1cqw;overflow:hidden;
+}
+.plate .planart{position:absolute;inset:0;width:100%;height:100%}
+.plate .planart .shell{fill:none;stroke:color-mix(in srgb,var(--ink) 62%,transparent);stroke-width:1.1}
+.plate .planart .room{fill:color-mix(in srgb,var(--ink) 5%,transparent);stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.6}
+.plate .planart .fix{fill:color-mix(in srgb,var(--ink) 13%,transparent);stroke:color-mix(in srgb,var(--ink) 36%,transparent);stroke-width:.45}
+.plate .planart .desk{fill:none;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.4}
+.plate .planart .mull{stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.55}
+.plate .planart text{fill:color-mix(in srgb,var(--ink) 62%,transparent);font-size:3.2px;font-family:"Instrument Sans",sans-serif;font-weight:500}
+.heat{position:absolute;inset:0;filter:blur(2.2cqw);opacity:.82;mix-blend-mode:multiply}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]) .heat{mix-blend-mode:screen;opacity:.66}
+}
+:root[data-theme="dark"] .heat{mix-blend-mode:screen;opacity:.66}
+.hblob{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
+.pins{position:absolute;inset:0}
+.hpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.35cqw}
+.hpin .knob{
+  width:1.1cqw;height:1.1cqw;border-radius:50%;
+  background:var(--surface);border:.28cqw solid var(--ink);
+  box-shadow:0 0 0 .3cqw color-mix(in srgb,var(--surface) 70%,transparent);
+}
+.hpin .plab{
+  font-size:1.2cqw;font-weight:600;white-space:nowrap;
+  background:color-mix(in srgb,var(--surface) 90%,transparent);
+  border-radius:.35cqw;padding:.15cqw .5cqw;
+}
+.hpin .flag{font-size:1.05cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:.3cqw;padding:.1cqw .45cqw}
+.ring{
+  position:absolute;width:15cqw;height:15cqw;border-radius:50%;
+  border:.28cqw solid var(--ink);transform:translate(-50%,-50%);opacity:0;
+}
+.ring.in{opacity:.7}
+.hmside .line{font-size:1.9cqw;margin-bottom:1.2cqw}
+.hmside .line.pop{font-size:2.3cqw}
+.mlegend{display:flex;align-items:center;gap:.8cqw;margin-top:1cqw;font-size:1.15cqw;color:var(--muted);flex-wrap:wrap}
+.mramp{width:9cqw;height:.55cqw;border-radius:99px;background:linear-gradient(90deg,#2A6DB5,#5FA3C4 26%,#3B9B78 50%,#DE9036 74%,#C64C2C)}
+.mswatch{width:2.4cqw;height:.55cqw;border-radius:99px;background:repeating-linear-gradient(45deg,#2A6DB5 0 .35cqw,#C64C2C .35cqw .7cqw)}
+
+.twoup{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw;margin-top:1.2cqw}
+.col{background:var(--surface-2);border:.14cqw solid var(--line);border-radius:.9cqw;padding:1.6cqw}
+.col h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.9cqw;margin:0 0 .7cqw;letter-spacing:-.02em}
+.col p{font-size:1.5cqw;color:var(--muted);margin:0;line-height:1.4}
+.col .tick{font-size:3.2cqw;line-height:1;margin-bottom:.7cqw;display:block}
+
+.capbar{
+  position:absolute;left:0;right:0;bottom:0;padding:1.5cqw 5.5cqw 1.8cqw;
+  background:linear-gradient(to top,color-mix(in srgb,var(--surface) 96%,transparent) 55%,transparent);
+  font-size:1.7cqw;line-height:1.4;color:var(--muted);min-height:5.6cqw;
+}
+
+.controls{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
+.ctrl{font:inherit;font-weight:600;font-size:15px;cursor:pointer;background:var(--ink);color:var(--paper);border:none;border-radius:9px;padding:9px 18px}
+.ctrl.ghost{background:none;color:var(--ink);border:1.5px solid var(--line)}
+.ctrl:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.counter{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted)}
+.marks{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.mk{font:inherit;font-size:13px;cursor:pointer;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 11px}
+.mk.cur{color:var(--ink);border-color:var(--ink)}
+.mk:hover{color:var(--ink)}
+.note{color:var(--muted);font-size:14px;margin-top:16px;line-height:1.6}
+
+body.presenting{overflow:hidden;background:var(--paper)}
+body.presenting .shell{max-width:none;padding:0}
+body.presenting .controls,
+body.presenting .marks,
+body.presenting .note{display:none}
+body.presenting .stage{
+  position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;
+  border:none;border-radius:0;
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="stage" id="stage">
+    <section class="scene" id="slide"></section>
+    <div class="capbar"><span id="cap"></span></div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl" id="prev">Prev</button>
+    <button class="ctrl" id="next">Next</button>
+    <button class="ctrl ghost" id="present">Present</button>
+    <span class="counter" id="counter">1 / 20</span>
+  </div>
+  <div class="marks" id="marks"></div>
+  <p class="note">A static slide deck (not a scrubbable timeline). Each slide's narration is generated as a
+    separate voiceover clip and combined with the slide's screenshot into a video by <code>npm run build-video</code>
+    — see docs/VIDEO-GUIDE.md.</p>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var $=function(i){return document.getElementById(i);};
+  function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+
+  var SCALE=[
+    {n:-2,f:"🥶",l:"Freezing",c:"--c-2"},
+    {n:-1,f:"🧥",l:"Chilly",c:"--c-1"},
+    {n: 0,f:"😌",l:"Just nice",c:"--c0"},
+    {n: 1,f:"🫠",l:"Warm",c:"--c1"},
+    {n: 2,f:"🥵",l:"Roasting",c:"--c2"}
+  ];
+  var HEAT=[[42,109,181],[95,163,196],[59,155,120],[222,144,54],[198,76,44]];
+
+  function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function heatColor(mean){
+    var p=clamp(mean,-2,2)+2, i=Math.min(3,Math.floor(p)), f=p-i;
+    var a=HEAT[i],b=HEAT[i+1];
+    return [0,1,2].map(function(k){return Math.round(a[k]+(b[k]-a[k])*f);});
+  }
+  function rgba(c,a){return "rgba("+c[0]+","+c[1]+","+c[2]+","+a+")";}
+  function hblob(x,y,size,c,alpha){
+    return '<div class="hblob" style="left:'+x+'%;top:'+y+'%;width:'+size+'%;aspect-ratio:1;'+
+      'background:radial-gradient(circle,'+rgba(c,alpha)+' 0%,'+rgba(c,0)+' 70%)"></div>';
+  }
+  function verdict(n,mean,split){
+    if(n===0) return "";
+    if(split) return "The room can't agree";
+    if(mean<=-1.2) return "Too cold";
+    if(mean<=-0.4) return "Leaning cold";
+    if(mean<0.4) return "About right";
+    if(mean<1.2) return "Leaning warm";
+    return "Too warm";
+  }
+
+  /* Built-in floor plan, same drawing as the app and the explainer video. */
+  function planSvg(){
+    function deskRow(y,xs){
+      return xs.map(function(x){
+        return '<rect class="desk" x="'+x+'" y="'+y+'" width="9" height="5" rx="1"/>'+
+               '<rect class="desk" x="'+x+'" y="'+(y+5)+'" width="9" height="5" rx="1"/>';
+      }).join("");
+    }
+    var m="";
+    for(var x=12;x<=148;x+=8){
+      m+='<line class="mull" x1="'+x+'" y1="4" x2="'+x+'" y2="7.5"/>';
+      m+='<line class="mull" x1="'+x+'" y1="106" x2="'+x+'" y2="102.5"/>';
+    }
+    for(var y=14;y<=96;y+=8) m+='<line class="mull" x1="4" y1="'+y+'" x2="7.5" y2="'+y+'"/>';
+    return '<svg class="planart" viewBox="0 0 160 110" preserveAspectRatio="none" aria-hidden="true">'+
+      '<rect class="shell" x="4" y="4" width="152" height="102" rx="2"/>'+m+
+      '<rect class="room" x="58" y="38" width="44" height="34"/>'+
+      '<rect class="fix" x="61" y="41" width="9" height="13"/>'+
+      '<rect class="fix" x="61" y="56" width="9" height="13"/>'+
+      '<rect class="fix" x="73" y="41" width="12" height="13"/>'+
+      '<rect class="fix" x="73" y="56" width="12" height="13"/>'+
+      '<rect class="fix" x="88" y="41" width="11" height="13"/>'+
+      '<rect class="fix" x="88" y="56" width="11" height="13"/>'+
+      '<text x="61.5" y="48.5">Lifts</text><text x="74" y="48.5">WC</text>'+
+      '<text x="88.8" y="48.5">Stair</text><text x="88.8" y="63.5">Riser</text>'+
+      '<rect class="room" x="120" y="8" width="34" height="22"/>'+
+      '<rect class="room" x="120" y="34" width="34" height="20"/>'+
+      '<rect class="room" x="120" y="58" width="34" height="20"/>'+
+      '<text x="122.5" y="12.5">Meeting 7-1</text>'+
+      '<text x="122.5" y="38.5">Meeting 7-2</text>'+
+      '<text x="122.5" y="62.5">Meeting 7-3</text>'+
+      '<rect class="room" x="6" y="78" width="36" height="26"/>'+
+      '<text x="8.5" y="82.5">Pantry</text>'+
+      deskRow(12,[10,21,32,47,58,69,84,95,106])+
+      deskRow(26,[10,21,32,47,58,69,84,95,106])+
+      deskRow(82,[48,59,70,85,96,107])+
+      deskRow(44,[10,21,32])+deskRow(58,[10,21,32])+
+      '</svg>';
+  }
+
+  // ---- Slide content -------------------------------------------------
+  // Discrete slides: the static-slide analogue of explainer.html's
+  // SCENES+CAPS. Each slide's `narration` is both the burned-in caption
+  // and the exact text sent to the local TTS engine (Piper) — see
+  // docs/VIDEO-GUIDE.md.
+  var SLIDES=[
+    { id:"title", section:"Title", layout:"title",
+      data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" },
+      narration:"Thermocracy — a small board for a very old office argument." },
+
+    { id:"what-1", section:"What it is", layout:"statement",
+      data:{ eyebrow:"What it is", heading:"The floor votes. The setpoint follows.",
+        lines:[{text:"A shared read on how the office feels, and what the aircon should do about it."}] },
+      narration:"It's a shared read on how the office feels, and what the aircon should do about it." },
+
+    { id:"what-2", section:"What it is", layout:"statement",
+      data:{ eyebrow:"What it is", heading:"Five buttons, two seconds, no ticket.",
+        lines:[{text:"Not the number on the thermostat — the temperature people are actually living at, desk by desk."}] },
+      narration:"Not the thermostat's number. The temperature people are actually living at, desk by desk." },
+
+    { id:"what-3", section:"What it is", layout:"statement",
+      data:{ eyebrow:"What it is", heading:"Agree, and it's one tap.",
+        lines:[
+          {text:"When a spot agrees, facilities gets a new setpoint to apply in one tap."},
+          {text:"Votes expire after two hours, so the board always reads as right now.", dim:true}
+        ] },
+      narration:"Agree on a spot, and facilities gets one tap to apply it. Votes expire after two hours, so the board always reads as right now." },
+
+    { id:"sarah-intro", section:"POV1: Sarah", layout:"person",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        line:"Start with Sarah. She's on Level 7, and she's cold." },
+      narration:"Start with Sarah. She's on Level 7, and she's cold." },
+
+    { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] },
+      narration:"She picks where she's sitting and taps Freezing. That's the whole interaction." },
+
+    { id:"sarah-first-dot", section:"POV1: Sarah", layout:"mockvote",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        spot:"Level 7 — Open floor", counts:[1,0,0,0,0] },
+      narration:"Her vote lands as a dot on a temperature axis." },
+
+    { id:"sarah-neighbors", section:"POV1: Sarah", layout:"mockvote",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        spot:"Level 7 — Open floor", counts:[3,2,1,1,0] },
+      narration:"Then her neighbours vote, and the picture gets strange." },
+
+    { id:"sarah-split-verdict", section:"POV1: Sarah", layout:"mockvote",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        spot:"Level 7 — Open floor", counts:[3,2,1,2,3] },
+      narration:"Half the floor is cold. Half the floor is warm. Same room, same minute. Eleven votes, one comfortable person, an average pointing dead centre." },
+
+    { id:"sarah-callout", section:"POV1: Sarah", layout:"calloutcard",
+      data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+        callout:"<b>Eleven people voted. One of them is comfortable.</b> The average still points dead centre.",
+        hint:"<b>This spot is really two spots.</b> No setpoint satisfies both, so this one isn’t a number — it’s a vent." },
+      narration:"So it proposes no setpoint at all. This spot is really two spots — no setpoint satisfies both." },
+
+    { id:"ravi-intro", section:"POV2: Ravi", layout:"person",
+      data:{ avatar:"🧑🏽‍🔧", name:"Ravi", role:"Aircon contractor — works the heat map, not the inbox",
+        line:"Now the other side. Ravi maintains the aircon for this building." },
+      narration:"Now the other side. Ravi maintains the aircon for this building." },
+
+    { id:"ravi-map-overview", section:"POV2: Ravi", layout:"heatmap",
+      data:{
+        pins:[
+          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
+          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
+          {x:50,y:22,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
+        ],
+        sideLines:[{text:"Most spots here already took their new setpoint."}]
+      },
+      narration:"He opens Level 7. Most spots already took their new setpoint." },
+
+    { id:"ravi-split-closeup", section:"POV2: Ravi", layout:"heatmap",
+      data:{
+        pins:[
+          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
+          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
+          {x:50,y:22,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
+        ],
+        ring:{x:50,y:22},
+        sideLines:[{text:"This one wouldn’t — it’s mottled, because the people standing in it disagree.",dim:true}]
+      },
+      narration:"This one wouldn't — it's mottled, because the people standing in it disagree. Which an average could never show him." },
+
+    { id:"ravi-split-reveal", section:"POV2: Ravi", layout:"heatmap",
+      data:{
+        pins:[
+          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
+          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
+          {x:50,y:9,label:"Window run",mean:1.9,n:6,flag:"HOT"},
+          {x:50,y:31,label:"Inner core",mean:-1.85,n:5,flag:"COLD"}
+        ],
+        sideLines:[{text:"He splits the spot, and the map shows what was hiding inside.",pop:true}]
+      },
+      narration:"He splits the spot, and the map shows what was hiding inside." },
+
+    { id:"ravi-detail", section:"POV2: Ravi", layout:"heatmap",
+      data:{
+        pins:[
+          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
+          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
+          {x:50,y:9,label:"Window run",mean:1.9,n:6,flag:"HOT"},
+          {x:50,y:31,label:"Inner core",mean:-1.85,n:5,flag:"COLD"}
+        ],
+        sideLines:[
+          {text:"A hot window run, three metres from a cold core, sharing one damper."},
+          {text:"No setpoint fixes that. It goes to management as a vent fault, votes attached."}
+        ]
+      },
+      narration:"A hot window run, three metres from a cold core, sharing one damper. No setpoint fixes that — it goes to management as a vent fault, votes attached." },
+
+    { id:"ravi-resolution", section:"POV2: Ravi", layout:"heatmap",
+      data:{
+        pins:[
+          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
+          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
+          {x:50,y:9,label:"Window run",mean:0.2,n:6,flag:"ADJUSTED"},
+          {x:50,y:31,label:"Inner core",mean:-0.15,n:5,flag:"ADJUSTED"}
+        ],
+        sideLines:[{text:"Damper rebalanced. Both green.",pop:true}]
+      },
+      narration:"They send someone to rebalance the branch. Next morning, both spots are green — this one never needed a new number at all." },
+
+    { id:"problem-1", section:"The problem", layout:"twoup",
+      data:{ eyebrow:"The problem it solves", heading:"Aircon complaints are never unanimous.",
+        cards:[
+          {tick:"🥶", title:"“It's freezing in here.”", body:"Sent from the desk under the vent, 9:40am."},
+          {tick:"🥵", title:"“Can we turn it up?”", body:"Sent from the window seats, same floor, 9:42am."}
+        ] },
+      narration:"Aircon complaints are never unanimous. Someone is always cold, and someone is always warm." },
+
+    { id:"problem-2", section:"The problem", layout:"statement",
+      data:{ eyebrow:"The problem it solves",
+        lines:[{text:"Two opposite tickets about one floor, and an average that says nothing is wrong.",dim:true}] },
+      narration:"Two opposite tickets about one floor, and an average saying nothing is wrong." },
+
+    { id:"problem-3", section:"The problem", layout:"statement",
+      data:{ eyebrow:"The problem it solves",
+        lines:[{text:"Some of them need a new number. Some need a spanner.",pop:true}] },
+      narration:"Some of those need a new number. Some need a spanner." },
+
+    { id:"close", section:"Close", layout:"close",
+      data:{ heading:"Most of it is just a number.", pop:"Thermocracy moves that one, and names the vent behind the rest." },
+      narration:"Most of it is just a number. Thermocracy moves that one, and names the vent behind the rest." }
+  ];
+
+  // ---- Layout renderers ------------------------------------------------
+  function vbtnsHtml(tappedIndex){
+    return SCALE.map(function(s,i){
+      var tap = (i===tappedIndex) ? " tapped" : "";
+      return '<div class="vbtn'+tap+'" style="--tint:var('+s.c+')"><span class="f">'+s.f+'</span><span class="l">'+s.l+'</span></div>';
+    }).join("");
+  }
+  function bandsHtml(counts){
+    return SCALE.map(function(s,i){
+      var dots="";
+      for(var k=0;k<counts[i];k++) dots+='<span class="dot"></span>';
+      return '<div class="band" style="--tint:var('+s.c+')">'+dots+'</div>';
+    }).join("");
+  }
+  function linesHtml(lines){
+    return (lines||[]).map(function(l){
+      var cls="line"+(l.dim?" dim":"")+(l.pop?" pop":"");
+      return '<p class="'+cls+'">'+esc(l.text)+'</p>';
+    }).join("");
+  }
+
+  var RENDER={
+    title:function(d){
+      return '<h1 class="title">'+esc(d.title)+'</h1>'+
+        (d.subtitle?'<p class="subtitle">'+esc(d.subtitle)+'</p>':'')+
+        '<div class="bigramp"></div>';
+    },
+    close:function(d){
+      return '<h2 class="big" style="font-size:5.6cqw">'+esc(d.heading)+'</h2>'+
+        '<p class="line pop" style="font-size:3.2cqw">'+esc(d.pop)+'</p>';
+    },
+    statement:function(d){
+      return (d.eyebrow?'<p class="eyebrow">'+esc(d.eyebrow)+'</p>':'')+
+        (d.heading?'<h2 class="big">'+esc(d.heading)+'</h2>':'')+
+        linesHtml(d.lines);
+    },
+    person:function(d){
+      return '<div class="who">'+
+        '<span class="av" aria-hidden="true">'+d.avatar+'</span>'+
+        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
+        '<p class="line pop">'+esc(d.line)+'</p>';
+    },
+    mockvote:function(d){
+      var counts=d.counts, n=0, sum=0;
+      counts.forEach(function(c,i){ n+=c; sum+=c*SCALE[i].n; });
+      var mean=n?sum/n:0;
+      var cold=counts[0]+counts[1], hot=counts[3]+counts[4];
+      var split=n>=4 && Math.min(cold,hot)/n>=0.25 && (cold+hot)/n>=0.6;
+      var needleLeft=clamp(((mean+2)/4)*100,2,98).toFixed(1);
+      return '<div class="who"><span class="av" aria-hidden="true">'+d.avatar+'</span>'+
+        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
+        '<div class="mock">'+
+          '<div class="mockrow"><span class="mocklab">I\'m at</span>'+
+            '<span class="pill'+(d.spotHot?' hot':'')+'">'+esc(d.spot)+'</span></div>'+
+          '<div class="vbtns">'+vbtnsHtml(d.tappedIndex)+'</div>'+
+          '<div class="strip">'+
+            '<div class="bands">'+bandsHtml(counts)+'</div>'+
+            '<div class="axis"></div>'+
+            '<div class="needle'+(n>0?' show':'')+(split?' split':'')+'" style="left:'+needleLeft+'%"></div>'+
+            '<div class="ticks"><span>Freezing</span><span>Chilly</span><span>Just nice</span><span>Warm</span><span>Roasting</span></div>'+
+          '</div>'+
+          '<div class="vrow"><span class="vtext">'+verdict(n,mean,split)+'</span>'+
+            '<span class="chip'+(split?' in':'')+'">Split</span></div>'+
+        '</div>';
+    },
+    calloutcard:function(d){
+      return '<div class="who"><span class="av" aria-hidden="true">'+d.avatar+'</span>'+
+        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
+        '<div class="mock" style="background:none;border:none;padding:0">'+
+          '<div class="callout">'+d.callout+'</div>'+
+          '<div class="hintcard">'+d.hint+'</div>'+
+        '</div>';
+    },
+    heatmap:function(d){
+      var H="",P="";
+      d.pins.forEach(function(p){
+        if(p.split){
+          H+=hblob(p.x-6,p.y,(13+p.cold*2.1)*2,HEAT[0],.82);
+          H+=hblob(p.x+6,p.y,(13+p.hot*2.1)*2,HEAT[4],.82);
+        }else{
+          var c=heatColor(p.mean);
+          var w=20+Math.min(p.n,10)*2.4;
+          var strength=.26+Math.min(Math.abs(p.mean)/2,1)*.62;
+          H+=hblob(p.x,p.y,w*2,c,strength);
+        }
+        P+='<div class="hpin" style="left:'+p.x+'%;top:'+p.y+'%">'+
+           '<span class="knob"></span>'+
+           (p.flag?'<span class="flag">'+p.flag+'</span>':'')+
+           '<span class="plab">'+esc(p.label)+'</span></div>';
+      });
+      var ring = d.ring ? '<div class="ring in" style="left:'+d.ring.x+'%;top:'+d.ring.y+'%"></div>' : '';
+      return '<div class="hmwrap">'+
+        '<div><div class="plate"><div class="planart-wrap">'+planSvg()+'</div>'+
+          '<div class="heat">'+H+'</div><div class="pins">'+P+'</div>'+ring+'</div>'+
+          '<div class="mlegend"><span class="mramp" aria-hidden="true"></span><span>freezing to roasting</span>'+
+          '<span class="mswatch" aria-hidden="true"></span><span>split</span>'+
+          '<span style="margin-left:auto;font-weight:600">Level 7</span></div></div>'+
+        '<div class="hmside">'+linesHtml(d.sideLines)+'</div>'+
+      '</div>';
+    },
+    twoup:function(d){
+      return (d.eyebrow?'<p class="eyebrow">'+esc(d.eyebrow)+'</p>':'')+
+        (d.heading?'<h2 class="big">'+esc(d.heading)+'</h2>':'')+
+        '<div class="twoup">'+d.cards.map(function(c){
+          return '<div class="col"><span class="tick" aria-hidden="true">'+c.tick+'</span>'+
+            '<h3>'+esc(c.title)+'</h3><p>'+esc(c.body)+'</p></div>';
+        }).join("")+'</div>';
+    }
+  };
+
+  var LAYOUT_CLASS={ title:"hero", mockvote:"dense", calloutcard:"dense" };
+
+  var idx=0;
+
+  function renderSlide(i){
+    idx=clamp(i,0,SLIDES.length-1);
+    var s=SLIDES[idx];
+    var slideEl=$("slide");
+    slideEl.className="scene"+(LAYOUT_CLASS[s.layout]?" "+LAYOUT_CLASS[s.layout]:"");
+    slideEl.innerHTML=RENDER[s.layout](s.data);
+    $("cap").textContent=s.caption||s.narration;
+    $("counter").textContent=(idx+1)+" / "+SLIDES.length;
+    [].forEach.call($("marks").children,function(b,i2){ b.classList.toggle("cur", i2===idx); });
+    document.body.dataset.ready="0";
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function(){
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.body.dataset.ready="1"; }); });
+    });
+  }
+
+  $("marks").innerHTML=SLIDES.map(function(s,i){
+    return '<button class="mk" data-i="'+i+'">'+esc(s.section)+'</button>';
+  }).join("");
+  [].forEach.call($("marks").children,function(b,i){
+    b.addEventListener("click",function(){ renderSlide(i); });
+  });
+  $("prev").addEventListener("click",function(){ renderSlide(idx-1); });
+  $("next").addEventListener("click",function(){ renderSlide(idx+1); });
+  $("present").addEventListener("click",function(){
+    document.body.classList.toggle("presenting");
+    $("present").textContent = document.body.classList.contains("presenting") ? "Exit" : "Present";
+  });
+  document.addEventListener("keydown",function(e){
+    if(e.key==="ArrowRight"){ renderSlide(idx+1); }
+    else if(e.key==="ArrowLeft"){ renderSlide(idx-1); }
+    else if(e.key==="Escape"){ document.body.classList.remove("presenting"); $("present").textContent="Present"; }
+  });
+
+  // Playwright contract: window.SLIDES for content extraction,
+  // window.__renderSlide(i) to paint a given slide before screenshotting.
+  window.SLIDES=SLIDES;
+  window.__renderSlide=renderSlide;
+
+  renderSlide(0);
+})();
+</script>
+</body>
+</html>

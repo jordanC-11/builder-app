@@ -296,6 +296,10 @@ Keyboard while presenting: `space` play/pause, `←`/`→` seek 5s, `R` restart,
 
 Either way the video still works muted, because the captions are burned in.
 
+If you want a finished MP4 with real voiceover without screen-recording or
+manual editing at all, see **section 10** — `npm run build-video` automates
+exactly this second option for the slide-deck version of the video.
+
 ---
 
 ## 8. Pitfalls
@@ -329,3 +333,104 @@ The part worth copying most deliberately is `mapAt(t)` — a function that retur
 the *entire* visual state of a complex animated element for any `t`. If your new
 video has a complex moving piece, model it that way rather than as a sequence of
 transitions, and scrubbing keeps working for free.
+
+---
+
+## 10. The slide-deck MP4 pipeline (`src/slides.html`)
+
+`src/explainer.html` is a continuous, scrubbable animation — great for live
+demos, bad as a source for automated voiceover, because there's no natural
+place to cut audio clips out of a timeline that's a pure function of `t`. For a
+finished, shareable MP4 with a real (not screen-recorded) voiceover, there's a
+second, separate artifact: `src/slides.html` plus a small Node pipeline under
+`scripts/`.
+
+This doesn't replace `explainer.html` — keep using that for live demos and fast
+iteration. The slide deck is for when you want a file you can email, embed, or
+play in a meeting without a live presenter.
+
+### The `SLIDES` data structure
+
+Where `explainer.html` has `SCENES` (continuous time windows) and `CAPS`
+(caption strings keyed by second), `slides.html` has one array of **discrete**
+slides, since each slide becomes exactly one screenshot and one audio clip:
+
+```js
+var SLIDES = [
+  { id:"title", section:"Title", layout:"title",
+    data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" },
+    narration:"Thermocracy — a small board for a very old office argument." },
+
+  { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote",
+    data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
+      spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] },
+    narration:"She picks where she's sitting and taps Freezing. That's the whole interaction." },
+
+  { id:"close", section:"Close", layout:"close",
+    data:{ heading:"Most of it is just a number.",
+      pop:"Thermocracy moves that one, and names the vent behind the rest." },
+    narration:"Most of it is just a number. Thermocracy moves that one, and names the vent behind the rest." }
+];
+```
+
+Fields: `id` (stable filename slug for the screenshot/audio pair), `section`
+(chapter grouping, shown in the nav marks), `layout` (which render function in
+the `RENDER` map to use — `title`, `statement`, `person`, `mockvote`,
+`calloutcard`, `heatmap`, `twoup`, `close`), `data` (layout-specific content),
+and `narration` (spoken **and** burned-in caption text — same convention as
+`CAPS`).
+
+**Adding a slide** is simpler than adding a scene to `explainer.html`: there's
+no time budget to rebalance, just insert an object into `SLIDES` (pick an
+existing `layout` or add a new one to the `RENDER` map) and re-run
+`npm run build-video`.
+
+### Piper (the local, free voiceover engine)
+
+The pipeline uses [Piper](https://github.com/rhasspy/piper) for text-to-speech
+— fully offline, no API key, no per-run cost. It's a native binary, not an npm
+package, so it needs a one-time manual setup:
+
+1. Download the Windows release zip from
+   `https://github.com/rhasspy/piper/releases` and unzip it so
+   `tools/piper/piper.exe` exists (along with its `.dll`s and
+   `espeak-ng-data/`).
+2. Download a voice model — `.onnx` + matching `.onnx.json` — from the Piper
+   voices collection (e.g. `en_US-lessac-medium`, the current default) and
+   place both files under `tools/piper/voices/`.
+3. `tools/piper/` is gitignored (native binary + large model files, not
+   source) — every clone needs to redo this setup once.
+
+To use a different voice, download its `.onnx`/`.onnx.json` pair and either
+replace the files at the default path or set the `PIPER_VOICE` environment
+variable to point at a different `.onnx` file before running the build.
+
+### Running it
+
+```
+npm install                 # also downloads Playwright's Chromium (postinstall)
+npm run build-video         # renders slides, generates voiceover, assembles the MP4
+```
+
+Output: `build/thermocracy-slides.mp4` (1920×1080, H.264 + AAC). Intermediate
+files land in `build/slides/` (PNG per slide), `build/audio/` (WAV per slide,
+from Piper), and `build/clips/` (per-slide MP4 before concatenation) — all
+gitignored.
+
+Useful flags: `node scripts/build-video-pipeline.mjs --skip-render` (reuse
+existing slide screenshots), `--skip-audio` (reuse existing voiceover clips),
+`--force` (regenerate audio even if a clip already exists). These make it cheap
+to re-tune the ffmpeg fade/timing without re-rendering or re-voicing everything.
+
+### How it works
+
+1. **Render** — Playwright drives headless Chromium to `src/slides.html`,
+   calls `window.__renderSlide(i)` for each entry in `window.SLIDES`, waits for
+   the page's own `body.dataset.ready` flag (set after fonts finish loading),
+   and screenshots the full 1920×1080 viewport in `Present` mode (no chrome).
+2. **Voice** — for each slide, its `narration` string is piped to `piper.exe`,
+   producing a WAV clip.
+3. **Assemble** — each slide's PNG is held for its own clip's duration (plus a
+   short tail pad and a 0.3s fade in/out), encoded to an individual MP4 via the
+   `ffmpeg-static` binary, then all per-slide clips are concatenated with
+   ffmpeg's concat demuxer into the final file.
