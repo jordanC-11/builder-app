@@ -4,4 +4,4 @@ node_modules/
 *.mov
 recordings/
 build/
-tools/piper/
+tools/

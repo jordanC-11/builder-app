@@ -40,10 +40,11 @@ cd builder-app
   (votes stay in your tab) with an empty board — add a spot to begin.
 - **Watch the video:** open `src/explainer.html`, press **Present** (or `F`).
   It's a self-playing 2:30 page; screen-record it if you need an MP4.
-- **Generate the slide video:** one-time setup, then `npm install && npm run build-video`
-  renders `src/slides.html` and produces `build/thermocracy-slides.mp4` (~2:30,
-  1920×1080) — a real slide deck with an offline, free TTS voiceover, no screen
-  recording needed. See "[The slide video](#the-slide-video)" below for the setup steps.
+- **Generate the slide video:** `npm install && npm run build-video` renders
+  `src/slides.html` into a music-scored, Apple-keynote-style motion reel —
+  `build/thermocracy-slides.mp4` (~1:30, 1920×1080), Ken Burns motion and
+  crossfades, no voiceover, no screen recording needed. See
+  "[The slide video](#the-slide-video)" below.
 
 Both `src/app.html` and `src/explainer.html` load two Google Fonts, so they
 look best online but still work offline with fallback fonts. They have no
@@ -58,9 +59,10 @@ npm.
 src/app.html          the application — single file, no build step
 src/explainer.html    the 2:30 video, as a self-playing page you screen-record
 src/slides.html       the same story as a static slide deck, for build-video
-scripts/              the build-video pipeline (render, voice, assemble)
+scripts/              the build-video pipeline (render, motion, crossfade, score)
 package.json          build-video's dependencies — not needed to run the app
 assets/floorplan.svg  the built-in sketch floor plan, standalone
+assets/audio/          the CC0 soundtrack used by build-video, and its credit
 seed/zones.json       starting spots
 docs/ARCHITECTURE.md  data model, capabilities, the split-detection logic
 docs/VIDEO-GUIDE.md   how the video works and how to make another one
@@ -91,35 +93,24 @@ isn't.
 ## The slide video
 
 The same story as `src/explainer.html`, expanded into a ~20-slide deck
-(`src/slides.html`) and rendered to an actual **2:30, 1920×1080 MP4** with a
-real, offline voiceover per slide — no screen recording, no manual narration,
-no paid API. This is a separate, Node/npm-only pipeline (`scripts/`); it
-doesn't touch `src/app.html` or `src/explainer.html`, which stay plain,
-dependency-free files.
-
-**One-time setup — [Piper](https://github.com/rhasspy/piper) (free, offline TTS):**
-
-1. Download the Windows release from the
-   [Piper releases page](https://github.com/rhasspy/piper/releases)
-   (`piper_windows_amd64.zip`) and unzip it so `tools/piper/piper.exe` exists.
-2. Download a voice — `.onnx` + `.onnx.json` — from the
-   [Piper voices collection](https://huggingface.co/rhasspy/piper-voices)
-   (default used here: `en_US-amy-medium`) into `tools/piper/voices/`.
-
-`tools/piper/` is gitignored, so this step is needed once per clone/machine.
-
-**Build the video:**
+(`src/slides.html`) and rendered to an **Apple-keynote-style motion reel** —
+`build/thermocracy-slides.mp4`, ~1:30, 1920×1080: dark cinematic slides, a
+slow Ken Burns pan/zoom on every slide, crossfades instead of hard cuts, and a
+CC0 instrumental soundtrack (`assets/audio/soundtrack.mp3`) — no voiceover, no
+screen recording, no paid API. This is a separate, Node/npm-only pipeline
+(`scripts/`); it doesn't touch `src/app.html` or `src/explainer.html`, which
+stay plain, dependency-free files.
 
 ```
 npm install          # also downloads Playwright's Chromium (postinstall)
 npm run build-video
 ```
 
-Output: `build/thermocracy-slides.mp4`. Re-run with `--skip-render` and/or
-`--skip-audio` (e.g. `node scripts/build-video-pipeline.mjs --skip-render --skip-audio`)
-to only re-assemble the video — useful when tuning timing without re-rendering
-screenshots or regenerating voiceover. Full details, the `SLIDES` data format,
-and how to swap the voice: `docs/VIDEO-GUIDE.md` section 10.
+Output: `build/thermocracy-slides.mp4`. Re-run with `--skip-render` (e.g.
+`node scripts/build-video-pipeline.mjs --skip-render`) to only re-assemble the
+video — useful when tuning per-slide `duration` values without re-rendering
+screenshots. Full details, the `SLIDES` data format, and how to swap the
+soundtrack: `docs/VIDEO-GUIDE.md` section 10.
 
 ## How it works, briefly
 

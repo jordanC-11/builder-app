@@ -296,9 +296,9 @@ Keyboard while presenting: `space` play/pause, `←`/`→` seek 5s, `R` restart,
 
 Either way the video still works muted, because the captions are burned in.
 
-If you want a finished MP4 with real voiceover without screen-recording or
-manual editing at all, see **section 10** — `npm run build-video` automates
-exactly this second option for the slide-deck version of the video.
+If you want a finished MP4 without screen-recording or manual editing at all,
+see **section 10** — `npm run build-video` automates a music-scored,
+voiceover-free render of the slide-deck version of the video instead.
 
 ---
 
@@ -339,98 +339,92 @@ transitions, and scrubbing keeps working for free.
 ## 10. The slide-deck MP4 pipeline (`src/slides.html`)
 
 `src/explainer.html` is a continuous, scrubbable animation — great for live
-demos, bad as a source for automated voiceover, because there's no natural
-place to cut audio clips out of a timeline that's a pure function of `t`. For a
-finished, shareable MP4 with a real (not screen-recorded) voiceover, there's a
-second, separate artifact: `src/slides.html` plus a small Node pipeline under
-`scripts/`.
+demos, bad as a source for a finished, shareable file. For an MP4 you can
+email, embed, or play in a meeting, there's a second, separate artifact:
+`src/slides.html` plus a small Node pipeline under `scripts/`, styled and
+paced like a product-launch teaser — dark cinematic slides, Ken Burns
+pan/zoom, crossfades between slides, and a CC0 instrumental soundtrack. No
+voiceover: the on-screen headline text carries the message.
 
 This doesn't replace `explainer.html` — keep using that for live demos and fast
-iteration. The slide deck is for when you want a file you can email, embed, or
-play in a meeting without a live presenter.
+iteration. The slide deck is for when you want a self-contained video file.
 
 ### The `SLIDES` data structure
 
 Where `explainer.html` has `SCENES` (continuous time windows) and `CAPS`
 (caption strings keyed by second), `slides.html` has one array of **discrete**
-slides, since each slide becomes exactly one screenshot and one audio clip:
+slides, since each slide becomes exactly one screenshot and one Ken Burns clip:
 
 ```js
 var SLIDES = [
-  { id:"title", section:"Title", layout:"title",
-    data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" },
-    narration:"Thermocracy — a small board for a very old office argument." },
+  { id:"title", section:"Title", layout:"title", duration:5.5,
+    data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" } },
 
-  { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote",
+  { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote", duration:4.5,
     data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-      spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] },
-    narration:"She picks where she's sitting and taps Freezing. That's the whole interaction." },
+      spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] } },
 
-  { id:"close", section:"Close", layout:"close",
+  { id:"close", section:"Close", layout:"close", duration:6.0,
     data:{ heading:"Most of it is just a number.",
-      pop:"Thermocracy moves that one, and names the vent behind the rest." },
-    narration:"Most of it is just a number. Thermocracy moves that one, and names the vent behind the rest." }
+      pop:"Thermocracy moves that one, and names the vent behind the rest." } }
 ];
 ```
 
-Fields: `id` (stable filename slug for the screenshot/audio pair), `section`
+Fields: `id` (stable filename slug for the screenshot/clip), `section`
 (chapter grouping, shown in the nav marks), `layout` (which render function in
 the `RENDER` map to use — `title`, `statement`, `person`, `mockvote`,
-`calloutcard`, `heatmap`, `twoup`, `close`), `data` (layout-specific content),
-and `narration` (spoken **and** burned-in caption text — same convention as
-`CAPS`).
+`calloutcard`, `heatmap`, `twoup`, `close`), `data` (layout-specific content —
+the *only* copy source; there's no separate caption/narration field), and
+`duration` (seconds the slide holds on screen — authored by eye, not derived
+from a voiceover clip).
 
-**Adding a slide** is simpler than adding a scene to `explainer.html`: there's
-no time budget to rebalance, just insert an object into `SLIDES` (pick an
-existing `layout` or add a new one to the `RENDER` map) and re-run
+**Adding a slide**: insert an object into `SLIDES` (pick an existing `layout`
+or add a new one to the `RENDER` map), give it a `duration`, and re-run
 `npm run build-video`.
 
-### Piper (the local, free voiceover engine)
+### The soundtrack
 
-The pipeline uses [Piper](https://github.com/rhasspy/piper) for text-to-speech
-— fully offline, no API key, no per-run cost. It's a native binary, not an npm
-package, so it needs a one-time manual setup:
+`assets/audio/soundtrack.mp3` is a CC0 (public domain) instrumental track —
+see `assets/audio/CREDITS.md` for its source and license. Because it's CC0
+and small, it's committed directly (unlike the old Piper binaries, which were
+large, per-platform, and therefore gitignored) — no per-clone setup needed.
 
-1. Download the Windows release zip from
-   `https://github.com/rhasspy/piper/releases` and unzip it so
-   `tools/piper/piper.exe` exists (along with its `.dll`s and
-   `espeak-ng-data/`).
-2. Download a voice model — `.onnx` + matching `.onnx.json` — from the Piper
-   voices collection (e.g. `en_US-amy-medium`, the current default) and
-   place both files under `tools/piper/voices/`.
-3. `tools/piper/` is gitignored (native binary + large model files, not
-   source) — every clone needs to redo this setup once.
-
-To use a different voice, download its `.onnx`/`.onnx.json` pair and either
-replace the files at the default path or set the `PIPER_VOICE` environment
-variable to point at a different `.onnx` file before running the build.
+To swap it, replace `assets/audio/soundtrack.mp3` with another track (any
+format ffmpeg reads — mp3, wav, etc.) and update `CREDITS.md`. The build loops
+and trims it to the video's length automatically (`-stream_loop -1` +
+`-shortest`), with a 1.5s fade in/out — you don't need to match its length to
+the video by hand.
 
 ### Running it
 
 ```
 npm install                 # also downloads Playwright's Chromium (postinstall)
-npm run build-video         # renders slides, generates voiceover, assembles the MP4
+npm run build-video         # renders slides, builds Ken Burns clips, crossfades, scores it
 ```
 
 Output: `build/thermocracy-slides.mp4` (1920×1080, H.264 + AAC). Intermediate
-files land in `build/slides/` (PNG per slide), `build/audio/` (WAV per slide,
-from Piper), and `build/clips/` (per-slide MP4 before concatenation) — all
-gitignored.
+files land in `build/slides/` (supersampled PNG per slide) and `build/clips/`
+(per-slide silent Ken Burns MP4) — all gitignored.
 
-Useful flags: `node scripts/build-video-pipeline.mjs --skip-render` (reuse
-existing slide screenshots), `--skip-audio` (reuse existing voiceover clips),
-`--force` (regenerate audio even if a clip already exists). These make it cheap
-to re-tune the ffmpeg fade/timing without re-rendering or re-voicing everything.
+Useful flag: `node scripts/build-video-pipeline.mjs --skip-render` (reuse
+existing slide screenshots) — cheap way to re-tune `duration` values or the
+motion/crossfade constants without re-rendering every screenshot.
 
 ### How it works
 
-1. **Render** — Playwright drives headless Chromium to `src/slides.html`,
+1. **Render** — Playwright drives headless Chromium to `src/slides.html` at
+   `deviceScaleFactor: 2` (supersampled, for clean digital zoom headroom),
    calls `window.__renderSlide(i)` for each entry in `window.SLIDES`, waits for
    the page's own `body.dataset.ready` flag (set after fonts finish loading),
    and screenshots the full 1920×1080 viewport in `Present` mode (no chrome).
-2. **Voice** — for each slide, its `narration` string is piped to `piper.exe`,
-   producing a WAV clip.
-3. **Assemble** — each slide's PNG is held for its own clip's duration (plus a
-   short tail pad and a 0.3s fade in/out), encoded to an individual MP4 via the
-   `ffmpeg-static` binary, then all per-slide clips are concatenated with
-   ffmpeg's concat demuxer into the final file.
+2. **Ken Burns** — each slide's PNG becomes a silent clip held for its
+   `duration`, with ffmpeg's `zoompan` filter applying a slow digital zoom
+   (in on even-indexed slides, out on odd-indexed ones, centered so the frame
+   doesn't drift) via the `ffmpeg-static` binary.
+3. **Crossfade** — all per-slide clips are chained together with ffmpeg's
+   `xfade` filter (a 0.6s overlapping fade at each cut, built as one
+   `filter_complex` graph from the slides' durations) instead of a hard-cut
+   concat, plus a fade from/to black at the very start/end.
+4. **Score** — the crossfaded silent video is muxed against
+   `assets/audio/soundtrack.mp3`, looped and trimmed to the video's exact
+   length with fades at both ends, producing the final MP4.

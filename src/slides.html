@@ -8,25 +8,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+/* Cinematic dark-only palette — the deck used to switch on prefers-color-scheme /
+   data-theme, but a keynote-style render should never depend on the OS/browser
+   context it happens to be screenshotted in, so this is now the only theme. */
 :root{
-  --paper:#E7EDF0; --surface:#FFFFFF; --surface-2:#F3F7F9;
-  --ink:#14242C; --muted:#5F737D; --line:#CDD9DF; --line-soft:#E1E9ED;
-  --c-2:#2A6DB5; --c-1:#5FA3C4; --c0:#3B9B78; --c1:#DE9036; --c2:#C64C2C;
-  --focus:#14242C;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --paper:#0C1418; --surface:#17242B; --surface-2:#1D2D35;
-    --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
-    --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
-    --focus:#E6EEF1;
-  }
-}
-:root[data-theme="dark"]{
-  --paper:#0C1418; --surface:#17242B; --surface-2:#1D2D35;
-  --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
-  --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
-  --focus:#E6EEF1;
+  --paper:#05080A; --surface:#12191E; --surface-2:#172127;
+  --ink:#F3F8FA; --muted:#8FA3AC; --line:#26343C; --line-soft:#1C2830;
+  --c-2:#6BAEEC; --c-1:#82C4E0; --c0:#5FCB9E; --c1:#F0B265; --c2:#EC7E5B;
+  --focus:#F3F8FA;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -51,10 +40,13 @@ body{
   position:absolute;inset:0;padding:4.5cqw 5.5cqw 10cqw;opacity:1;
   display:flex;flex-direction:column;justify-content:center;
 }
-.eyebrow{font-size:1.5cqw;font-weight:600;color:var(--muted);margin:0 0 1.4cqw}
+.eyebrow{
+  font-size:1.35cqw;font-weight:600;color:var(--muted);margin:0 0 1.6cqw;
+  text-transform:uppercase;letter-spacing:.14em;
+}
 h2.big{
   font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
-  font-size:5cqw;letter-spacing:-.03em;line-height:1.02;margin:0 0 2.2cqw;
+  font-size:5.6cqw;letter-spacing:-.03em;line-height:1.02;margin:0 0 2.2cqw;
 }
 .line{font-size:2.4cqw;line-height:1.4;margin:0 0 1.4cqw;max-width:42em}
 .line.dim{color:var(--muted)}
@@ -162,11 +154,7 @@ h2.big{
 .plate .planart .desk{fill:none;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.4}
 .plate .planart .mull{stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.55}
 .plate .planart text{fill:color-mix(in srgb,var(--ink) 62%,transparent);font-size:3.2px;font-family:"Instrument Sans",sans-serif;font-weight:500}
-.heat{position:absolute;inset:0;filter:blur(2.2cqw);opacity:.82;mix-blend-mode:multiply}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]) .heat{mix-blend-mode:screen;opacity:.66}
-}
-:root[data-theme="dark"] .heat{mix-blend-mode:screen;opacity:.66}
+.heat{position:absolute;inset:0;filter:blur(2.2cqw);opacity:.66;mix-blend-mode:screen}
 .hblob{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
 .pins{position:absolute;inset:0}
 .hpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.35cqw}
@@ -198,12 +186,6 @@ h2.big{
 .col p{font-size:1.5cqw;color:var(--muted);margin:0;line-height:1.4}
 .col .tick{font-size:3.2cqw;line-height:1;margin-bottom:.7cqw;display:block}
 
-.capbar{
-  position:absolute;left:0;right:0;bottom:0;padding:1.5cqw 5.5cqw 1.8cqw;
-  background:linear-gradient(to top,color-mix(in srgb,var(--surface) 96%,transparent) 55%,transparent);
-  font-size:1.7cqw;line-height:1.4;color:var(--muted);min-height:5.6cqw;
-}
-
 .controls{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
 .ctrl{font:inherit;font-weight:600;font-size:15px;cursor:pointer;background:var(--ink);color:var(--paper);border:none;border-radius:9px;padding:9px 18px}
 .ctrl.ghost{background:none;color:var(--ink);border:1.5px solid var(--line)}
@@ -231,7 +213,6 @@ body.presenting .stage{
 <div class="shell">
   <div class="stage" id="stage">
     <section class="scene" id="slide"></section>
-    <div class="capbar"><span id="cap"></span></div>
   </div>
 
   <div class="controls">
@@ -241,9 +222,9 @@ body.presenting .stage{
     <span class="counter" id="counter">1 / 20</span>
   </div>
   <div class="marks" id="marks"></div>
-  <p class="note">A static slide deck (not a scrubbable timeline). Each slide's narration is generated as a
-    separate voiceover clip and combined with the slide's screenshot into a video by <code>npm run build-video</code>
-    — see docs/VIDEO-GUIDE.md.</p>
+  <p class="note">A static slide deck (not a scrubbable timeline). Each slide holds an authored
+    <code>duration</code> and is rendered with Ken Burns motion, crossfaded into the next, and
+    scored with a music bed by <code>npm run build-video</code> — see docs/VIDEO-GUIDE.md.</p>
 </div>
 
 <script>
@@ -324,69 +305,58 @@ body.presenting .stage{
 
   // ---- Slide content -------------------------------------------------
   // Discrete slides: the static-slide analogue of explainer.html's
-  // SCENES+CAPS. Each slide's `narration` is both the burned-in caption
-  // and the exact text sent to the local TTS engine (Piper) — see
-  // docs/VIDEO-GUIDE.md.
+  // SCENES+CAPS. Each slide carries an authored `duration` (seconds) —
+  // its on-screen hold time in the built video, tuned by eye rather than
+  // derived from a voiceover clip — see docs/VIDEO-GUIDE.md.
   var SLIDES=[
-    { id:"title", section:"Title", layout:"title",
-      data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" },
-      narration:"Meet Thermocracy — the board that finally settles your office's oldest argument." },
+    { id:"title", section:"Title", layout:"title", duration:5.5,
+      data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" } },
 
-    { id:"what-1", section:"What it is", layout:"statement",
+    { id:"what-1", section:"What it is", layout:"statement", duration:4.5,
       data:{ eyebrow:"What it is", heading:"The floor votes. The setpoint follows.",
-        lines:[{text:"Give your floor a two-second way to say how it actually feels, and let that answer drive the aircon."}] },
-      narration:"Give your floor a two-second way to say how it actually feels, and let that answer drive the aircon." },
+        lines:[{text:"Give your floor a two-second way to say how it actually feels, and let that answer drive the aircon."}] } },
 
-    { id:"what-2", section:"What it is", layout:"statement",
+    { id:"what-2", section:"What it is", layout:"statement", duration:4.5,
       data:{ eyebrow:"What it is", heading:"Five buttons, two seconds, no ticket.",
-        lines:[{text:"Forget the thermostat's number — this is the temperature your team is actually living in, desk by desk."}] },
-      narration:"Forget the thermostat's number — this is the temperature your team is actually living in, desk by desk." },
+        lines:[{text:"Forget the thermostat's number — this is the temperature your team is actually living in, desk by desk."}] } },
 
-    { id:"what-3", section:"What it is", layout:"statement",
+    { id:"what-3", section:"What it is", layout:"statement", duration:5.5,
       data:{ eyebrow:"What it is", heading:"Agree, and facilities acts in one tap.",
         lines:[
           {text:"When your floor agrees, facilities gets a ready-to-apply setpoint — one tap, done."},
           {text:"Votes expire after two hours, so it's never stale.", dim:true}
-        ] },
-      narration:"When your floor agrees, facilities gets a ready-to-apply setpoint — one tap, done. Votes expire after two hours, so it's never stale." },
+        ] } },
 
-    { id:"sarah-intro", section:"POV1: Sarah", layout:"person",
+    { id:"sarah-intro", section:"POV1: Sarah", layout:"person", duration:4.0,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-        line:"Meet Sarah. Level 7, and she's freezing." },
-      narration:"Meet Sarah. Level 7, and she's freezing." },
+        line:"Meet Sarah. Level 7, and she's freezing." } },
 
-    { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote",
+    { id:"sarah-vote", section:"POV1: Sarah", layout:"mockvote", duration:4.5,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-        spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] },
-      narration:"She picks her spot, taps Freezing — done. That's the whole interaction." },
+        spot:"Level 7 — Open floor", spotHot:true, tappedIndex:0, counts:[0,0,0,0,0] } },
 
-    { id:"sarah-first-dot", section:"POV1: Sarah", layout:"mockvote",
+    { id:"sarah-first-dot", section:"POV1: Sarah", layout:"mockvote", duration:4.0,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-        spot:"Level 7 — Open floor", counts:[1,0,0,0,0] },
-      narration:"Her vote lands instantly — one dot on the axis." },
+        spot:"Level 7 — Open floor", counts:[1,0,0,0,0] } },
 
-    { id:"sarah-neighbors", section:"POV1: Sarah", layout:"mockvote",
+    { id:"sarah-neighbors", section:"POV1: Sarah", layout:"mockvote", duration:4.2,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-        spot:"Level 7 — Open floor", counts:[3,2,1,1,0] },
-      narration:"Then her neighbours pile in, and the picture gets weird fast." },
+        spot:"Level 7 — Open floor", counts:[3,2,1,1,0] } },
 
-    { id:"sarah-split-verdict", section:"POV1: Sarah", layout:"mockvote",
+    { id:"sarah-split-verdict", section:"POV1: Sarah", layout:"mockvote", duration:5.5,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
-        spot:"Level 7 — Open floor", counts:[3,2,1,2,3] },
-      narration:"Eleven votes. One comfortable person. That's not a tolerance problem — that's two rooms wearing one thermostat." },
+        spot:"Level 7 — Open floor", counts:[3,2,1,2,3] } },
 
-    { id:"sarah-callout", section:"POV1: Sarah", layout:"calloutcard",
+    { id:"sarah-callout", section:"POV1: Sarah", layout:"calloutcard", duration:6.0,
       data:{ avatar:"🧑🏻‍💻", name:"Sarah", role:"Analyst, Level 7 — votes from her desk",
         callout:"<b>Eleven votes. One comfortable person.</b> The average still lands dead centre — and hides every bit of that.",
-        hint:"<b>This spot is really two spots.</b> No setpoint satisfies both, so this one isn’t a number — it’s a vent." },
-      narration:"So Thermocracy proposes no setpoint at all — this spot is really two spots, and no single number satisfies both." },
+        hint:"<b>This spot is really two spots.</b> No setpoint satisfies both, so this one isn’t a number — it’s a vent." } },
 
-    { id:"ravi-intro", section:"POV2: Ravi", layout:"person",
+    { id:"ravi-intro", section:"POV2: Ravi", layout:"person", duration:4.0,
       data:{ avatar:"🧑🏽‍🔧", name:"Ravi", role:"Aircon contractor — works the heat map, not the inbox",
-        line:"Now meet Ravi — he keeps this building's aircon honest." },
-      narration:"Now meet Ravi — he keeps this building's aircon honest." },
+        line:"Now meet Ravi — he keeps this building's aircon honest." } },
 
-    { id:"ravi-map-overview", section:"POV2: Ravi", layout:"heatmap",
+    { id:"ravi-map-overview", section:"POV2: Ravi", layout:"heatmap", duration:5.5,
       data:{
         pins:[
           {x:15,y:83,label:"Pantry",mean:0.25,n:4},
@@ -394,10 +364,9 @@ body.presenting .stage{
           {x:50,y:22,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
         ],
         sideLines:[{text:"Most spots on this floor already took their new setpoint."}]
-      },
-      narration:"Open the floor plan: most spots already took their new setpoint." },
+      } },
 
-    { id:"ravi-split-closeup", section:"POV2: Ravi", layout:"heatmap",
+    { id:"ravi-split-closeup", section:"POV2: Ravi", layout:"heatmap", duration:5.5,
       data:{
         pins:[
           {x:15,y:83,label:"Pantry",mean:0.25,n:4},
@@ -406,10 +375,9 @@ body.presenting .stage{
         ],
         ring:{x:50,y:22},
         sideLines:[{text:"This spot wouldn’t settle — it’s mottled, because the people in it flat-out disagree.",dim:true}]
-      },
-      narration:"This spot wouldn't settle — it's mottled, because the people in it flat-out disagree. An average could never show him that." },
+      } },
 
-    { id:"ravi-split-reveal", section:"POV2: Ravi", layout:"heatmap",
+    { id:"ravi-split-reveal", section:"POV2: Ravi", layout:"heatmap", duration:5.2,
       data:{
         pins:[
           {x:15,y:83,label:"Pantry",mean:0.25,n:4},
@@ -418,10 +386,9 @@ body.presenting .stage{
           {x:50,y:31,label:"Inner core",mean:-1.85,n:5,flag:"COLD"}
         ],
         sideLines:[{text:"So he splits the spot — and the map shows exactly what was hiding inside.",pop:true}]
-      },
-      narration:"So he splits the spot — and the map shows exactly what was hiding inside." },
+      } },
 
-    { id:"ravi-detail", section:"POV2: Ravi", layout:"heatmap",
+    { id:"ravi-detail", section:"POV2: Ravi", layout:"heatmap", duration:6.2,
       data:{
         pins:[
           {x:15,y:83,label:"Pantry",mean:0.25,n:4},
@@ -433,10 +400,9 @@ body.presenting .stage{
           {text:"A hot window run, three metres from a cold core, sharing one damper."},
           {text:"No setpoint fixes that. It's flagged as a vent fault, votes attached."}
         ]
-      },
-      narration:"A hot window run, three metres from a cold core, sharing one damper. No setpoint fixes that — it's flagged as a vent fault, votes attached." },
+      } },
 
-    { id:"ravi-resolution", section:"POV2: Ravi", layout:"heatmap",
+    { id:"ravi-resolution", section:"POV2: Ravi", layout:"heatmap", duration:5.2,
       data:{
         pins:[
           {x:15,y:83,label:"Pantry",mean:0.25,n:4},
@@ -445,30 +411,25 @@ body.presenting .stage{
           {x:50,y:31,label:"Inner core",mean:-0.15,n:5,flag:"ADJUSTED"}
         ],
         sideLines:[{text:"One damper rebalanced later, both spots are green.",pop:true}]
-      },
-      narration:"One damper rebalanced later, both spots are green. This one never needed a new number at all." },
+      } },
 
-    { id:"problem-1", section:"The problem", layout:"twoup",
+    { id:"problem-1", section:"The problem", layout:"twoup", duration:5.5,
       data:{ eyebrow:"The problem it solves", heading:"Aircon complaints are never unanimous.",
         cards:[
           {tick:"🥶", title:"“It's freezing in here.”", body:"Sent from the desk under the vent, 9:40am."},
           {tick:"🥵", title:"“Can we turn it up?”", body:"Sent from the window seats, same floor, 9:42am."}
-        ] },
-      narration:"Aircon complaints are never unanimous — someone's always cold, and someone's always warm." },
+        ] } },
 
-    { id:"problem-2", section:"The problem", layout:"statement",
+    { id:"problem-2", section:"The problem", layout:"statement", duration:4.2,
       data:{ eyebrow:"The problem it solves",
-        lines:[{text:"Two opposite tickets about one floor — and an average that swears nothing's wrong.",dim:true}] },
-      narration:"Two opposite tickets about one floor — and an average that swears nothing's wrong." },
+        lines:[{text:"Two opposite tickets about one floor — and an average that swears nothing's wrong.",dim:true}] } },
 
-    { id:"problem-3", section:"The problem", layout:"statement",
+    { id:"problem-3", section:"The problem", layout:"statement", duration:4.5,
       data:{ eyebrow:"The problem it solves",
-        lines:[{text:"Some of them need a new number. Some need a spanner. Thermocracy tells you which.",pop:true}] },
-      narration:"Some of them need a new number. Some need a spanner. Thermocracy tells you which." },
+        lines:[{text:"Some of them need a new number. Some need a spanner. Thermocracy tells you which.",pop:true}] } },
 
-    { id:"close", section:"Close", layout:"close",
-      data:{ heading:"Stop guessing. Start voting.", pop:"Bring Thermocracy to your floor — one file, no server, no setup." },
-      narration:"Stop guessing. Start voting. Bring Thermocracy to your floor — it's one file, no server, no setup." }
+    { id:"close", section:"Close", layout:"close", duration:6.0,
+      data:{ heading:"Stop guessing. Start voting.", pop:"Bring Thermocracy to your floor — one file, no server, no setup." } }
   ];
 
   // ---- Layout renderers ------------------------------------------------
@@ -591,7 +552,6 @@ body.presenting .stage{
     var slideEl=$("slide");
     slideEl.className="scene"+(LAYOUT_CLASS[s.layout]?" "+LAYOUT_CLASS[s.layout]:"");
     slideEl.innerHTML=RENDER[s.layout](s.data);
-    $("cap").textContent=s.caption||s.narration;
     $("counter").textContent=(idx+1)+" / "+SLIDES.length;
     [].forEach.call($("marks").children,function(b,i2){ b.classList.toggle("cur", i2===idx); });
     document.body.dataset.ready="0";
