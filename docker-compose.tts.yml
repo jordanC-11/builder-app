@@ -1,0 +1,40 @@
+# Kokoro text-to-speech, for rendering the presentation narration.
+#
+#   docker compose -f docker-compose.tts.yml up -d      # GPU (default)
+#   docker compose -f docker-compose.tts.yml --profile cpu up -d kokoro-cpu
+#   node scripts/kokoro-samples.mjs
+#   docker compose -f docker-compose.tts.yml down
+#
+# remsky/Kokoro-FastAPI wraps Kokoro-82M (Apache-2.0) in an OpenAI-compatible
+# API with the model weights baked into the image, so there is nothing to
+# install locally and nothing to download at first run.
+services:
+  kokoro:
+    image: ghcr.io/remsky/kokoro-fastapi-gpu:latest
+    container_name: thermocracy-kokoro
+    ports:
+      - "8880:8880"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    healthcheck:
+      # The voices endpoint only answers once the model is loaded, so this waits
+      # for readiness rather than for the port to open.
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8880/v1/audio/voices')"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  # Same API without CUDA — smaller image, fine for a script this size.
+  kokoro-cpu:
+    image: ghcr.io/remsky/kokoro-fastapi-cpu:latest
+    container_name: thermocracy-kokoro-cpu
+    profiles: ["cpu"]
+    ports:
+      - "8880:8880"

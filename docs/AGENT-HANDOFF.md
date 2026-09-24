@@ -4,8 +4,9 @@ You're picking up Thermocracy. This tells you what's load-bearing, what's
 decoration, and what to build next.
 
 Read `docs/ARCHITECTURE.md` before changing `src/app.html`, and
-`docs/VIDEO-GUIDE.md` before changing `src/explainer.html`. This file is the
-orientation on top of those.
+`docs/VIDEO-GUIDE.md` before changing `src/slides.html` or
+`scripts/build-video-pipeline.mjs`. This file is the orientation on top of
+those.
 
 ---
 
@@ -25,7 +26,7 @@ refusal:
 
 Every design decision follows from that fork: the dot plot instead of a bar, the
 dashed needle, the mottled heat blob, splitting the zone rather than guessing at
-a number, the two-POV video. If a change would make the app report a single
+a number, the video's own "it refuses to lie" scene. If a change would make the app report a single
 comfortable-sounding number for a room where half the people are freezing — or
 worse, *apply* one — the change is wrong regardless of how much cleaner it looks.
 
@@ -38,10 +39,8 @@ usage says so — but adjust them deliberately, with a note, not incidentally.
 
 - **`src/app.html` stays a single file.** No build step. It has to be
   deployable by a facilities team onto an internal server.
-- **No `px` inside `.stage` in the explainer.** Container query units only, or
-  the video breaks at other recording resolutions.
-- **`paint()` in the explainer must stay a pure function of `t`.** No timers, no
-  accumulation. This is what makes scrubbing and chapter jumps work.
+- **No `px` inside `.stage` in `src/slides.html`.** Container query units
+  only, or a slide's composition shifts at a different render resolution.
 - **Every `claude.use()` result may be `null`.** There's an existing degradation
   path for each; extend it, don't assume the capability.
 - **One write at a time per document.** Writes go through the `writeChain`
@@ -81,9 +80,10 @@ read/write surface is small and isolated in the last ~60 lines of the script.
 ## What to build next, in order
 
 > **Status note.** Items 1 and 2 are specified but **not yet built in
-> `src/app.html`**. `src/explainer.html` and these docs already describe them as
-> product behaviour. Closing that gap is the current job — don't demo the video
-> to a customer as a description of shipped software until it is.
+> `src/app.html`**. The slide video (`src/slides.html`, `build/thermocracy-slides.mp4`)
+> and these docs already describe them as product behaviour. Closing that gap is
+> the current job — don't demo the video to a customer as a description of
+> shipped software until it is.
 
 **1. Setpoint proposal and one-tap apply.** The consensus half of the product.
 For any non-split spot with enough recent votes, derive a target from the mean
@@ -144,17 +144,15 @@ season bucketing would name that. Needs (3) first.
 
 ## If you're asked for another video
 
-Read `docs/VIDEO-GUIDE.md`. The short version: `src/explainer.html` is a
-template. Keep the clock, `paint()`, the `ease`/`lerp` helpers, the `data-cue`
-mechanism, Present mode and the `cqw` sizing. Replace `SCENES`, `MARKS`, `CAPS`,
-the scene markup, and the scene-specific animation.
+Read `docs/VIDEO-GUIDE.md`. The short version: `src/slides.html` is a data
+array (`SLIDES`) rendered by a small set of reusable layouts, plus an optional
+`voiceover` line per slide that drives both the synthesized narration and the
+slide's on-screen hold time. Add or edit slides there and re-run
+`npm run build-video`; don't hand-edit anything under `build/` (gitignored,
+fully regenerated).
 
-Keep the two-POV structure. A single-POV video shows features; two POVs show the
-handoff from the person who reports a problem to the person who fixes it, which
-is the thing an internal tool has to prove it can do.
-
-And keep the closing line honest. "Most of it is just a number — Thermocracy
-moves that one, and names the vent behind the rest" claims the half the tool
-genuinely closes and is specific about the half it hands off. A facilities
-audience has been sold end-to-end fixes before; the split claim is the one
-they'll believe.
+Keep the honest scene. Whatever the framing — the current cut plays the whole
+thing as an Apple-keynote parody — the "it refuses to lie" beat (the split-zone
+detection, `truth-*` slides) should stay the one moment played straight. It's
+the actual distinguishing claim, and undercutting the parody with something
+true is part of what makes the joke land rather than just being a gag reel.

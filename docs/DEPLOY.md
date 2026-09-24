@@ -78,7 +78,9 @@ thing preventing ballot stuffing.
 
 ---
 
-## The explainer
+## The slide video
 
-`src/explainer.html` has no capabilities and no data. Publish it, host it, or
-open it from disk — all equivalent. See `docs/VIDEO-GUIDE.md` for recording.
+`src/slides.html` has no capabilities and no data — it's a build-time input,
+not something to publish. `build/thermocracy-slides.mp4` (the rendered
+output) is an ordinary video file; host it, attach it, or share it however
+you'd share any MP4. See `docs/VIDEO-GUIDE.md` for how to build it.

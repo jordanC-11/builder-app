@@ -167,8 +167,9 @@ rather than failing loudly.
 
 ## The split detection
 
-This is the core logic. It lives in `tally()` and is duplicated in
-`src/explainer.html` so the video demonstrates the real rule.
+This is the core logic. It lives in `tally()`; the same 3/2/1/2/3 demo data and
+the same verdict language are reused in `src/slides.html` so the video
+demonstrates the real rule, not an invented one.
 
 ```js
 var cold = c[0] + c[1];          // freezing + chilly
@@ -203,8 +204,8 @@ frame, and it's worth preserving if you change the seed data.
 
 ## Setpoint proposal and escalation
 
-**Status: specified, not yet implemented in `src/app.html`.** The explainer and
-the docs describe this as product behaviour; the code does not do it yet.
+**Status: specified, not yet implemented in `src/app.html`.** The slide video
+and the docs describe this as product behaviour; the code does not do it yet.
 
 This is the fork that follows from split detection. `tally()` already computes
 everything it needs.
