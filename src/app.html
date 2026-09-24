@@ -75,6 +75,20 @@ body{
   background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
 }
 
+/* ---------- view toggle ---------- */
+.viewsw{
+  display:inline-flex;gap:3px;margin-left:auto;align-self:center;
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:99px;padding:3px;
+}
+.vsw{
+  font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;
+  color:var(--muted);background:none;border:none;
+  border-radius:99px;padding:6px 15px;white-space:nowrap;
+}
+.vsw[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.vsw:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
 /* ---------- panels ---------- */
 .panel{
   background:var(--surface);
@@ -92,7 +106,6 @@ body{
 .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
 
 /* ---------- spot picker ---------- */
-.spotrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
 select,input[type=text]{
   font:inherit;font-size:15px;color:var(--ink);
   background:var(--surface-2);
@@ -219,6 +232,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   cursor:pointer;text-decoration:underline;text-underline-offset:3px;
   text-decoration-thickness:1.5px;display:block;
 }
+.linkbtn.inline{display:inline;margin:0}
 .linkbtn:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:3px}
 
 /* ---------- zone list ---------- */
@@ -233,30 +247,15 @@ label.fieldlab{font-size:14px;color:var(--muted)}
 .zrow.here{background:var(--surface-2)}
 .zname{display:block;font-weight:600;font-size:15.5px;letter-spacing:-.01em}
 .zmeta{display:block;font-size:13px;color:var(--muted);margin-top:2px}
-.zfloor{
-  font-size:11.5px;font-weight:600;color:var(--muted);
-  border:1px solid var(--line);border-radius:5px;padding:1px 6px;margin-right:7px;
-  white-space:nowrap;
-}
 .zstrip{--h:34px;--d:9px}
 .empty{
   padding:26px 16px;text-align:center;color:var(--muted);font-size:15px;
   border:1px dashed var(--line);border-radius:11px;
 }
+.modsum{font-size:14px;color:var(--muted);margin:0 0 13px}
+.modsum b{color:var(--ink);font-weight:600}
 
-/* ---------- add spot ---------- */
-.addform{display:flex;gap:9px;flex-wrap:wrap;align-items:flex-end}
-.addform .f{display:flex;flex-direction:column;gap:5px;flex:1 1 150px}
-.btn{
-  font:inherit;font-weight:600;font-size:15px;cursor:pointer;
-  background:var(--ink);color:var(--paper);
-  border:none;border-radius:9px;padding:10px 17px;
-}
-.btn:active{transform:scale(.98)}
-.btn:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.btn[disabled]{opacity:.45;cursor:default}
-
-/* ---------- heatmap ---------- */
+/* ---------- heatmap / plan ---------- */
 .floors{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .ftab{
   font:inherit;font-size:14px;font-weight:600;cursor:pointer;
@@ -271,7 +270,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   background:var(--surface-2);border:1px solid var(--line);
   border-radius:13px;overflow:hidden;
 }
-.plate.placing{cursor:crosshair;border-color:var(--ink);border-style:dashed}
+.plate.pick{cursor:crosshair}
 
 /* floor plan under the heat */
 .planart{position:absolute;inset:0;width:100%;height:100%}
@@ -318,7 +317,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   border-radius:5px;padding:2px 6px;
   max-width:130px;overflow:hidden;text-overflow:ellipsis;
 }
-.pin.sel .knob{background:var(--ink)}
+.pin.sel .knob{background:var(--ink);width:13px;height:13px}
 .pin.sel .plab{background:var(--ink);color:var(--paper)}
 .pin:focus-visible{outline:2px solid var(--focus);outline-offset:4px;border-radius:6px}
 .pin .flag{
@@ -340,6 +339,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   background:repeating-linear-gradient(45deg,#2A6DB5 0 4px,#C64C2C 4px 8px);
 }
 .hmnote{font-size:13.5px;color:var(--muted);margin:12px 0 0;line-height:1.55}
+.hmnote b{color:var(--ink);font-weight:600}
 
 /* ---------- status control ---------- */
 .statusrow{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:15px;
@@ -349,6 +349,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   font-size:11.5px;font-weight:700;letter-spacing:.02em;
   border-radius:5px;padding:2px 7px;border:1.5px solid var(--line);color:var(--muted);
 }
+.sbadge.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 
 .foot{color:var(--muted);font-size:13.5px;line-height:1.65;margin-top:26px}
 .foot p{margin:0 0 7px}
@@ -363,6 +364,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   .vote{padding:11px 2px 9px}
   .vote .lab{font-size:11px}
   .vote .face{font-size:22px}
+  .viewsw{margin-left:0}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition:none !important}
@@ -375,93 +377,90 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   <header class="top">
     <h1 class="logo">Thermocracy</h1>
     <span class="tag">Is it you, or is it the room?</span>
+    <div class="viewsw" id="viewsw" role="group" aria-label="View">
+      <button class="vsw" type="button" data-v="vote" aria-pressed="true">I'm voting</button>
+      <button class="vsw" type="button" data-v="board" aria-pressed="false">Facilities</button>
+    </div>
   </header>
   <div class="ramp" aria-hidden="true"></div>
 
   <div id="banner" class="banner" hidden></div>
 
-  <!-- VOTE -->
-  <section class="panel">
-    <h2>How is it right now?</h2>
-    <p class="sub" id="voteSub">Pick where you're sitting, then say how it feels.</p>
+  <!-- ============================ VOTER ============================ -->
+  <div id="viewVote">
 
-    <div class="spotrow">
-      <label class="fieldlab" for="spot">I'm at</label>
-      <select id="spot" aria-label="Your spot"></select>
-    </div>
+    <!-- WHERE -->
+    <section class="panel">
+      <h2>Where are you sitting?</h2>
+      <p class="sub">Tap anywhere on the plan to mark where you are.</p>
+      <div class="floors" id="voteFloors" role="group" aria-label="Floor"></div>
+      <div class="plate pick" id="votePlate"></div>
+      <p class="hmnote" id="voteNote"></p>
+    </section>
 
-    <div class="votes" id="voteBtns" role="group" aria-label="How it feels"></div>
-    <p class="castline" id="castline"></p>
-  </section>
+    <!-- VOTE -->
+    <section class="panel">
+      <h2>How is it right now?</h2>
+      <p class="sub">Five buttons. One vote per person per spot, and you can change it whenever the room changes its mind.</p>
+      <div class="votes" id="voteBtns" role="group" aria-label="How it feels"></div>
+      <p class="castline" id="castline"></p>
+    </section>
 
-  <!-- YOUR ZONE READOUT -->
-  <section class="panel" id="readout" hidden>
-    <h2 id="roTitle">Your spot</h2>
-    <p class="sub" id="roSub"></p>
-    <div id="roStrip"></div>
-    <div class="verdict">
-      <span class="vtext" id="roVerdict"></span>
-      <span class="chip" id="roChip" hidden></span>
-    </div>
-    <div id="roBal"></div>
-    <div class="count" id="roCount"></div>
-    <div class="hint" id="roHint" hidden></div>
-    <div class="statusrow">
-      <label class="fieldlab" for="statusSel">Facilities status</label>
-      <select id="statusSel" aria-label="Facilities status for this spot">
-        <option value="">Nothing logged</option>
-        <option value="looking">Someone's looking at it</option>
-        <option value="adjusted">Recently adjusted</option>
-      </select>
-      <span class="count" id="statusWhen" style="margin:0"></span>
-    </div>
-  </section>
+    <!-- YOUR SPOT -->
+    <section class="panel" id="readout" hidden>
+      <h2 id="roTitle">Your spot</h2>
+      <p class="sub" id="roSub"></p>
+      <div id="roBody"></div>
+    </section>
 
-  <!-- HEATMAP -->
-  <section class="panel">
-    <h2>Heat map</h2>
-    <p class="sub">Where the warm and cold patches actually are. Blue is cold, red is warm, mottled means the spot is arguing with itself.</p>
-    <div class="floors" id="floors" role="group" aria-label="Floor"></div>
-    <div class="plate" id="plate">
-      <div id="planLayer"></div>
-      <div class="heat" id="heat" aria-hidden="true"></div>
-      <div class="pins" id="pins"></div>
-    </div>
-    <div class="legend">
-      <span class="lramp" aria-hidden="true"></span>
-      <span>freezing to roasting</span>
-      <span class="lswatch" aria-hidden="true"></span>
-      <span>split</span>
-      <button class="linkbtn" id="planBtn" style="margin:0 0 0 auto" hidden>Upload this floor's plan</button>
-      <button class="linkbtn" id="placeBtn" style="margin:0">Move spots on the map</button>
-    </div>
-    <input type="file" id="planFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
-    <p class="hmnote" id="hmnote"></p>
-  </section>
+  </div>
 
-  <!-- ALL ZONES -->
-  <section class="panel">
-    <h2>Every spot in the building</h2>
-    <p class="sub">Same setpoint, different reality. Sorted by whatever needs looking at most.</p>
-    <div class="zlist" id="zlist"></div>
-  </section>
+  <!-- ========================== MODERATOR ========================== -->
+  <div id="viewBoard" hidden>
 
-  <!-- ADD -->
-  <section class="panel">
-    <h2>Add a spot</h2>
-    <p class="sub" id="addSub">If one corner of a floor never matches the rest, give it its own entry.</p>
-    <div class="addform">
-      <div class="f">
-        <label class="fieldlab" for="nFloor">Floor or area</label>
-        <input type="text" id="nFloor" placeholder="Level 7" maxlength="28">
+    <!-- LOCATIONS -->
+    <section class="panel">
+      <h2>Every spot in the building</h2>
+      <p class="sub">Same setpoint, different reality. Sorted by whatever needs looking at most — pick one for the detail.</p>
+      <p class="modsum" id="modsum"></p>
+      <div class="floors" id="listFloors" role="group" aria-label="Filter by floor"></div>
+      <div class="zlist" id="zlist"></div>
+    </section>
+
+    <!-- SELECTED LOCATION -->
+    <section class="panel" id="detail" hidden>
+      <h2 id="dtTitle"></h2>
+      <p class="sub" id="dtSub"></p>
+      <div id="dtBody"></div>
+      <div class="statusrow">
+        <label class="fieldlab" for="statusSel">Facilities status</label>
+        <select id="statusSel" aria-label="Facilities status for this spot">
+          <option value="">Nothing logged</option>
+          <option value="looking">Someone's looking at it</option>
+          <option value="adjusted">Recently adjusted</option>
+        </select>
+        <span class="count" id="statusWhen" style="margin:0"></span>
       </div>
-      <div class="f">
-        <label class="fieldlab" for="nName">Spot</label>
-        <input type="text" id="nName" placeholder="North window seats" maxlength="40">
+    </section>
+
+    <!-- HEATMAP -->
+    <section class="panel">
+      <h2>Heat map</h2>
+      <p class="sub">Where the warm and cold patches actually are. Blue is cold, red is warm, mottled means the spot is arguing with itself.</p>
+      <div class="floors" id="floors" role="group" aria-label="Floor"></div>
+      <div class="plate" id="boardPlate"></div>
+      <div class="legend">
+        <span class="lramp" aria-hidden="true"></span>
+        <span>freezing to roasting</span>
+        <span class="lswatch" aria-hidden="true"></span>
+        <span>split</span>
+        <button class="linkbtn" id="planBtn" style="margin:0 0 0 auto" hidden>Upload this floor's plan</button>
       </div>
-      <button class="btn" id="addBtn">Add spot</button>
-    </div>
-  </section>
+      <input type="file" id="planFile" accept="image/png,image/jpeg,image/webp,image/svg+xml" hidden>
+      <p class="hmnote" id="hmnote"></p>
+    </section>
+
+  </div>
 
   <div class="foot">
     <p>Votes expire after two hours, so what you see is how it feels now, not this morning.</p>
@@ -474,22 +473,35 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   "use strict";
 
   var SCALE = [
-    {n:-2, face:"\uD83E\uDD76", lab:"Freezing",  css:"--c-2"},
-    {n:-1, face:"\uD83E\uDDE5", lab:"Chilly",    css:"--c-1"},
-    {n: 0, face:"\uD83D\uDE0C", lab:"Just nice", css:"--c0"},
-    {n: 1, face:"\uD83E\uDEE0", lab:"Warm",      css:"--c1"},
-    {n: 2, face:"\uD83E\uDD75", lab:"Roasting",  css:"--c2"}
+    {n:-2, face:"🥶", lab:"Freezing",  css:"--c-2"},
+    {n:-1, face:"🧥", lab:"Chilly",    css:"--c-1"},
+    {n: 0, face:"😌", lab:"Just nice", css:"--c0"},
+    {n: 1, face:"🫠", lab:"Warm",      css:"--c1"},
+    {n: 2, face:"🥵", lab:"Roasting",  css:"--c2"}
   ];
   var TTL = 2*60*60*1000;   // votes go stale after 2h
   var MAXDOT = 6;
+  var STATUS = {"":"Nothing logged", looking:"ON IT", adjusted:"ADJUSTED"};
 
-  var db=null, userCap=null, uid=null;
-  var zones=[];                 // {id, floor, name}
+  // The building, as facilities lists it: one spot per floor, not a sub-area
+  // within it. Edit this to match the real building.
+  var CATALOG = ["L1","L2","L3","L4","L5"];
+
+  var db=null, userCap=null, assetsCap=null, uid=null;
+  var zones=[];                 // {id, floor, name, x, y, status, statusAt}
   var ballots=new Map();        // voterId -> {zoneId:{n,t}}
+  var plans=new Map();          // floor slug -> {assetId,w,h}
   var localMode=true;           // no db: everything lives in this tab only
-  var writeBlocked=false;
-  var myZone=null;
+  var writeBlocked=false;       // this account may not vote
+  var zoneBlocked=false;        // this account may not change locations
   var writeChain=Promise.resolve();
+
+  // two views, one board
+  var view="vote";              // "vote" | "board"
+  var myZone=null;              // the voter's own spot (== their floor's zone)
+  var myPos=null;               // {x,y} exactly where the voter marked themselves
+  var selZone=null;             // the location facilities is looking at
+  var voteFloor=null, boardFloor=null, listFloor=null;   // listFloor null = all
 
   var $ = function(id){return document.getElementById(id);};
 
@@ -505,6 +517,40 @@ label.fieldlab{font-size:14px;color:var(--muted)}
   }
   function lsGet(k){ try{return localStorage.getItem(k);}catch(e){return null;} }
   function lsSet(k,v){ try{localStorage.setItem(k,v);}catch(e){} }
+
+  function zoneById(id){
+    for(var i=0;i<zones.length;i++) if(zones[i].id===id) return zones[i];
+    return null;
+  }
+  function floorOf(z){ return (z && z.floor) || "Unassigned"; }
+  function zonesOn(floor){
+    return zones.filter(function(z){ return floorOf(z)===floor; });
+  }
+  // every level in the building, in catalogue order, plus any the board has
+  // picked up that the catalogue doesn't list. A level with no spots yet still
+  // gets a tab — otherwise there is no way to reach it and add one.
+  function floorsOf(){
+    var out=catalogFloors().slice();
+    zones.forEach(function(z){
+      var f=floorOf(z);
+      if(out.indexOf(f)<0) out.push(f);
+    });
+    return out;
+  }
+  function labelOf(z){ return z ? z.floor : ""; }
+
+  /* ---------------- the catalogue ---------------- */
+  function catalogFloors(){
+    return CATALOG.slice();
+  }
+  function spotId(floor){ return slug(floor); }
+  // the board starts as the whole building, so nobody has to set it up to vote
+  function seedCatalog(){
+    CATALOG.forEach(function(f){
+      if(zoneById(spotId(f))) return;
+      zones.push({id:spotId(f), floor:f, name:f, x:50, y:50});
+    });
+  }
 
   /* ---------------- tally ---------------- */
   function tally(zoneId){
@@ -588,7 +634,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
       {k:"warm", n:t.hot,  lab:"warm"}
     ];
     var h='<div class="bal'+(opts.small?" small":"")+(t.split?" split":"")+'" role="img" aria-label="'+
-      t.cold+' cold, '+t.nice+' comfortable, '+t.hot+' warm'+(t.split?' \u2014 split':'')+'">';
+      t.cold+' cold, '+t.nice+' comfortable, '+t.hot+' warm'+(t.split?' — split':'')+'">';
     h+='<div class="balbar">';
     parts.forEach(function(p){
       if(p.n>0) h+='<span class="bseg '+p.k+'" style="flex:'+p.n+'"></span>';
@@ -601,10 +647,44 @@ label.fieldlab{font-size:14px;color:var(--muted)}
     return h;
   }
 
-  /* ---------------- floor plan ---------------- */
-  var plans=new Map();          // floor slug -> {assetId,w,h}
-  var assetsCap=null;
+  /* ---------------- one readout, both views ---------------- */
+  // opts: {statusBadge:bool}  — the moderator gets the <select> in its own row
+  //       {splitAction:bool}  — and the one button a split spot actually needs
+  function readoutHTML(z, t, opts){
+    opts = opts || {};
+    var v = verdict(t);
+    var h = stripHTML(t,{big:true});
 
+    h+='<div class="verdict"><span class="vtext"'+
+       ((v.tone && !t.split) ? ' style="color:var('+SCALE[v.tone+2].css+')"' : '')+
+       '>'+esc(v.text)+'</span>';
+    if(t.split) h+='<span class="chip split">Split</span>';
+    h+='</div>';
+
+    h+=balanceHTML(t);
+    if(t.n) h+='<div class="count">'+t.n+(t.n===1?" person":" people")+' in the last two hours</div>';
+
+    if(t.split){
+      h+='<div class="hint"><b>'+t.cold+' feel cold and '+t.hot+' feel warm in the same place.</b> '+
+         'That usually means this area is really two — a window run and a shaded core, or one vent doing all the work. '+
+         'Turning the thermostat will just move the complaint to the other group; this one wants looking at on the floor.'+
+         (opts.splitAction && z && z.status!=="looking"
+            ? '<button class="linkbtn splitbtn" type="button">Mark it as being looked at</button>' : '')+
+         '</div>';
+    } else if(t.n>0 && t.n<3){
+      h+='<div class="hint">Only '+t.n+(t.n===1?' vote':' votes')+' so far. Get one or two neighbours to tap as well — one person’s cardigan isn’t a reading.</div>';
+    }
+
+    if(opts.statusBadge && z && z.status){
+      h+='<div class="statusrow"><span class="fieldlab">Facilities</span>'+
+         '<span class="sbadge on">'+esc(STATUS[z.status]||z.status)+'</span>'+
+         (z.statusAt ? '<span class="count" style="margin:0">updated '+ago(z.statusAt)+'</span>' : '')+
+         '</div>';
+    }
+    return h;
+  }
+
+  /* ---------------- floor plan ---------------- */
   function deskRow(y,xs){
     return xs.map(function(x){
       return '<rect class="desk" x="'+x+'" y="'+y+'" width="9" height="5" rx="1"/>'+
@@ -642,9 +722,9 @@ label.fieldlab{font-size:14px;color:var(--muted)}
     '<rect class="room" x="120" y="8" width="34" height="22"/>'+
     '<rect class="room" x="120" y="34" width="34" height="20"/>'+
     '<rect class="room" x="120" y="58" width="34" height="20"/>'+
-    '<text x="122.5" y="12.5">Meeting 7-1</text>'+
-    '<text x="122.5" y="38.5">Meeting 7-2</text>'+
-    '<text x="122.5" y="62.5">Meeting 7-3</text>'+
+    '<text x="122.5" y="12.5">Meeting A</text>'+
+    '<text x="122.5" y="38.5">Meeting B</text>'+
+    '<text x="122.5" y="62.5">Meeting C</text>'+
     // pantry
     '<rect class="room" x="6" y="78" width="36" height="26"/>'+
     '<text x="8.5" y="82.5">Pantry</text>'+
@@ -658,49 +738,8 @@ label.fieldlab{font-size:14px;color:var(--muted)}
 
   function floorSlug(f){ return slug(f||"unassigned"); }
 
-  function renderPlan(){
-    var layer=$("planLayer");
-    var p = plans.get(floorSlug(curFloor));
-    var want = p && p.assetId ? "img:"+p.assetId : "svg";
-    if(layer.dataset.mode!==want){
-      layer.dataset.mode=want;
-      layer.innerHTML = p && p.assetId
-        ? '<img class="planimg" src="/_blob/'+esc(p.assetId)+'" alt="Floor plan">'
-        : PLAN_SVG;
-    }
-    $("plate").style.aspectRatio = (p && p.w && p.h) ? (p.w+" / "+p.h) : "16 / 11";
-    var btn=$("planBtn");
-    btn.hidden = !assetsCap;
-    if(assetsCap) btn.textContent = p && p.assetId ? "Replace this floor's plan" : "Upload this floor's plan";
-  }
-
-  $("planBtn").addEventListener("click",function(){ $("planFile").click(); });
-  $("planFile").addEventListener("change",function(){
-    var f=this.files && this.files[0];
-    this.value="";
-    if(!f || !assetsCap) return;
-    var slugF=floorSlug(curFloor);
-    $("planBtn").textContent="Uploading\u2026";
-    var img=new Image(), url=URL.createObjectURL(f);
-    img.onload=function(){
-      var w=img.naturalWidth||1600, h=img.naturalHeight||1100;
-      URL.revokeObjectURL(url);
-      assetsCap.upload(f).then(function(res){
-        plans.set(slugF,{assetId:res.id,w:w,h:h});
-        render();
-        if(!localMode && db) return db.doc("plans/"+slugF).set({assetId:res.id,w:w,h:h});
-      }).catch(function(){
-        banner("That plan didn't upload. Try a PNG or JPG under 20 MB.");
-        render();
-      });
-    };
-    img.onerror=function(){ URL.revokeObjectURL(url); banner("That file isn't an image the map can read."); render(); };
-    img.src=url;
-  });
-
   /* ---------------- heat map ---------------- */
   var HEAT = [[42,109,181],[95,163,196],[59,155,120],[222,144,54],[198,76,44]];
-  var curFloor=null, placing=false;
 
   function heatColor(mean){
     var p=Math.max(-2,Math.min(2,mean))+2;      // 0..4
@@ -713,125 +752,155 @@ label.fieldlab{font-size:14px;color:var(--muted)}
     return '<div class="blob" style="left:'+x+'%;top:'+y+'%;width:'+size+'%;'+
       'aspect-ratio:1;background:radial-gradient(circle,'+rgba(c,alpha)+' 0%,'+rgba(c,0)+' 70%)"></div>';
   }
-
-  function floorsOf(){
-    var seen=[], out=[];
-    zones.forEach(function(z){
-      var f=z.floor||"Unassigned";
-      if(seen.indexOf(f)<0){ seen.push(f); out.push(f); }
+  // one small blob per live vote, at exactly where that person marked
+  // themselves — so the heat map is the shape of where people actually are,
+  // not one averaged blob in the middle of the floor. A vote written without
+  // a position (an older ballot, or one from a client that didn't send one)
+  // falls back to the zone's own pin.
+  function voterBlobs(zoneId, fallbackPos){
+    var now=Date.now(), H="";
+    ballots.forEach(function(b){
+      var v=b && b[zoneId];
+      if(!v || typeof v.n!=="number") return;
+      if(!v.t || now - v.t > TTL) return;
+      var x = typeof v.x==="number" ? v.x : fallbackPos.x;
+      var y = typeof v.y==="number" ? v.y : fallbackPos.y;
+      H += blob(x, y, 18, heatColor(v.n), .55);
     });
-    return out;
+    return H;
   }
 
-  function autoPos(z, idx, total){
+  function autoPos(idx, total){
     // deterministic fallback so a spot without coordinates still appears
     var cols=Math.ceil(Math.sqrt(Math.max(total,1)));
     var r=Math.floor(idx/cols), rows=Math.ceil(total/cols);
     return {x: (idx%cols + .5)/cols*82 + 9, y: (r+.5)/Math.max(rows,1)*70 + 15, auto:true};
   }
+  function posOf(z, idx, total){
+    return (typeof z.x==="number" && typeof z.y==="number")
+      ? {x:z.x, y:z.y, auto:false} : autoPos(idx, total);
+  }
 
-  function renderHeat(){
-    var fl=floorsOf();
-    if(!fl.length){ curFloor=null; }
-    else if(!curFloor || fl.indexOf(curFloor)<0){
-      var mine = zones.filter(function(z){return z.id===myZone;})[0];
-      curFloor = mine ? (mine.floor||"Unassigned") : fl[0];
+  /* ---------------- the plate, drawn into any host ---------------- */
+  // opts: {floor, heat, flags, sel, onPin, myPos, pins}
+  function renderPlate(host, opts){
+    if(host.dataset.built!=="1"){
+      host.innerHTML='<div class="planlayer"></div><div class="heat" aria-hidden="true"></div><div class="pins"></div>';
+      host.dataset.built="1";
     }
+    var layer=host.children[0], heat=host.children[1], pins=host.children[2];
 
-    var tabs=$("floors");
-    tabs.innerHTML = fl.map(function(f){
-      return '<button class="ftab" type="button" data-f="'+esc(f)+'" aria-pressed="'+(f===curFloor)+'">'+esc(f)+'</button>';
-    }).join("");
-    Array.prototype.forEach.call(tabs.children,function(b){
-      b.addEventListener("click",function(){ curFloor=b.dataset.f; render(); });
-    });
+    var p = plans.get(floorSlug(opts.floor));
+    var want = p && p.assetId ? "img:"+p.assetId : "svg";
+    if(layer.dataset.mode!==want){
+      layer.dataset.mode=want;
+      layer.innerHTML = p && p.assetId
+        ? '<img class="planimg" src="/_blob/'+esc(p.assetId)+'" alt="Floor plan">'
+        : PLAN_SVG;
+    }
+    host.style.aspectRatio = (p && p.w && p.h) ? (p.w+" / "+p.h) : "16 / 11";
 
-    var here = zones.filter(function(z){ return (z.floor||"Unassigned")===curFloor; });
-    renderPlan();
-    var heat=$("heat"), pins=$("pins"), H="", P="", flagged=0;
+    var here = zonesOn(opts.floor), H="", P="", flagged=0;
 
     here.forEach(function(z,i){
       var t=tally(z.id);
-      var pos = (typeof z.x==="number" && typeof z.y==="number")
-        ? {x:z.x, y:z.y, auto:false} : autoPos(z,i,here.length);
+      // the voter's own marker sits exactly where they tapped, not at the
+      // zone's shared pin position
+      var pos = (opts.myPos && z.id===opts.sel) ? opts.myPos : posOf(z,i,here.length);
 
-      if(t.n===0){
-        H += blob(pos.x,pos.y,22,[120,135,143],.16);
-      } else if(t.split){
-        // no single colour is honest here: lay a cold blob and a warm blob side by side
-        flagged++;
-        var wc = 12 + Math.min(t.cold,8)*2.1;
-        var wh = 12 + Math.min(t.hot,8)*2.1;
-        H += blob(pos.x-5, pos.y, wc*2, HEAT[0], .8);
-        H += blob(pos.x+5, pos.y, wh*2, HEAT[4], .8);
-      } else {
-        var c=heatColor(t.mean);
-        var w = 20 + Math.min(t.n,10)*2.6;
-        var strength = .28 + Math.min(Math.abs(t.mean)/2,1)*.6;
-        H += blob(pos.x,pos.y,w*2,c,strength);
-        if(Math.abs(t.mean)>=1.2) flagged++;
+      if(opts.heat){
+        if(t.n===0){
+          H += blob(pos.x,pos.y,22,[120,135,143],.16);
+        } else {
+          // the shape comes from where people actually clicked, not one
+          // averaged blob — a split floor shows up as its own two colours
+          // without any special-casing here.
+          H += voterBlobs(z.id, pos);
+        }
       }
+      if(t.split || (t.n && Math.abs(t.mean)>=1.2)) flagged++;
 
-      var flag = t.split ? "SPLIT" : (t.n && Math.abs(t.mean)>=1.2 ? (t.mean<0?"COLD":"HOT") : "");
-      var badge = z.status==="looking" ? "ON IT" : z.status==="adjusted" ? "ADJUSTED" : "";
-      P += '<button class="pin'+(z.id===myZone?" sel":"")+(pos.auto?" unplaced":"")+
-           '" style="left:'+pos.x+'%;top:'+pos.y+'%" data-z="'+esc(z.id)+'" '+
-           'title="'+esc(z.name)+(t.n?" \u2014 "+t.n+" votes":" \u2014 no votes")+'">'+
-           '<span class="knob"></span>'+
-           (flag||badge ? '<span class="flag">'+esc(badge||flag)+'</span>' : '')+
-           '<span class="plab">'+esc(z.name)+'</span></button>';
+      if(opts.pins!==false){
+        var badge="";
+        if(opts.flags){
+          var flag = t.split ? "SPLIT" : (t.n && Math.abs(t.mean)>=1.2 ? (t.mean<0?"COLD":"HOT") : "");
+          var st = z.status==="looking" ? "ON IT" : z.status==="adjusted" ? "ADJUSTED" : "";
+          badge = st || flag;
+        } else if(z.id===opts.sel){
+          badge = "YOU";
+        }
+
+        P += '<button class="pin'+(z.id===opts.sel?" sel":"")+(pos.auto?" unplaced":"")+
+             '" type="button" style="left:'+pos.x+'%;top:'+pos.y+'%" data-z="'+esc(z.id)+'" '+
+             'title="'+esc(z.name)+(t.n?" — "+t.n+" votes":" — no votes")+'">'+
+             '<span class="knob"></span>'+
+             (badge ? '<span class="flag">'+esc(badge)+'</span>' : '')+
+             '<span class="plab">'+esc(z.name)+'</span></button>';
+      }
     });
 
-    heat.innerHTML=H; pins.innerHTML=P;
+    heat.innerHTML = opts.heat ? H : "";
+    pins.innerHTML = P;
     Array.prototype.forEach.call(pins.children,function(b){
       b.addEventListener("click",function(e){
-        if(placing) return;
         e.stopPropagation();
-        myZone=b.dataset.z; lsSet("aw.zone",myZone); render();
+        opts.onPin(b.dataset.z);
       });
     });
 
-    $("plate").classList.toggle("placing", placing);
-    $("placeBtn").textContent = placing ? "Done moving spots" : "Move spots on the map";
-    $("hmnote").textContent = placing
-      ? "Click anywhere on the plan to drop \u201C"+(zones.filter(function(z){return z.id===myZone;})[0]||{name:"the selected spot"}).name+"\u201D there."
-      : here.length===0 ? "No spots on this floor yet."
-      : flagged===0 ? "Nothing on this floor is far off. Dotted pins haven\u2019t been placed on the plan yet."
-      : flagged+(flagged===1?" spot needs":" spots need")+" a look. Dotted pins haven\u2019t been placed on the plan yet.";
+    return {count:here.length, flagged:flagged};
   }
 
-  $("placeBtn").addEventListener("click",function(){
-    placing=!placing; render();
-  });
-  $("plate").addEventListener("click",function(e){
-    if(!placing || !myZone) return;
-    var r=this.getBoundingClientRect();
-    var x=Math.round(((e.clientX-r.left)/r.width)*1000)/10;
-    var y=Math.round(((e.clientY-r.top)/r.height)*1000)/10;
-    var z=zones.filter(function(q){return q.id===myZone;})[0];
-    if(!z) return;
-    z.x=Math.max(4,Math.min(96,x)); z.y=Math.max(6,Math.min(94,y));
-    z.floor = z.floor || (curFloor==="Unassigned" ? "" : curFloor);
-    if(!localMode && db){
-      writeChain = writeChain.then(function(){
-        return db.doc("zones/"+z.id).update({x:z.x, y:z.y});
-      }).catch(function(){});
+  function renderFloorTabs(host, cur, withAll, onPick){
+    var fl=floorsOf(), h="";
+    if(withAll){
+      h+='<button class="ftab" type="button" data-all="1" aria-pressed="'+(cur===null)+'">All floors</button>';
     }
-    render();
-  });
+    h+=fl.map(function(f){
+      return '<button class="ftab" type="button" data-f="'+esc(f)+'" aria-pressed="'+(f===cur)+'">'+esc(f)+'</button>';
+    }).join("");
+    host.innerHTML=h;
+    Array.prototype.forEach.call(host.children,function(b){
+      b.addEventListener("click",function(){
+        onPick(b.dataset.all ? null : b.dataset.f);
+      });
+    });
+  }
 
-  $("statusSel").addEventListener("change",function(){
-    var z=zones.filter(function(q){return q.id===myZone;})[0];
-    if(!z) return;
-    z.status=this.value; z.statusAt=Date.now();
-    if(!localMode && db){
-      var v=z.status, at=z.statusAt;
-      writeChain = writeChain.then(function(){
-        return db.doc("zones/"+z.id).update({status:v, statusAt:at});
-      }).catch(function(){});
-    }
+  /* ---------------- writes ---------------- */
+  function zoneWrite(fn){
+    if(localMode || !db || zoneBlocked) return;
+    writeChain = writeChain.then(fn).catch(function(e){
+      if(e && (e.code==="invalid_argument" || e.code==="not_granted")){
+        zoneBlocked=true;
+        banner("Your account can read this board but not change the locations on it.");
+        render();
+      }
+    });
+  }
+
+  // one document per voter at votes/<viewer id>, shaped { v: { zoneId: {n,t} } }
+  function cast(n){
+    if(!myZone || writeBlocked || !zoneById(myZone)) return;
+    var key = uid || "__local__";
+    var body = Object.assign({}, ballots.get(key) || {});
+    var entry = {n:n, t:Date.now()};
+    if(myPos){ entry.x=myPos.x; entry.y=myPos.y; }
+    body[myZone] = entry;
+    ballots.set(key, body);
     render();
-  });
+
+    if(localMode || !db || !uid) return;
+    writeChain = writeChain.then(function(){
+      return db.doc("votes/"+uid).set({v:body});
+    }).catch(function(e){
+      if(e && (e.code==="invalid_argument" || e.code==="not_granted")){
+        writeBlocked=true;
+        banner("Your account can read this board but not vote on it.");
+        render();
+      }
+    });
+  }
 
   /* ---------------- vote buttons ---------------- */
   function buildVoteButtons(){
@@ -856,156 +925,185 @@ label.fieldlab{font-size:14px;color:var(--muted)}
     return v;
   }
 
-  // one document per voter at votes/<viewer id>, shaped { v: { zoneId: {n,t} } }
-  function cast(n){
-    if(!myZone || writeBlocked) return;
-    var key = uid || "__local__";
-    var body = Object.assign({}, ballots.get(key) || {});
-    body[myZone] = {n:n, t:Date.now()};
-    ballots.set(key, body);
+  function pickSpot(id){
+    myZone=id; lsSet("tc.spot",id);
+    var z=zoneById(id);
+    if(z) voteFloor=floorOf(z);
     render();
+  }
 
-    if(localMode || !db || !uid) return;
-    writeChain = writeChain.then(function(){
-      return db.doc("votes/"+uid).set({v:body});
-    }).catch(function(e){
-      if(e && (e.code==="invalid_argument" || e.code==="not_granted")){
-        writeBlocked=true;
-        banner("Your account can read this board but not vote on it.");
-        render();
-      }
+  /* ---------------- the voter's view ---------------- */
+  function renderVote(){
+    // exactly one spot per floor now — fall back to the first so the plate
+    // and vote buttons aren't just sitting there disabled.
+    if(zones.length && (!myZone || !zoneById(myZone))) myZone = zones[0].id;
+
+    var me = myZone ? zoneById(myZone) : null;
+    if(!voteFloor || floorsOf().indexOf(voteFloor)<0) voteFloor = me ? floorOf(me) : (floorsOf()[0]||null);
+    var onThisFloor = me && floorOf(me)===voteFloor;
+
+    renderFloorTabs($("voteFloors"), voteFloor, false, function(f){
+      voteFloor=f; render();
     });
-  }
+    var plate = renderPlate($("votePlate"), {
+      floor:voteFloor, heat:false, flags:false,
+      sel: onThisFloor ? myZone : null,
+      myPos: (onThisFloor && myPos) ? myPos : null,
+      onPin: pickSpot
+    });
 
-  /* ---------------- add a spot ---------------- */
-  function addSpot(floor, name){
-    floor=(floor||"").trim(); name=(name||"").trim();
-    if(!name) return null;
-    var id = slug((floor?floor+"-":"")+name);
-    if(zones.some(function(z){return z.id===id;})) return id;
-    var z={id:id, floor:floor, name:name};
-    zones.push(z);
-    if(!localMode && db){
-      writeChain = writeChain.then(function(){
-        return db.doc("zones/"+id).set({floor:floor, name:name});
-      }).catch(function(){});
-    }
-    return id;
-  }
-
-  /* ---------------- render ---------------- */
-  function render(){
-    // --- spot picker
-    var sel=$("spot");
-    var want = myZone;
-    sel.innerHTML="";
+    // the line under the plan
+    var note=$("voteNote");
     if(!zones.length){
-      var o=document.createElement("option");
-      o.textContent="No spots yet — add one below";
-      o.value=""; sel.appendChild(o); sel.disabled=true;
-    }else{
-      sel.disabled=false;
-      zones.forEach(function(z){
-        var o=document.createElement("option");
-        o.value=z.id;
-        o.textContent = z.floor ? z.floor+" \u2014 "+z.name : z.name;
-        sel.appendChild(o);
-      });
-      if(!want || !zones.some(function(z){return z.id===want;})) want=zones[0].id;
-      myZone=want; sel.value=want;
+      note.innerHTML="No spots on the board yet.";
+    } else if(!plate.count){
+      note.innerHTML="No spots on this level yet.";
+    } else if(!me){
+      note.innerHTML="Tap the plan where you’re sitting.";
+    } else if(!onThisFloor){
+      note.innerHTML='You’re at <b>'+esc(labelOf(me))+'</b>, on another level.';
+    } else if(!myPos){
+      note.innerHTML="Tap the plan where you’re sitting.";
+    } else {
+      note.innerHTML='You’re at <b>'+esc(me.name)+'</b>.';
     }
 
-    // --- vote buttons state
-    var mine = myZone ? myVote(myZone) : null;
+    // vote buttons
+    var mine = me ? myVote(myZone) : null;
     Array.prototype.forEach.call($("voteBtns").children,function(b){
       var on = mine && String(mine.n)===b.dataset.n;
       b.setAttribute("aria-pressed", on?"true":"false");
-      b.disabled = !myZone || writeBlocked;
-      b.style.opacity = (!myZone||writeBlocked) ? ".45" : "";
+      b.disabled = !me || writeBlocked;
+      b.style.opacity = (!me||writeBlocked) ? ".45" : "";
     });
-    $("castline").textContent = !myZone ? ""
+    $("castline").textContent = !me ? "Pick where you're sitting first."
       : writeBlocked ? "Voting is off for your account."
       : mine ? "You said "+SCALE[mine.n+2].lab.toLowerCase()+", "+ago(mine.t)+". Tap again to change it."
       : "You haven't voted here yet.";
 
-    // --- readout
-    if(myZone){
-      var z = zones.filter(function(x){return x.id===myZone;})[0];
-      var t = tally(myZone);
-      var v = verdict(t);
+    // your spot
+    if(me){
+      var t=tally(myZone);
       $("readout").hidden=false;
-      $("roTitle").textContent = z.floor ? z.floor+" \u2014 "+z.name : z.name;
+      $("roTitle").textContent = labelOf(me);
       $("roSub").textContent = t.n ? "Last vote "+ago(t.newest)+"." : "Be the first to say something.";
-      $("roStrip").innerHTML = stripHTML(t,{big:true});
-      $("roVerdict").textContent = v.text;
-      $("roVerdict").style.color = (v.tone && !t.split) ? "var("+SCALE[v.tone+2].css+")" : "";
-      var chip=$("roChip");
-      if(t.split){
-        chip.hidden=false; chip.textContent="Split"; chip.classList.add("split");
-      } else { chip.hidden=true; chip.classList.remove("split"); }
-      $("roBal").innerHTML = balanceHTML(t);
-      $("roCount").textContent = t.n===0 ? "" :
-        t.n+(t.n===1?" person":" people")+" in the last two hours";
-
-      $("statusSel").value = z.status || "";
-      $("statusWhen").textContent = z.status && z.statusAt ? "updated "+ago(z.statusAt) : "";
-
-      var hint=$("roHint");
-      if(t.split){
-        hint.hidden=false;
-        hint.innerHTML='<b>'+t.cold+' feel cold and '+t.hot+' feel warm in the same place.</b> '+
-          'That usually means this spot is really two spots \u2014 a window run and a shaded core, or one vent doing all the work. '+
-          'Turning the thermostat will just move the complaint to the other group.'+
-          '<button class="linkbtn" id="splitBtn">Add a narrower spot instead</button>';
-        var sb=$("splitBtn");
-        if(sb) sb.addEventListener("click",function(){
-          $("nFloor").value = z.floor || "";
-          $("nName").value = "";
-          $("nName").focus();
-          $("nName").scrollIntoView({behavior:"smooth", block:"center"});
-        });
-      } else if(t.n>0 && t.n<3){
-        hint.hidden=false;
-        hint.innerHTML='Only '+t.n+(t.n===1?' vote':' votes')+' so far. Get one or two neighbours to tap as well \u2014 one person\u2019s cardigan isn\u2019t a reading.';
-      } else hint.hidden=true;
+      $("roBody").innerHTML = readoutHTML(me, t, {statusBadge:true});
     } else {
       $("readout").hidden=true;
     }
+  }
 
-    // --- all zones
+  /* ---------------- the moderator's view ---------------- */
+  function renderBoard(){
+    var rows = zones.map(function(z){
+      var t=tally(z.id);
+      return {z:z, t:t, u:urgency(t)};
+    }).sort(function(a,b){ return b.u - a.u; });
+
+    if(!selZone || !zoneById(selZone)) selZone = rows.length ? rows[0].z.id : null;
+    var sz = selZone ? zoneById(selZone) : null;
+
+    // summary
+    var nSplit=0, nFar=0, nQuiet=0, nOk=0;
+    rows.forEach(function(r){
+      if(r.t.n===0) nQuiet++;
+      else if(r.t.split) nSplit++;
+      else if(Math.abs(r.t.mean)>=1.2) nFar++;
+      else nOk++;
+    });
+    var bits=[];
+    if(nSplit) bits.push("<b>"+nSplit+"</b> split");
+    if(nFar)   bits.push("<b>"+nFar+"</b> too far off");
+    if(nOk)    bits.push("<b>"+nOk+"</b> settled");
+    if(nQuiet) bits.push("<b>"+nQuiet+"</b> quiet");
+    $("modsum").innerHTML = zones.length
+      ? zones.length+(zones.length===1?" spot":" spots")+" — "+bits.join(" · ")
+      : "";
+
+    // floor filter
+    if(listFloor!==null && floorsOf().indexOf(listFloor)<0) listFloor=null;
+    $("listFloors").hidden = floorsOf().length<2;
+    renderFloorTabs($("listFloors"), listFloor, true, function(f){
+      listFloor=f; render();
+    });
+
+    // the list
+    var shown = listFloor===null ? rows : rows.filter(function(r){ return floorOf(r.z)===listFloor; });
     var list=$("zlist");
     if(!zones.length){
-      list.innerHTML='<div class="empty">Nothing here yet. Add the floor you\u2019re on and the board starts filling in.</div>';
+      list.innerHTML='<div class="empty">Nothing here yet. Add the floor you’re on and the board starts filling in.</div>';
+    } else if(!shown.length){
+      list.innerHTML='<div class="empty">No spots on this floor.</div>';
     } else {
-      var rows = zones.map(function(z){
-        var t=tally(z.id);
-        return {z:z, t:t, u:urgency(t)};
-      }).sort(function(a,b){ return b.u - a.u; });
-
-      list.innerHTML = rows.map(function(r){
+      list.innerHTML = shown.map(function(r){
         var v=verdict(r.t);
-        var meta = r.t.n===0 ? "Quiet \u2014 no votes in the last two hours"
-          : v.text + " \u00B7 " + r.t.n + (r.t.n===1?" vote":" votes") + " \u00B7 " + ago(r.t.newest);
-        return '<button class="zrow'+(r.z.id===myZone?" here":"")+'" data-z="'+esc(r.z.id)+'">'+
-          '<span><span class="zname">'+
-            (r.z.floor?'<span class="zfloor">'+esc(r.z.floor)+'</span>':'')+
-            esc(r.z.name)+'</span>'+
+        var meta = r.t.n===0 ? "Quiet — no votes in the last two hours"
+          : v.text + " · " + r.t.n + (r.t.n===1?" vote":" votes") + " · " + ago(r.t.newest);
+        return '<button class="zrow'+(r.z.id===selZone?" here":"")+'" type="button" data-z="'+esc(r.z.id)+'">'+
+          '<span><span class="zname">'+esc(r.z.name)+'</span>'+
           '<span class="zmeta">'+esc(meta)+'</span>'+balanceHTML(r.t,{small:true})+'</span>'+
           '<span>'+stripHTML(r.t,{big:false})+'</span>'+
         '</button>';
       }).join("");
-
       Array.prototype.forEach.call(list.querySelectorAll(".zrow"),function(btn){
-        btn.addEventListener("click",function(){
-          myZone = btn.dataset.z;
-          lsSet("aw.zone", myZone);
-          render();
-          document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
-        });
+        btn.addEventListener("click",function(){ pickLocation(btn.dataset.z); });
       });
     }
 
-    renderHeat();
+    // the selected location
+    if(sz){
+      var t2=tally(selZone);
+      $("detail").hidden=false;
+      $("dtTitle").textContent = labelOf(sz);
+      $("dtSub").textContent = t2.n ? "Last vote "+ago(t2.newest)+"." : "No votes in the last two hours.";
+      $("dtBody").innerHTML = readoutHTML(sz, t2, {splitAction:!zoneBlocked});
+      var sb=$("dtBody").querySelector(".splitbtn");
+      if(sb) sb.addEventListener("click",function(){
+        $("statusSel").value="looking";
+        $("statusSel").dispatchEvent(new Event("change"));
+      });
+      $("statusSel").value = sz.status || "";
+      $("statusSel").disabled = zoneBlocked;
+      $("statusWhen").textContent = sz.status && sz.statusAt ? "updated "+ago(sz.statusAt) : "";
+    } else {
+      $("detail").hidden=true;
+    }
+
+    // the heat map
+    if(!boardFloor || floorsOf().indexOf(boardFloor)<0) boardFloor = sz ? floorOf(sz) : (floorsOf()[0]||null);
+    renderFloorTabs($("floors"), boardFloor, false, function(f){
+      boardFloor=f; render();
+    });
+    var plate = renderPlate($("boardPlate"), {
+      floor:boardFloor, heat:true, pins:false
+    });
+
+    $("planBtn").hidden = !assetsCap || zoneBlocked;
+    if(assetsCap){
+      var p=plans.get(floorSlug(boardFloor));
+      $("planBtn").textContent = p && p.assetId ? "Replace this floor's plan" : "Upload this floor's plan";
+    }
+    $("hmnote").textContent = plate.count===0 ? "No spots on this floor yet."
+      : plate.flagged===0 ? "Nothing on this floor is far off."
+      : plate.flagged+(plate.flagged===1?" spot needs":" spots need")+" a look.";
+  }
+
+  function pickLocation(id){
+    if(selZone===id) return;
+    selZone=id;
+    var z=zoneById(id);
+    if(z) boardFloor=floorOf(z);
+    render();
+  }
+
+  /* ---------------- render ---------------- */
+  function render(){
+    Array.prototype.forEach.call($("viewsw").children,function(b){
+      b.setAttribute("aria-pressed", b.dataset.v===view ? "true" : "false");
+    });
+    $("viewVote").hidden  = view!=="vote";
+    $("viewBoard").hidden = view!=="board";
+    if(view==="vote") renderVote(); else renderBoard();
   }
 
   function banner(msg){
@@ -1015,22 +1113,70 @@ label.fieldlab{font-size:14px;color:var(--muted)}
 
   /* ---------------- wire up ---------------- */
   buildVoteButtons();
-  myZone = lsGet("aw.zone");
+  seedCatalog();            // the building, so the board is usable on first open
+  myZone = lsGet("tc.spot") || lsGet("aw.zone");
+  try{
+    var savedPos = JSON.parse(lsGet("tc.pos")||"null");
+    if(savedPos && savedPos.z===myZone) myPos = {x:savedPos.x, y:savedPos.y};
+  }catch(e){}
+  view = lsGet("tc.view")==="board" ? "board" : "vote";
 
-  $("spot").addEventListener("change",function(){
-    myZone=$("spot").value; lsSet("aw.zone",myZone); render();
+  Array.prototype.forEach.call($("viewsw").children,function(b){
+    b.addEventListener("click",function(){
+      view=b.dataset.v; lsSet("tc.view",view);
+      render();
+      document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
+    });
   });
 
-  $("addBtn").addEventListener("click",function(){
-    var id = addSpot($("nFloor").value, $("nName").value);
-    if(!id){ $("nName").focus(); return; }
-    $("nFloor").value=""; $("nName").value="";
-    myZone=id; lsSet("aw.zone",id);
+  // the voter taps the plan: snap to the nearest spot on this floor. Free
+  // form — anywhere on the layout is a valid tap, never rejected as too far.
+  // the voter taps the plan: their marker lands exactly where they tapped —
+  // no snapping to a pin, because the floor is the whole spot now.
+  $("votePlate").addEventListener("click",function(e){
+    if(e.target.closest && e.target.closest(".pin")) return;
+    var here=zonesOn(voteFloor);
+    if(!here.length) return;
+    var r=this.getBoundingClientRect();
+    var x=Math.max(2,Math.min(98,Math.round(((e.clientX-r.left)/r.width)*1000)/10));
+    var y=Math.max(2,Math.min(98,Math.round(((e.clientY-r.top)/r.height)*1000)/10));
+    myZone=here[0].id; myPos={x:x,y:y};
+    lsSet("tc.spot",myZone); lsSet("tc.pos",JSON.stringify({z:myZone,x:x,y:y}));
     render();
-    document.querySelector(".wrap").scrollIntoView({behavior:"smooth",block:"start"});
   });
-  $("nName").addEventListener("keydown",function(e){
-    if(e.key==="Enter") $("addBtn").click();
+
+  $("statusSel").addEventListener("change",function(){
+    var z=zoneById(selZone);
+    if(!z) return;
+    z.status=this.value; z.statusAt=Date.now();
+    var v=z.status, at=z.statusAt, zid=z.id;
+    zoneWrite(function(){ return db.doc("zones/"+zid).update({status:v, statusAt:at}); });
+    render();
+  });
+
+  /* ---------------- floor plan upload ---------------- */
+  $("planBtn").addEventListener("click",function(){ $("planFile").click(); });
+  $("planFile").addEventListener("change",function(){
+    var f=this.files && this.files[0];
+    this.value="";
+    if(!f || !assetsCap) return;
+    var slugF=floorSlug(boardFloor);
+    $("planBtn").textContent="Uploading…";
+    var img=new Image(), url=URL.createObjectURL(f);
+    img.onload=function(){
+      var w=img.naturalWidth||1600, h=img.naturalHeight||1100;
+      URL.revokeObjectURL(url);
+      assetsCap.upload(f).then(function(res){
+        plans.set(slugF,{assetId:res.id,w:w,h:h});
+        render();
+        zoneWrite(function(){ return db.doc("plans/"+slugF).set({assetId:res.id,w:w,h:h}); });
+      }).catch(function(){
+        banner("That plan didn't upload. Try a PNG or JPG under 20 MB.");
+        render();
+      });
+    };
+    img.onerror=function(){ URL.revokeObjectURL(url); banner("That file isn't an image the map can read."); render(); };
+    img.src=url;
   });
 
   render();
@@ -1046,6 +1192,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
 
     if(!db){
       banner("Running on its own. Votes stay in this browser until the board is opened from its shared link.");
+      render();
       return;
     }
     localMode=false;
@@ -1053,7 +1200,7 @@ label.fieldlab{font-size:14px;color:var(--muted)}
     try{ uid = userCap ? await userCap.id() : null; }catch(e){ uid=null; }
     if(!uid){
       writeBlocked=true;
-      banner("Signed-out view \u2014 you can read the board but not vote.");
+      banner("Signed-out view — you can read the board but not vote.");
     }
 
     db.collection("zones").onSnapshot(function(snap){
