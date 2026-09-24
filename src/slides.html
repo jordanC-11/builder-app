@@ -108,24 +108,27 @@ h2.big{
 .card p,.cell p{font-size:1.45cqw;color:var(--muted);margin:0;line-height:1.5}
 .cardsfoot{font-size:1.7cqw;font-style:italic;color:var(--c-1);margin:2cqw 0 0}
 
-/* ---- person ---- */
-.scene.person{justify-content:flex-start}
-.who{display:flex;align-items:center;gap:1.5cqw;margin-top:2.4cqw}
-.who .av{
-  width:6cqw;height:6cqw;border-radius:50%;flex:0 0 auto;
-  display:flex;align-items:center;justify-content:center;
-  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:3cqw;color:var(--paper);
+/* ---- duo (two people, one shared setpoint) ---- */
+.scene.duo{justify-content:flex-start}
+.duorow{display:grid;grid-template-columns:1fr auto 1fr;gap:2.6cqw;align-items:start;margin-top:2.6cqw}
+.duop{display:flex;flex-direction:column;gap:.5cqw}
+.duop .av{
+  width:5.2cqw;height:5.2cqw;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;color:var(--paper);
 }
-.who .wn{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.9cqw;letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
-.who .wr{font-size:1.55cqw;color:var(--muted);line-height:1.3;margin-top:.2cqw}
+.duop .av svg{width:56%;height:56%}
+.duop .dtime{font-size:1.1cqw;font-weight:700;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:.7cqw}
+.duop .wn{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.5cqw;letter-spacing:-.02em;line-height:1.1;color:var(--ink);margin-top:.25cqw}
+.duop .wr{font-size:1.3cqw;color:var(--muted);line-height:1.3}
+.duoq{font-size:2.05cqw;line-height:1.4;margin:1.1cqw 0 0;letter-spacing:-.015em}
+.duomid{display:flex;align-items:center;justify-content:center;padding-top:5.6cqw}
 .setpoint{
-  margin-left:auto;background:var(--surface-2);border:.1cqw solid var(--line-soft);
-  border-radius:1cqw;padding:1.1cqw 2cqw;text-align:center;
+  background:var(--surface-2);border:.1cqw solid var(--line-soft);
+  border-radius:1cqw;padding:1.1cqw 1.8cqw;text-align:center;
 }
-.setpoint b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:3.2cqw;letter-spacing:-.03em;display:block;color:var(--ink)}
-.setpoint span{font-size:1.15cqw;color:var(--muted)}
-.quote{font-size:3.5cqw;line-height:1.35;margin:3.4cqw 0 0;letter-spacing:-.02em;max-width:24em}
-.personfoot{font-size:2cqw;font-weight:600;color:var(--ink);margin-top:auto}
+.setpoint b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.8cqw;letter-spacing:-.03em;display:block;color:var(--ink)}
+.setpoint span{font-size:1.05cqw;color:var(--muted)}
+.duofoot{font-size:1.7cqw;font-weight:600;color:var(--ink);margin-top:2.6cqw}
 
 /* ---- numbered rows ---- */
 .rows{display:flex;flex-direction:column;gap:1.5cqw;margin-top:1.2cqw}
@@ -136,13 +139,9 @@ h2.big{
 
 /* ---- the vote panel ---- */
 .split2{display:grid;grid-template-columns:1.15fr 1fr;gap:2.6cqw;align-items:start;margin-top:1.4cqw}
+.split3{display:grid;grid-template-columns:.9fr .95fr 1.05fr;gap:2cqw;align-items:start;margin-top:1.4cqw}
+.platenote{font-size:1.25cqw;color:var(--muted);margin:.8cqw 0 0}
 .panel{background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:1.2cqw;padding:1.8cqw}
-.pickrow{display:flex;align-items:center;gap:1cqw;margin-bottom:1.5cqw}
-.picklab{font-size:1.3cqw;color:var(--muted);flex:0 0 auto}
-.pick{
-  flex:1;font-size:1.4cqw;background:var(--surface-2);color:var(--ink);
-  border:.1cqw solid var(--line);border-radius:.6cqw;padding:.6cqw 1cqw;
-}
 .vbtns{display:grid;grid-template-columns:repeat(5,1fr);gap:.6cqw}
 .vbtn{
   background:var(--surface-2);border:.11cqw solid var(--line);border-radius:.85cqw;
@@ -161,6 +160,14 @@ h2.big{
   flex:0 0 auto;margin-top:.55cqw;
 }
 
+/* ---- two-up screenshot pair ---- */
+.shotwrap{display:grid;grid-template-columns:1fr 1fr;gap:2.2cqw;margin-top:1.8cqw;align-items:start}
+.shotlab{
+  font-size:1.2cqw;font-weight:700;color:var(--muted);margin:0 0 .8cqw;
+  text-transform:uppercase;letter-spacing:.1em;
+}
+.shot .vbtns{margin-top:1.3cqw}
+
 /* ---- dot plot + balance bar ---- */
 .strip{position:relative}
 .bands{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;height:7.4cqw;align-items:end}
@@ -177,49 +184,17 @@ h2.big{
 .needle{position:absolute;bottom:-.7cqw;width:.24cqw;height:1.5cqw;border-radius:.2cqw;background:var(--ink)}
 .needle.split{background:repeating-linear-gradient(to bottom,var(--ink) 0 .34cqw,transparent .34cqw .68cqw)}
 .ticks{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;margin-top:1.2cqw;font-size:1.15cqw;color:var(--muted);text-align:center}
-.balbar{display:flex;height:1.1cqw;border-radius:99px;overflow:hidden;gap:.16cqw;background:var(--line-soft);margin-top:1.4cqw}
-.bseg{height:100%}
-.balkey{display:flex;gap:1.3cqw;margin-top:.7cqw;font-size:1.35cqw;color:var(--muted)}
-.balkey b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.7cqw;margin-right:.25cqw}
-.count{font-size:1.3cqw;color:var(--muted);margin-top:.9cqw}
 
-/* ---- big stat ---- */
-.statwrap{display:grid;grid-template-columns:1fr 1.5fr;gap:3cqw;align-items:center;margin-top:1cqw}
-.stat{margin-bottom:2.4cqw}
-.stat:last-child{margin-bottom:0}
-.stat b{
-  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:5.4cqw;
-  letter-spacing:-.04em;line-height:1;display:block;color:var(--ink);
+/* ---- one calm line in a busy list ---- */
+.solorow{
+  background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:1.2cqw;
+  padding:1.8cqw 2.2cqw;display:flex;align-items:center;justify-content:space-between;
+  gap:2.4cqw;margin-top:2cqw;
 }
-.stat.warm b{color:var(--c2)}
-.stat .lab{font-size:1.5cqw;font-weight:700;display:block;margin-top:.5cqw;color:var(--ink)}
-.stat .sub{font-size:1.3cqw;color:var(--muted);display:block;margin-top:.2cqw}
-.verdict{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.7cqw;letter-spacing:-.02em;margin-top:1.6cqw;color:var(--c0)}
-.verdictsub{font-size:1.3cqw;color:var(--muted);margin-top:.5cqw}
+.solorow .srname{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.6cqw;letter-spacing:-.02em;color:var(--ink);display:block}
+.solorow .srmeta{font-size:1.5cqw;color:var(--muted);margin-top:.4cqw;display:block}
+.solorow .srstrip{width:22cqw;flex:0 0 auto}
 .caption{font-size:1.6cqw;color:var(--c-1);margin-top:2cqw}
-
-/* ---- the split rule ---- */
-.rulecard{
-  background:color-mix(in srgb,var(--c0) 10%,var(--surface));
-  border:.17cqw solid var(--c0);border-radius:1.2cqw;padding:1.4cqw 1.8cqw;
-}
-.rulecard .cap{font-size:1.1cqw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c0);margin-bottom:.9cqw}
-.cond{margin-bottom:.95cqw}
-.cond:last-child{margin-bottom:0}
-.cond b{display:block;font-size:1.65cqw;font-weight:700;color:var(--ink);letter-spacing:-.01em}
-.cond span{display:block;font-size:1.3cqw;color:var(--muted);margin-top:.15cqw}
-.vrow{display:flex;align-items:center;gap:1cqw;margin-top:1.6cqw}
-.vtext{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.6cqw;letter-spacing:-.02em;color:var(--ink)}
-.chip{font-size:1.25cqw;font-weight:700;padding:.3cqw 1cqw;border-radius:99px;background:var(--ink);color:var(--paper)}
-.vsub{font-size:1.3cqw;font-style:italic;color:var(--muted);margin-top:.5cqw}
-.effects{display:flex;flex-direction:column;gap:.7cqw}
-.effect{display:flex;gap:.8cqw;font-size:1.4cqw;color:var(--ink);line-height:1.38}
-.effect::before{content:"";width:.6cqw;height:.6cqw;border-radius:50%;background:var(--c0);flex:0 0 auto;margin-top:.48cqw}
-.quotecard{
-  background:var(--surface-2);border:.1cqw solid var(--line-soft);border-radius:1cqw;
-  padding:1.1cqw 1.4cqw;margin-top:1.2cqw;font-size:1.3cqw;font-style:italic;
-  color:var(--muted);line-height:1.42;
-}
 
 /* ---- heat map ---- */
 .hmwrap{display:grid;grid-template-columns:1.4fr 1fr;gap:2.4cqw;align-items:start;margin-top:1cqw}
@@ -278,7 +253,6 @@ h2.big{
 }
 .zrow.top{background:var(--surface-2)}
 .zname{display:flex;align-items:center;gap:.6cqw;font-size:1.5cqw;font-weight:700;color:var(--ink)}
-.zfloor{font-size:1.05cqw;font-weight:600;color:var(--muted);border:.1cqw solid var(--line);border-radius:.35cqw;padding:.1cqw .5cqw}
 .zflag{font-size:1cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:99px;padding:.12cqw .6cqw}
 .zmeta{font-size:1.2cqw;color:var(--muted);margin-top:.25cqw}
 .zstrip{width:11cqw}
@@ -301,16 +275,6 @@ h2.big{
 .badges{display:flex;gap:.6cqw;align-items:center;margin-top:.9cqw}
 .badge{font-size:1cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:99px;padding:.15cqw .7cqw}
 .badges span.n{font-size:1.15cqw;font-style:italic;color:var(--muted)}
-
-/* ---- checklist ---- */
-.check{display:grid;grid-template-columns:1fr 1fr;gap:1.1cqw 2.4cqw;margin-top:1.6cqw}
-.ci{display:flex;gap:.9cqw;align-items:flex-start}
-.ci .tick{
-  width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--c0);color:var(--on-accent);
-  display:flex;align-items:center;justify-content:center;font-size:.95cqw;font-weight:700;flex:0 0 auto;margin-top:.25cqw;
-}
-.ci b{display:block;font-size:1.5cqw;color:var(--ink);letter-spacing:-.01em}
-.ci span{display:block;font-size:1.25cqw;color:var(--muted);margin-top:.15cqw;line-height:1.35}
 
 /* ---- deck chrome (hidden when presenting / rendering) ---- */
 .controls{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
@@ -348,7 +312,7 @@ body.presenting .stage{
   <div class="marks" id="marks"></div>
   <p class="note">The deck, and the script. Each slide carries a <code>voiceover</code> line and a
     <code>duration</code> floor; <code>npm run build-video</code> screenshots every slide, narrates it
-    with Kokoro, and crossfades the result into an MP4. See CLAUDE.md.</p>
+    with Kokoro, and crossfades the result into an MP4. See README.md.</p>
 </div>
 
 <script>
@@ -370,28 +334,30 @@ body.presenting .stage{
      than a face: an invented person should not be given a gendered avatar, and
      the colour ties them to where they sit. */
   var CAST={
-    priya:{i:"P",name:"Priya",role:"Level 7 — north window seats",tint:"--c2"},
-    daniel:{i:"D",name:"Daniel",role:"Level 7 — core desks",tint:"--c-2"},
-    marcus:{i:"M",name:"Marcus",role:"Facilities",tint:"--ink"}
+    priya:{name:"Priya",role:"L3 — window run",tint:"--c2"},
+    daniel:{name:"Daniel",role:"L3 — shaded corner",tint:"--c-2"}
   };
+
+  /* A plain profile silhouette, not a letter, so the avatar reads as "a person"
+     rather than as a monogram. */
+  var PERSON_ICON='<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">'+
+    '<path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2c-4.42 0-8 2.24-8 5v3h16v-3c0-2.76-3.58-5-8-5Z"/></svg>';
 
   /* Eleven votes: 3 freezing, 2 chilly, 1 just nice, 2 warm, 3 roasting. Mean
      exactly 0.0, one comfortable person, and it trips every condition of the
      split rule in src/app.html. */
   var SPLIT=[3,2,1,2,3];
 
-  var MAP_BEFORE=[
-    {x:47,y:14,label:"North window seats",mean:1.9,n:6,flag:"HOT"},
-    {x:17,y:44,label:"Core desks",mean:-1.85,n:5,flag:"COLD"},
-    {x:15,y:78,label:"Pantry",mean:.15,n:4},
-    {x:70,y:87,label:"South-east desks",none:true,unplaced:true},
-    {x:47,y:33,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
-  ];
   var MAP_AFTER=[
-    {x:47,y:14,label:"Window run",mean:.2,n:6,flag:"ADJUSTED"},
-    {x:17,y:44,label:"Core desks",mean:-.15,n:5,flag:"ADJUSTED"},
-    {x:15,y:78,label:"Pantry",mean:.15,n:4},
-    {x:70,y:87,label:"South-east desks",none:true,unplaced:true}
+    {x:38,y:18,mean:.1,n:11,flag:"ADJUSTED"}
+  ];
+
+  /* A generic, spoiler-free glimpse of the heat map for the opening "what we
+     built" slide — no flags, nothing that steals the L3 story. Two floors,
+     read at a glance: one running hot, one running a little cold. */
+  var TEASER_PINS=[
+    {x:20,y:18,mean:2,n:8},   // top-left: roasting
+    {x:20,y:78,mean:-1,n:6}   // bottom-left: chilly
   ];
 
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
@@ -441,9 +407,9 @@ body.presenting .stage{
       '<rect class="room" x="120" y="8" width="34" height="22"/>'+
       '<rect class="room" x="120" y="34" width="34" height="20"/>'+
       '<rect class="room" x="120" y="58" width="34" height="20"/>'+
-      '<text x="122.5" y="12.5">Meeting 7-1</text>'+
-      '<text x="122.5" y="38.5">Meeting 7-2</text>'+
-      '<text x="122.5" y="62.5">Meeting 7-3</text>'+
+      '<text x="122.5" y="12.5">Meeting A</text>'+
+      '<text x="122.5" y="38.5">Meeting B</text>'+
+      '<text x="122.5" y="62.5">Meeting C</text>'+
       '<rect class="room" x="6" y="78" width="36" height="26"/>'+
       '<text x="8.5" y="82.5">Pantry</text>'+
       deskRow(12,[10,21,32,47,58,69,84,95,106])+
@@ -475,19 +441,6 @@ body.presenting .stage{
     return h;
   }
 
-  function balanceBar(counts){
-    var t=tally(counts);
-    if(!t.n) return "";
-    var parts=[{n:t.cold,c:"--c-2",l:"cold"},{n:t.nice,c:"--c0",l:"comfortable"},{n:t.hot,c:"--c2",l:"warm"}];
-    var segs=parts.filter(function(p){return p.n>0;}).map(function(p){
-      return '<span class="bseg" style="flex:'+p.n+';background:var('+p.c+')"></span>';
-    }).join("");
-    var key=parts.map(function(p){
-      return '<span><b style="color:var('+p.c+')">'+p.n+'</b>'+p.l+'</span>';
-    }).join("");
-    return '<div class="balbar">'+segs+'</div><div class="balkey">'+key+'</div>';
-  }
-
   function voteButtons(on){
     return '<div class="vbtns">'+SCALE.map(function(s,i){
       return '<div class="vbtn'+(i===on?" on":"")+'" style="--tint:var('+s.c+')">'+
@@ -498,10 +451,13 @@ body.presenting .stage{
   function plate(pins){
     var H="",P="";
     pins.forEach(function(p){
-      if(p.none) H+=hblob(p.x,p.y,17,[135,149,160],.35);
+      if(p.plain){ /* voting view: just the pin, no heat */ }
+      else if(p.none) H+=hblob(p.x,p.y,17,[135,149,160],.35);
       else if(p.split){
-        H+=hblob(p.x-6,p.y,17,HEAT[0],.85);
-        H+=hblob(p.x+6,p.y,17,HEAT[4],.85);
+        var coldX = p.splitReverse ? p.x+6 : p.x-6;
+        var hotX  = p.splitReverse ? p.x-6 : p.x+6;
+        H+=hblob(coldX,p.y,17,HEAT[0],.85);
+        H+=hblob(hotX,p.y,17,HEAT[4],.85);
       }else{
         H+=hblob(p.x,p.y,15+Math.min(p.n,10)*.9,heatColor(p.mean),
           .5+Math.min(Math.abs(p.mean)/2,1)*.45);
@@ -509,7 +465,7 @@ body.presenting .stage{
       P+='<div class="hpin'+(p.unplaced?" unplaced":"")+'" style="left:'+p.x+'%;top:'+p.y+'%">'+
         '<span class="knob"></span>'+
         (p.flag?'<span class="flag">'+esc(p.flag)+'</span>':'')+
-        '<span class="plab">'+esc(p.label)+'</span></div>';
+        (p.label?'<span class="plab">'+esc(p.label)+'</span>':'')+'</div>';
     });
     return '<div class="plate">'+planSvg()+'<div class="heat">'+H+'</div>'+
       '<div class="pins">'+P+'</div></div>';
@@ -527,166 +483,118 @@ body.presenting .stage{
     { id:"title", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
       voiceover:"This is Thermocracy. It settles a question every office argues about and nobody can actually answer: is it you, or is it the room?",
       data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
-        kicker:"A shared board for how the office actually feels — not what the thermostat is set to." } },
+        kicker:"A shared app for how the office actually feels — not what the thermostat is set to." } },
 
-    { id:"what", section:"What we built", theme:"light", layout:"cards", duration:5,
-      voiceover:"We built a board where anyone on a floor picks their spot and taps one of five buttons — freezing to roasting. Those votes become a live heat map of the floor, and a board that refuses to average away a room that disagrees with itself. Let us show you what that looks like on a real afternoon.",
+    { id:"what", section:"What we built", theme:"light", layout:"showcase", duration:6,
+      voiceover:"We built one app for two very different jobs. Anyone on a floor taps the plan where they're sitting and picks one of five buttons — freezing to roasting. Facilities gets every spot in the building, ranked by what actually needs a look. And when a spot disagrees with itself, the app doesn't average the argument away — it reports the disagreement, and settles which one of you was right about the room.",
       data:{ title:"What we built",
-        lead:"A board where anyone on a floor taps how it feels where they are sitting — and the building answers back.",
-        cards:[
-          {tick:"1",title:"Five buttons",body:"Freezing to roasting. Pick your spot, tap once. Two seconds, no ticket, no login."},
-          {tick:"2",title:"A live heat map",body:"Those votes land on your floor plan as the warm and cold patches they actually are."},
-          {tick:"3",title:"A board that won't lie",body:"When one spot disagrees with itself, it reports the disagreement instead of averaging it away.",accent:true}
+        lead:"One app for two very different jobs — and a refusal to paper over the argument between them.",
+        shots:[
+          {label:"I'm voting", pins:[{x:45,y:22,plain:true,flag:"YOU"}], pressed:4},
+          {label:"Facilities", pins:TEASER_PINS}
         ] } },
 
-    { id:"priya", section:"One Tuesday on Level 7", theme:"dark", layout:"person", duration:4,
-      voiceover:"So. One Tuesday, Level 7. At twenty to three, Priya is at the north window seats, and has been quietly writing off half a row of desks every afternoon since the weather turned.",
-      data:{ eyebrow:"2:40pm — one Tuesday on Level 7", person:"priya",
-        quote:"“It's roasting by two every afternoon. We've stopped booking the window desks.”" } },
-
-    { id:"daniel", section:"One Tuesday on Level 7", theme:"dark", layout:"person", duration:4,
-      voiceover:"Forty metres away, at the core desks, Daniel keeps a blanket under the desk. In July. Same floor, same minute, one setpoint — twenty-two degrees — serving both of them. Move that number in either direction and you simply choose which of these two people to upset.",
-      data:{ eyebrow:"2:41pm — forty metres away", person:"daniel",
-        quote:"“I keep a blanket under my desk. In July.”",
-        setpoint:"22.0°C",
-        footer:"Same floor. Same minute. One setpoint, serving both of them." } },
-
-    { id:"why", section:"Why we built it", theme:"light", layout:"rows", duration:5,
-      voiceover:"And this is why we built it. Three people lose here. The person sitting there has no way to report comfort that isn't an awkward email. Facilities get opinions one at a time, with no idea how many people agree. And whoever signs off the repair never sees evidence that the fault is physical — so the duct never gets fixed, and someone just nudges the setpoint again. Back to Tuesday.",
+    { id:"why", section:"Why we built it", theme:"light", layout:"rows", duration:6,
+      voiceover:"And this is why we built it. Three people lose here. The person sitting there has no way to report comfort that isn't an awkward email. Facilities hear conflicting opinions from the same floor, with no way to tell who's right, so any decision looks like picking a side. And whoever actually sets the temperature has no concrete evidence or opinion to go on, so the setpoint gets guessed at — then guessed at again. Here's what that actually looks like, one Tuesday, on L3.",
       data:{ title:"Why we built it",
         lead:"This happens on every floor, every summer, and nobody in the chain can fix it alone.",
         rows:[
           {tick:"1",title:"The person sitting there",body:"Has no way to report comfort that isn't an awkward email about their own cardigan."},
-          {tick:"2",title:"Facilities",body:"Get opinions one at a time, with no idea how many people agree, or whether it is still true an hour later."},
-          {tick:"3",title:"Whoever signs off the fix",body:"Never sees evidence that the fault is physical, so the duct is never funded — someone just nudges the setpoint again."}
+          {tick:"2",title:"Facilities",body:"Hear conflicting opinions from the same floor, with no way to tell who's right — so any decision looks like picking a side."},
+          {tick:"3",title:"Whoever sets the temperature",body:"Has no concrete evidence or aggregated opinion to go on, so the setpoint gets guessed at — then guessed at again next week."}
         ] } },
 
-    { id:"vote", section:"One Tuesday on Level 7", theme:"light", layout:"vote", duration:5,
-      voiceover:"So Priya taps. Pick the spot — it is remembered next time — and hit one of five buttons. Two seconds, no ticket, no login. One vote per person per spot, changeable whenever the room changes its mind, and after two hours it expires on its own. Daniel taps too. So do nine other people on that floor.",
+    { id:"faceoff", section:"One Tuesday on L3", theme:"dark", layout:"duo", duration:8,
+      voiceover:"So. One Tuesday, L3. At twenty to three, Priya is at the window run, right against the glass — and has been quietly writing off half a row of desks every afternoon since the weather turned. Forty metres away, in the shaded corner of that very same floor, Daniel keeps a blanket under the desk. In July. Same floor, same spot on the app, same minute — one setpoint, twenty-two degrees, serving both of them. Move that number in either direction and you simply choose which of these two people to upset.",
+      data:{ eyebrow:"One Tuesday, L3 — forty metres apart",
+        people:[
+          {key:"priya", time:"2:40pm", quote:"“It's roasting by two every afternoon. We've stopped booking the window desks.”"},
+          {key:"daniel", time:"2:41pm", quote:"“I keep a blanket under my desk. In July.”"}
+        ],
+        setpoint:"22.0°C",
+        footer:"Same floor. Same spot on the app. One setpoint, serving both of them." } },
+
+    { id:"vote", section:"One Tuesday on L3", theme:"light", layout:"vote", duration:6,
+      voiceover:"So Priya taps the plan where she's sitting — it marks exactly where she is, no typing, ever. Hit one of five buttons. Two seconds, no ticket, no login. One vote per person per spot, changeable whenever the room changes its mind, and after two hours it expires on its own. Daniel taps too, from his own corner of that very same floor. So do nine other people on L3.",
       data:{ eyebrow:"2:42pm", title:"So Priya taps",
-        spot:"Level 7 — North window seats", pressed:4,
+        pins:[{x:38,y:18,plain:true,flag:"YOU"}],
+        platenote:"You're at L3.",
+        pressed:4,
         castline:"You said roasting, just now. Tap again to change it.",
         note:"Two hours after that tap, the vote expires on its own.",
         points:[
-          "Five points, freezing to roasting — enough range to be useful, few enough to tap without thinking.",
+          "Tap the plan where you're sitting and it marks exactly where you are — no typing, ever.",
           "One vote per person, per spot. Change it any time the room changes its mind.",
-          "After two hours it expires on its own, so the board is always how the floor feels now."
+          "After two hours it expires on its own, so the app is always how the floor feels now."
         ] } },
 
-    { id:"average", section:"One Tuesday on Level 7", theme:"dark", layout:"bigstat", duration:6,
-      voiceover:"Eleven votes are in. Three freezing, three roasting, one person comfortable. And the average lands on exactly zero — about right. Every survey, every sensor, every thermostat in that building would report Level 7 as fine. Ten of those eleven people are not fine. This is the moment a normal tool gets it wrong.",
-      data:{ eyebrow:"2:55pm", title:"Eleven votes. One average.",
-        counts:SPLIT, verdict:"About right",
-        verdictsub:"what an average concludes — and what this board refuses to print",
-        stats:[
-          {value:"0.0",lab:"mean of 11 votes",sub:"which any average reports as “about right”"},
-          {value:"1 of 11",lab:"people actually comfortable",sub:"the other ten are at the ends of the scale",warm:true}
+    { id:"average", section:"One Tuesday on L3", theme:"dark", layout:"boardrow", duration:8,
+      voiceover:"Eleven votes are in now — Priya's, Daniel's, and nine more from L3. The list on its own just says L3, about right, eleven votes. But Marcus has more than the list. He has the counts — three freezing, three roasting, one comfortable — and he has the floor plan, where those same votes fall into two clear clusters: warm by the window, cold toward the back. Together, that's not a broken thermostat, that's one damper serving two zones. Marcus doesn't need to wait for a rule to tell him — he can already send facilities straight to the window-seat vent.",
+      data:{ eyebrow:"2:55pm — reading the room", title:"Enough to act on",
+        row:{ floor:"L3", meta:"About right · 11 votes · 2 min ago", counts:SPLIT },
+        explain:[
+          {k:"The counts",v:"three freezing, three roasting, one comfortable — a room arguing with itself, not a faulty thermostat."},
+          {k:"The map",v:"warm hugs the window, cold sits toward the back — a location pattern, not random noise."},
+          {k:"One likely cause",v:"a single damper serving both zones would explain exactly this shape."}
         ],
-        caption:"Three freezing, three roasting, one comfortable. Every survey, sensor and thermostat in the building calls this floor fine." } },
-
-    { id:"split", section:"One Tuesday on Level 7", theme:"light", layout:"split", duration:7,
-      voiceover:"Because when at least four people have voted, at least a quarter fall on each side, and most of the room is uncomfortable, the board declares that spot split — and then refuses to summarise it. The verdict won't pick a direction. The needle goes dashed, because the average of two camps is a lie. And it tells Priya and Daniel what it actually means: this is not a temperature problem. This is one spot pretending to be two, and turning the thermostat would just move the complaint to the other group. This is the part we are proudest of.",
-      data:{ eyebrow:"2:55pm — the part we are proudest of", title:"The board refuses to say that",
-        counts:SPLIT, verdict:"The room can't agree",
-        vsub:"— instead of a direction it cannot honestly give",
-        conditions:[
-          {rule:"At least 4 votes",why:"below that, disagreement is noise rather than signal"},
-          {rule:"At least a quarter on each side",why:"one outlier in a cardigan is not a constituency"},
-          {rule:"At least 60% uncomfortable",why:"separates a polarised room from a merely mixed one"}
+        pins:[
+          // window seats, top left — warm to roasting
+          {x:14,y:12,mean:2,n:1}, {x:24,y:10,mean:2,n:1}, {x:18,y:20,mean:2,n:1},
+          {x:30,y:14,mean:1,n:1}, {x:10,y:24,mean:1,n:1},
+          // one comfortable vote, away from either cluster
+          {x:75,y:50,mean:0,n:1},
+          // the coldest desks, bottom centre
+          {x:44,y:80,mean:-1,n:1}, {x:60,y:90,mean:-1,n:1},
+          {x:48,y:88,mean:-2,n:1}, {x:56,y:84,mean:-2,n:1}, {x:52,y:93,mean:-2,n:1}
         ],
-        effects:[
-          "The verdict refuses to pick a direction.",
-          "A “Split” chip appears next to it.",
-          "The needle goes dashed — the mean of two camps is a lie.",
-          "The map draws that spot in two colours at once.",
-          "It explains the likely cause in plain words.",
-          "It offers to create the narrower spot for you."
-        ],
-        quote:"“That usually means this spot is really two spots — a window run and a shaded core, or one vent doing all the work. Turning the thermostat will just move the complaint to the other group.”" } },
+        heatnote:"Same eleven votes, on L3's actual floor plan.",
+        closing:"Marcus doesn't need to guess — he sends facilities straight to the window-seat vent." } },
 
-    { id:"heatmap", section:"One Tuesday on Level 7", theme:"light", layout:"heatmap", duration:6,
-      voiceover:"All of it lands on Level 7's actual floor plan. The size of a patch is how many people voted — confidence. The intensity is how far from comfortable they are — severity. Grey means nobody has voted there: unknown, not fine. And the open floor is drawn in two colours at once, because there is no honest single colour for a place whose occupants disagree.",
-      data:{ eyebrow:"2:56pm", title:"And on the floor plan, two colours at once",
-        pins:MAP_BEFORE,
-        lead2:"Blue is cold, red is warm, mottled means the spot is arguing with itself.",
-        note:"2 spots need a look. Dotted pins haven't been placed on the plan yet.",
-        reading:[
-          {k:"Size",v:"how many people voted — a big patch is a confident one."},
-          {k:"Intensity",v:"how far from comfortable they are."},
-          {k:"Grey",v:"nobody has voted there. Unknown, not fine."},
-          {k:"Mottled",v:"the spot is arguing with itself — two colours, no blend."}
-        ] } },
-
-    { id:"triage", section:"One Tuesday on Level 7", theme:"light", layout:"triage", duration:6,
-      voiceover:"Marcus, in facilities, opens the board to every spot in the building ranked by what needs looking at. Split spots first, because no setpoint will help them. Then how far off it is and how many people said so. Quiet spots sink. Marcus marks Level 7 as someone's looking at it — and that badge appears on the map, so the floor can see something is happening and stops filing the same ticket.",
-      data:{ eyebrow:"3:05pm", title:"It reaches Marcus first",
+    { id:"triage", section:"One Tuesday on L3", theme:"light", layout:"triage", duration:8,
+      voiceover:"Marcus, in facilities, opens the list. Every floor in the building, ranked by what needs looking at. L3 sits on top — split, so no setpoint can fix it, only a look on the floor. Right underneath, L2 is just too warm — nothing complicated there, he nudges the setpoint down and moves on. A floor that's settled and a floor with no votes both sink to the bottom, because neither is asking for anything. Marcus marks L3 as someone's looking at it — and that badge appears on the map, and on Priya's own reading of her own floor.",
+      data:{ eyebrow:"3:05pm", title:"Ranked, not random",
         rows:[
-          {floor:"Level 7",name:"Open floor",meta:"The room can't agree · 11 votes · 2 min ago",counts:SPLIT,flag:"SPLIT"},
-          {floor:"Level 7",name:"North window seats",meta:"Too warm · 6 votes · 8 min ago",counts:[0,0,1,2,3]},
-          {floor:"Level 7",name:"Pantry",meta:"About right · 4 votes · 21 min ago",counts:[0,1,2,1,0]},
-          {floor:"B1",name:"Canteen",meta:"Quiet — no votes in the last two hours",counts:[0,0,0,0,0]}
+          {floor:"L3",meta:"The room can't agree · 11 votes · 2 min ago",counts:SPLIT,flag:"SPLIT"},
+          {floor:"L2",meta:"Too warm · 7 votes · 8 min ago",counts:[0,0,1,2,4],flag:"HOT"},
+          {floor:"L4",meta:"About right · 5 votes · 21 min ago",counts:[0,1,3,1,0]},
+          {floor:"L1",meta:"Quiet — no votes in the last two hours",counts:[0,0,0,0,0]}
         ],
         explain:[
-          {k:"Split spots first",v:"no setpoint can help them, so they never sit below a merely warm room."},
-          {k:"Then severity × turnout",v:"how far off it is, and how many people said so."},
-          {k:"Quiet spots sink",v:"no votes in two hours means no claim on anyone's attention."}
+          {k:"Split floors first",v:"no setpoint can help them, so they never sit below a merely warm floor."},
+          {k:"The obvious ones are easy",v:"a floor that's just too warm, like L2, only needs the setpoint nudged — no visit required."},
+          {k:"Quiet floors sink",v:"no votes in two hours means no claim on anyone's attention."}
         ],
         status:{lab:"Facilities status",current:"Someone's looking at it",
           opts:"Nothing logged · Someone's looking at it · Recently adjusted",
-          badges:["ON IT","ADJUSTED"],note:"← and it shows on the map"} } },
+          badges:["ON IT","ADJUSTED"],note:"← and it shows on the map, and on Priya's own floor"} } },
 
-    { id:"diagnosis", section:"One Tuesday on Level 7", theme:"light", layout:"grid", duration:5,
-      voiceover:"And the diagnosis is exactly what the board suggested. The window run and the shaded core share one damper — one number was always going to fail one of them. So Marcus splits the spot in two, straight from the warning, and drops each new spot where it really sits on the plan.",
-      data:{ eyebrow:"3:20pm", title:"One damper, two rooms",
+    { id:"diagnosis", section:"One Tuesday on L3", theme:"light", layout:"grid", duration:7,
+      voiceover:"The investigation confirms exactly what the pattern already showed: the window run and the shaded corner of L3 share a single damper. There are two ways to fix that. Rebalance the shared damper so airflow actually splits between the two zones — the quick fix, and the one Marcus tries first. Or install a second, independent damper so each zone gets permanent control of its own — the longer-term fix, if the split keeps coming back. Either way, he marks L3 as someone's looking at it, so the floor can see something's underway.",
+      data:{ eyebrow:"3:20pm", title:"The finding, and the fix",
         cells:[
-          {title:"What Marcus finds",body:"The window run and the shaded core share a single damper. One number was always going to fail one of them."},
-          {title:"Split the spot in two",body:"The board offers it directly from the warning, because the fix is usually a narrower spot.",accent:true},
-          {title:"Put them where they really are",body:"Drop each new spot onto the plan. Swap the plan for a better one later and the pins stay put."},
-          {title:"Every floor, its own plan",body:"A tab appears per floor on its own, and facilities can upload the real plan for each one."}
+          {title:"The finding",body:"The window run and the shaded corner of L3 share a single damper. One setting was always going to fail one of them."},
+          {title:"Quick fix: rebalance it",body:"Re-open the damper on the window side and throttle the core — same duct, split properly between the two zones. What Marcus tries first.",accent:true},
+          {title:"Longer term: split it",body:"Add a second, independent damper so the window run and the core each get their own control, not one shared setting."},
+          {title:"Tracked either way",body:"Marcus marks L3 “someone's looking at it” while the work happens, so the floor can see something's underway."}
         ] } },
 
-    { id:"resolved", section:"One Tuesday on Level 7", theme:"light", layout:"heatmap", duration:5,
-      voiceover:"Ninety minutes later. One damper rebalanced — the only physical work anybody did. Two spots where there used to be one that could never be right, both settled, and both still being voted on, so it stays honest. Priya and Daniel never spoke to each other. They both just tapped a button.",
-      data:{ eyebrow:"Ninety minutes later", title:"4:10pm",
+    { id:"resolved", section:"One Tuesday on L3", theme:"light", layout:"heatmap", duration:8,
+      voiceover:"Zoom out, and this is the whole app, in three steps. Employees vote — tap the plan, say how it feels, freezing to roasting, two seconds, no login. Management acts — the vote counts, the heat map, and a status everyone can see turn those taps into exactly where to look and what to do. And then it's resolved — the right fix gets made, whether that's a setpoint nudged or a damper rebalanced, and the running complaints about the office air-conditioning finally stop. Priya and Daniel never spoke to each other. They both just tapped a button.",
+      data:{ eyebrow:"4:10pm — ninety minutes after Priya's first tap", title:"From vote to quiet office",
         pins:MAP_AFTER,
-        lead2:"The same floor plan. Nothing on it is arguing with itself any more.",
-        note:"Nothing on this floor is far off.",
+        lead2:"The same three steps, on any floor in the building.",
         reading:[
-          {k:"One damper",v:"rebalanced — the only physical work anyone did."},
-          {k:"Two spots",v:"where there used to be one that could never be right."},
-          {k:"Both settled",v:"and both still being voted on, so it stays honest."}
+          {k:"Employees vote",v:"tap the plan, say how it feels — freezing to roasting, two seconds, no login."},
+          {k:"Management acts",v:"vote counts, the heat map, and status turn taps into where to look, and what to do."},
+          {k:"It gets resolved",v:"the right fix gets made, and the office air-conditioning complaints finally stop."}
         ],
-        closing:"Priya and Daniel never spoke to each other. They just both tapped a button." } },
-
-    { id:"recap", section:"What you just saw", theme:"light", layout:"checklist", duration:5,
-      voiceover:"That was seven features, and not one of them had to be explained to Priya, Daniel or Marcus. The vote, the spot picker, the dot plot, split detection, the heat map, the ranked list, and the status everyone on the floor can see.",
-      data:{ title:"What you just saw",
-        lead:"Seven features, and not one of them needed explaining to Priya, Daniel or Marcus.",
-        items:[
-          {k:"The five-point vote",v:"one tap, one vote per person, expires after two hours"},
-          {k:"The spot picker",v:"remembers where you sit, so the next vote is one tap"},
-          {k:"The dot plot",v:"every vote is a dot, so you see the shape, not a score"},
-          {k:"Split detection",v:"the refusal to average a room that disagrees with itself"},
-          {k:"The heat map",v:"your floor plan, with turnout as size and severity as colour"},
-          {k:"The ranked list",v:"what needs a look, worst first, quiet spots last"},
-          {k:"Facilities status",v:"ON IT and ADJUSTED, visible to the whole floor"}
-        ] } },
-
-    { id:"different", section:"What makes it different", theme:"dark", layout:"cards", duration:6,
-      voiceover:"Three things separate this from a survey or a sensor. One: it refuses to average a split room — it detects when a mean would be a lie and reports the disagreement instead. Two: it shows the shape of opinion rather than a score, so three freezing and three roasting can't hide behind a zero. Three: it expires, so this is always a picture of now. A sensor measures the air. This measures the people in it, and they are the ones filing the tickets.",
-      data:{ title:"What makes it different",
-        cards:[
-          {tick:"01",title:"It refuses to average a split room",body:"Every polling tool reports a mean. This one detects when a mean would be a lie, and reports the disagreement instead.",accent:true},
-          {tick:"02",title:"It shows shape, not score",body:"Dots, not a number. Three freezing and three roasting cannot hide behind a 0.0."},
-          {tick:"03",title:"It expires",body:"Two hours and a vote is gone. The board is how the floor feels now — never a survey from March."}
-        ],
-        footer:"A sensor measures the air. This measures the people in it — and they are the ones filing the tickets." } },
+        closing:"Priya and Daniel never spoke to each other. They both just tapped a button." } },
 
     { id:"close", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
       voiceover:"Thermocracy. Is it you, or is it the room? Now the floor can answer. Thank you.",
       data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
         kicker:"Now the floor can answer.", kickerStrong:true,
-        note:"Level 7 settled its own argument in ninety minutes." } }
+        note:"L3 settled its own argument in ninety minutes." } }
   ];
 
   /* ---- layout renderers ---------------------------------------------- */
@@ -710,16 +618,30 @@ body.presenting .stage{
       (d.footer?'<p class="cardsfoot">'+esc(d.footer)+'</p>':'')+'</div>';
     },
 
-    person:function(d){
-      var p=CAST[d.person];
+    showcase:function(d){
+      return head(d)+'<div class="body"><div class="shotwrap">'+d.shots.map(function(s){
+        var inner = plate(s.pins)+(s.pressed!=null ? voteButtons(s.pressed) : '');
+        return '<div class="shot"><p class="shotlab">'+esc(s.label)+'</p>'+inner+'</div>';
+      }).join("")+'</div></div>';
+    },
+
+    duo:function(d){
+      var mid='<div class="duomid">'+
+        (d.setpoint?'<span class="setpoint"><b>'+esc(d.setpoint)+'</b><span>the whole floor</span></span>':'')+
+        '</div>';
+      var cols=d.people.map(function(pk){
+        var p=CAST[pk.key];
+        return '<div class="duop">'+
+          '<span class="av" style="background:var('+p.tint+')">'+PERSON_ICON+'</span>'+
+          '<span class="dtime">'+esc(pk.time)+'</span>'+
+          '<span class="wn">'+esc(p.name)+'</span>'+
+          '<span class="wr">'+esc(p.role)+'</span>'+
+          '<p class="duoq" style="color:var('+p.tint+')">'+esc(pk.quote)+'</p>'+
+        '</div>';
+      });
       return '<p class="eyebrow plain">'+esc(d.eyebrow)+'</p>'+
-        '<div class="who">'+
-          '<span class="av" style="background:var('+p.tint+')">'+esc(p.i)+'</span>'+
-          '<span><span class="wn">'+esc(p.name)+'</span><br><span class="wr">'+esc(p.role)+'</span></span>'+
-          (d.setpoint?'<span class="setpoint"><b>'+esc(d.setpoint)+'</b><span>the whole floor</span></span>':'')+
-        '</div>'+
-        '<p class="quote" style="color:var('+p.tint+')">'+esc(d.quote)+'</p>'+
-        (d.footer?'<p class="personfoot">'+esc(d.footer)+'</p>':'');
+        '<div class="duorow">'+cols[0]+mid+cols[1]+'</div>'+
+        (d.footer?'<p class="duofoot">'+esc(d.footer)+'</p>':'');
     },
 
     rows:function(d){
@@ -731,9 +653,9 @@ body.presenting .stage{
     },
 
     vote:function(d){
-      return head(d)+'<div class="body"><div class="split2">'+
+      return head(d)+'<div class="body"><div class="split3">'+
+        '<div>'+plate(d.pins)+'<p class="platenote">'+esc(d.platenote)+'</p></div>'+
         '<div class="panel">'+
-          '<div class="pickrow"><span class="picklab">I\'m at</span><span class="pick">'+esc(d.spot)+'</span></div>'+
           voteButtons(d.pressed)+
           '<p class="castline">'+esc(d.castline)+'</p>'+
           '<p class="castnote">'+esc(d.note)+'</p>'+
@@ -744,44 +666,31 @@ body.presenting .stage{
       '</div></div>';
     },
 
-    bigstat:function(d){
-      return head(d)+'<div class="body"><div class="statwrap">'+
-        '<div>'+d.stats.map(function(s){
-          return '<div class="stat'+(s.warm?" warm":"")+'"><b>'+esc(s.value)+'</b>'+
-            '<span class="lab">'+esc(s.lab)+'</span><span class="sub">'+esc(s.sub)+'</span></div>';
-        }).join("")+'</div>'+
-        '<div>'+dotPlot(d.counts,{solid:true})+
-          '<p class="verdict">'+esc(d.verdict)+'</p>'+
-          '<p class="verdictsub">'+esc(d.verdictsub)+'</p></div>'+
-      '</div><p class="caption">'+esc(d.caption)+'</p></div>';
-    },
-
-    split:function(d){
-      return head(d)+'<div class="body"><div class="split2">'+
+    boardrow:function(d){
+      return head(d)+'<div class="body"><div class="hmwrap">'+
         '<div>'+
-          '<div class="rulecard"><div class="cap">When all three are true</div>'+
-          d.conditions.map(function(c){
-            return '<div class="cond"><b>'+esc(c.rule)+'</b><span>'+esc(c.why)+'</span></div>';
+          '<div class="solorow"><div>'+
+            '<span class="srname">'+esc(d.row.floor)+'</span>'+
+            '<span class="srmeta">'+esc(d.row.meta)+'</span></div>'+
+            '<div class="srstrip">'+dotPlot(d.row.counts,{ticks:false})+'</div>'+
+          '</div>'+
+          '<div class="explain" style="margin-top:1.6cqw">'+d.explain.map(function(e){
+            return '<p class="e"><b>'+esc(e.k)+'</b> — '+esc(e.v)+'</p>';
           }).join("")+'</div>'+
-          '<div class="vrow"><span class="vtext">'+esc(d.verdict)+'</span><span class="chip">Split</span></div>'+
-          '<p class="vsub">'+esc(d.vsub)+'</p>'+
-          balanceBar(d.counts)+
+          (d.closing?'<p class="caption">'+esc(d.closing)+'</p>':'')+
         '</div>'+
-        '<div>'+
-          '<p class="eyebrow plain">What changes the moment it fires</p>'+
-          '<div class="effects">'+d.effects.map(function(e){
-            return '<p class="effect">'+esc(e)+'</p>';
-          }).join("")+'</div>'+
-          '<div class="quotecard">'+esc(d.quote)+'</div>'+
+        '<div>'+plate(d.pins)+
+          (d.heatnote?'<p class="hmnote">'+esc(d.heatnote)+'</p>':'')+
         '</div>'+
       '</div></div>';
     },
+
 
     heatmap:function(d){
       return head(d)+'<div class="body"><div class="hmwrap">'+
         '<div>'+plate(d.pins)+
           '<div class="mlegend"><span class="mramp"></span><span>freezing to roasting</span>'+
-          '<span class="mswatch"></span><span>split</span><span class="floor">Level 7</span></div>'+
+          '<span class="mswatch"></span><span>split</span><span class="floor">L3</span></div>'+
         '</div>'+
         '<div>'+
           '<p class="lead" style="margin-top:0">'+esc(d.lead2)+'</p>'+
@@ -789,7 +698,7 @@ body.presenting .stage{
             return '<p class="r"><b>'+esc(r.k)+'</b> — '+esc(r.v)+'</p>';
           }).join("")+'</div>'+
           (d.closing?'<p class="hmclose">'+esc(d.closing)+'</p>':'')+
-          '<p class="hmnote">'+esc(d.note)+'</p>'+
+          (d.note?'<p class="hmnote">'+esc(d.note)+'</p>':'')+
         '</div>'+
       '</div></div>';
     },
@@ -805,7 +714,7 @@ body.presenting .stage{
         '<div class="zrows">'+d.rows.map(function(r,i){
           var t=tally(r.counts);
           return '<div class="zrow'+(i===0?" top":"")+'">'+
-            '<div><div class="zname"><span class="zfloor">'+esc(r.floor)+'</span>'+esc(r.name)+
+            '<div><div class="zname">'+esc(r.floor)+
               (r.flag?'<span class="zflag">'+esc(r.flag)+'</span>':'')+'</div>'+
               '<div class="zmeta">'+esc(r.meta)+'</div></div>'+
             (t.n?'<div class="zstrip">'+dotPlot(r.counts,{ticks:false})+'</div>'
@@ -826,17 +735,10 @@ body.presenting .stage{
           '</div>'+
         '</div>'+
       '</div></div>';
-    },
-
-    checklist:function(d){
-      return head(d)+'<div class="body"><div class="check">'+d.items.map(function(it){
-        return '<div class="ci"><span class="tick">✓</span>'+
-          '<div><b>'+esc(it.k)+'</b><span>'+esc(it.v)+'</span></div></div>';
-      }).join("")+'</div></div>';
     }
   };
 
-  var LAYOUT_CLASS={ title:"hero", person:"person" };
+  var LAYOUT_CLASS={ title:"hero", duo:"duo" };
 
   var idx=0;
   function renderSlide(i){
