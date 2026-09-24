@@ -8,204 +8,328 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* Cinematic dark-only palette — the deck used to switch on prefers-color-scheme /
-   data-theme, but a keynote-style render should never depend on the OS/browser
-   context it happens to be screenshotted in, so this is now the only theme. */
-:root{
-  --paper:#05080A; --surface:#12191E; --surface-2:#172127;
-  --ink:#F3F8FA; --muted:#8FA3AC; --line:#26343C; --line-soft:#1C2830;
-  --c-2:#6BAEEC; --c-1:#82C4E0; --c0:#5FCB9E; --c1:#F0B265; --c2:#EC7E5B;
-  --focus:#F3F8FA;
+/* The deck is themed per slide, never from prefers-color-scheme: a render must
+   not depend on the OS the screenshot happened to be taken on. Dark cards open,
+   close and carry the problem; the walkthrough runs light. */
+.stage{
+  --paper:#E7EDF0; --surface:#FFFFFF; --surface-2:#F3F7F9;
+  --ink:#14242C; --muted:#5F737D; --line:#CDD9DF; --line-soft:#E1E9ED;
+  --c-2:#2A6DB5; --c-1:#5FA3C4; --c0:#3B9B78; --c1:#DE9036; --c2:#C64C2C;
+  --on-accent:#FFFFFF;
 }
+.stage[data-theme="dark"]{
+  --paper:#101A1F; --surface:#17242B; --surface-2:#1D2D35;
+  --ink:#E6EEF1; --muted:#93A6AF; --line:#2C3F49; --line-soft:#223139;
+  --c-2:#5D9EE0; --c-1:#78BBD8; --c0:#56BC93; --c1:#E8A757; --c2:#E07152;
+  --on-accent:#101A1F;
+}
+:root{--focus:#14242C}
+
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
-  background:var(--paper); color:var(--ink);
+  background:#8A949A; color:#14242C;
   font-family:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,sans-serif;
   -webkit-font-smoothing:antialiased;
 }
-.shell{max-width:1040px;margin:0 auto;padding:18px 16px 40px}
+.shell{max-width:1100px;margin:0 auto;padding:18px 16px 40px}
 
 .stage{
   position:relative;width:100%;aspect-ratio:16/9;container-type:inline-size;
-  background:var(--surface);border:1px solid var(--line-soft);
-  border-radius:14px;overflow:hidden;
+  background:var(--paper);border-radius:14px;overflow:hidden;
+  box-shadow:0 6px 24px rgba(0,0,0,.28);
 }
-/* This deck is static per slide (no timeline), so every reveal state is
-   rendered "already on" and all transitions/animations are suppressed —
-   Playwright screenshots a settled frame, not a mid-transition one. */
+/* Every slide is rendered in its settled state — no timeline, no transitions —
+   so a screenshot is never caught mid-animation. */
 .stage *{transition:none!important;animation:none!important}
 
 .scene{
-  position:absolute;inset:0;padding:4.5cqw 5.5cqw 10cqw;opacity:1;
-  display:flex;flex-direction:column;justify-content:center;
+  position:absolute;inset:0;padding:4.6cqw 4.6cqw 3.4cqw;
+  display:flex;flex-direction:column;
 }
 .eyebrow{
-  font-size:1.35cqw;font-weight:600;color:var(--muted);margin:0 0 1.6cqw;
+  font-size:1.15cqw;font-weight:700;color:var(--c0);margin:0 0 .5cqw;
   text-transform:uppercase;letter-spacing:.14em;
 }
+.eyebrow.plain{color:var(--muted)}
 h2.big{
   font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
-  font-size:5.6cqw;letter-spacing:-.03em;line-height:1.02;margin:0 0 2.2cqw;
+  font-size:4.4cqw;letter-spacing:-.03em;line-height:1.04;margin:0 0 .4cqw;
+  color:var(--ink);
 }
-.line{font-size:2.4cqw;line-height:1.4;margin:0 0 1.4cqw;max-width:42em}
-.line.dim{color:var(--muted)}
-.line.pop{
-  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;
-  font-size:3cqw;letter-spacing:-.02em;margin-top:.8cqw;
+.lead{font-size:1.85cqw;line-height:1.45;color:var(--muted);margin:.8cqw 0 0;max-width:52em}
+/* `safe` matters: with plain `center`, a slide whose content is a few pixels
+   too tall overflows in BOTH directions and paints over the title. Safe
+   alignment falls back to flex-start rather than overflowing upward. */
+.body{flex:1;display:flex;flex-direction:column;justify-content:safe center;min-height:0}
+/* Sits outside the content column's right edge (4.6cqw of padding), so a slide
+   whose column reaches the bottom can't collide with it. */
+.pageno{
+  position:absolute;right:1.7cqw;bottom:1.2cqw;
+  font-size:1.05cqw;color:var(--muted);font-variant-numeric:tabular-nums;opacity:.75;
 }
 
-.who{display:flex;align-items:center;gap:1.1cqw;margin-bottom:1.6cqw}
-.who .av{
-  width:4cqw;height:4cqw;border-radius:50%;flex:0 0 auto;
-  background:var(--surface-2);border:.18cqw solid var(--line);
-  display:flex;align-items:center;justify-content:center;font-size:2cqw;
-}
-.who .wn{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.3cqw;letter-spacing:-.02em;line-height:1.1}
-.who .wr{font-size:1.5cqw;color:var(--muted);line-height:1.2}
-
-.scene.hero{align-items:flex-start}
-.title{
+/* ---- title / close ---- */
+.scene.hero{justify-content:center}
+.hero .title{
   font-family:"Bricolage Grotesque",sans-serif;font-weight:800;
-  font-size:8.6cqw;letter-spacing:-.04em;line-height:.95;margin:0;
+  font-size:8.2cqw;letter-spacing:-.045em;line-height:.95;margin:0;color:var(--ink);
 }
-.subtitle{font-size:2.5cqw;color:var(--muted);margin:1.5cqw 0 0}
-.bigramp{
-  height:.7cqw;border-radius:99px;margin-top:3.2cqw;width:54%;
+.hero .tagline{font-size:3cqw;color:var(--c-1);margin:1.4cqw 0 0}
+.hero .bigramp{
+  height:.85cqw;border-radius:99px;margin-top:4cqw;width:100%;
   background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
 }
+.hero .ramplabels{display:flex;justify-content:space-between;font-size:1.15cqw;color:var(--muted);margin-top:.7cqw}
+.hero .kicker{font-size:1.75cqw;color:var(--muted);margin:3cqw 0 0;max-width:46em}
+.hero .kicker.strong{color:var(--ink)}
+.hero .note{font-size:1.4cqw;color:var(--muted);margin:.8cqw 0 0}
 
-.mock{background:var(--surface-2);border:.14cqw solid var(--line);border-radius:1.1cqw;padding:2.2cqw 2.6cqw 2.4cqw}
-.mockrow{display:flex;align-items:center;gap:1.1cqw;margin-bottom:1.8cqw}
-.mocklab{font-size:1.5cqw;color:var(--muted)}
-.pill{
-  font-size:1.7cqw;font-weight:600;background:var(--surface);
-  border:.15cqw solid var(--line);border-radius:.65cqw;padding:.6cqw 1.1cqw;
+/* ---- cards (three across) ---- */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.9cqw;margin-top:1.6cqw}
+.card{
+  background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:1.2cqw;
+  padding:1.9cqw;display:flex;flex-direction:column;
 }
-.pill.hot{border-color:var(--ink);box-shadow:0 0 0 .22cqw color-mix(in srgb,var(--ink) 12%,transparent)}
-.vbtns{display:grid;grid-template-columns:repeat(5,1fr);gap:.7cqw;margin-bottom:2.2cqw}
+.card.accent{
+  background:color-mix(in srgb,var(--c0) 12%,var(--surface));
+  border:.17cqw solid var(--c0);
+}
+.disc{
+  width:2.7cqw;height:2.7cqw;border-radius:50%;background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;flex:0 0 auto;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.35cqw;
+}
+.card.accent .disc{background:var(--c0);color:var(--on-accent)}
+.card h3,.cell h3{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2cqw;
+  letter-spacing:-.02em;margin:1.3cqw 0 .9cqw;color:var(--ink);line-height:1.15;
+}
+.card p,.cell p{font-size:1.45cqw;color:var(--muted);margin:0;line-height:1.5}
+.cardsfoot{font-size:1.7cqw;font-style:italic;color:var(--c-1);margin:2cqw 0 0}
+
+/* ---- person ---- */
+.scene.person{justify-content:flex-start}
+.who{display:flex;align-items:center;gap:1.5cqw;margin-top:2.4cqw}
+.who .av{
+  width:6cqw;height:6cqw;border-radius:50%;flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:3cqw;color:var(--paper);
+}
+.who .wn{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:2.9cqw;letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
+.who .wr{font-size:1.55cqw;color:var(--muted);line-height:1.3;margin-top:.2cqw}
+.setpoint{
+  margin-left:auto;background:var(--surface-2);border:.1cqw solid var(--line-soft);
+  border-radius:1cqw;padding:1.1cqw 2cqw;text-align:center;
+}
+.setpoint b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:3.2cqw;letter-spacing:-.03em;display:block;color:var(--ink)}
+.setpoint span{font-size:1.15cqw;color:var(--muted)}
+.quote{font-size:3.5cqw;line-height:1.35;margin:3.4cqw 0 0;letter-spacing:-.02em;max-width:24em}
+.personfoot{font-size:2cqw;font-weight:600;color:var(--ink);margin-top:auto}
+
+/* ---- numbered rows ---- */
+.rows{display:flex;flex-direction:column;gap:1.5cqw;margin-top:1.2cqw}
+.row{display:flex;gap:1.4cqw;align-items:flex-start}
+.row .disc{width:3.1cqw;height:3.1cqw;font-size:1.55cqw}
+.row h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2cqw;margin:.2cqw 0 .45cqw;letter-spacing:-.02em;color:var(--ink)}
+.row p{font-size:1.5cqw;color:var(--muted);margin:0;line-height:1.45;max-width:54em}
+
+/* ---- the vote panel ---- */
+.split2{display:grid;grid-template-columns:1.15fr 1fr;gap:2.6cqw;align-items:start;margin-top:1.4cqw}
+.panel{background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:1.2cqw;padding:1.8cqw}
+.pickrow{display:flex;align-items:center;gap:1cqw;margin-bottom:1.5cqw}
+.picklab{font-size:1.3cqw;color:var(--muted);flex:0 0 auto}
+.pick{
+  flex:1;font-size:1.4cqw;background:var(--surface-2);color:var(--ink);
+  border:.1cqw solid var(--line);border-radius:.6cqw;padding:.6cqw 1cqw;
+}
+.vbtns{display:grid;grid-template-columns:repeat(5,1fr);gap:.6cqw}
 .vbtn{
-  background:var(--surface);border:.15cqw solid var(--line);border-radius:.8cqw;
-  padding:.9cqw .3cqw .7cqw;text-align:center;
+  background:var(--surface-2);border:.11cqw solid var(--line);border-radius:.85cqw;
+  padding:.9cqw .2cqw .7cqw;text-align:center;
 }
-.vbtn .f{font-size:2.3cqw;line-height:1;display:block}
-.vbtn .l{font-size:1.15cqw;color:var(--muted);display:block;margin-top:.35cqw}
-.vbtn.tapped{
-  border-color:var(--tint);border-width:.28cqw;
-  background:color-mix(in srgb,var(--tint) 14%,var(--surface));transform:scale(.95);
+.vbtn .f{font-size:2.1cqw;line-height:1;display:block}
+.vbtn .l{font-size:1.1cqw;color:var(--ink);display:block;margin-top:.4cqw}
+.vbtn.on{border-color:var(--tint);border-width:.2cqw;background:color-mix(in srgb,var(--tint) 14%,var(--surface))}
+.vbtn.on .l{color:var(--tint);font-weight:700}
+.castline{font-size:1.35cqw;color:var(--muted);margin:1.5cqw 0 0}
+.castnote{font-size:1.25cqw;font-style:italic;color:var(--c0);margin:.6cqw 0 0}
+.points{display:flex;flex-direction:column;gap:1.5cqw;margin-top:.4cqw}
+.point{display:flex;gap:.9cqw;font-size:1.5cqw;line-height:1.45;color:var(--ink)}
+.point::before{
+  content:"";width:.7cqw;height:.7cqw;border-radius:50%;background:var(--c0);
+  flex:0 0 auto;margin-top:.55cqw;
 }
 
+/* ---- dot plot + balance bar ---- */
 .strip{position:relative}
-.bands{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;height:9.5cqw;align-items:end}
+.bands{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;height:7.4cqw;align-items:end}
 .band{
   height:100%;display:flex;flex-direction:column-reverse;align-items:center;
-  gap:.3cqw;padding-bottom:.3cqw;border-radius:.6cqw .6cqw 0 0;
-  background:color-mix(in srgb,var(--tint) 9%,transparent);
+  gap:.34cqw;padding-bottom:.34cqw;border-radius:.5cqw .5cqw 0 0;
+  background:color-mix(in srgb,var(--tint) 10%,transparent);
 }
-.dot{width:1.35cqw;height:1.35cqw;border-radius:50%;background:var(--tint);flex:0 0 auto}
-.axis{height:.4cqw;border-radius:99px;margin-top:.5cqw;
-  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2))}
-.needle{
-  position:absolute;bottom:-1cqw;width:.26cqw;height:1.8cqw;border-radius:.2cqw;
-  background:var(--ink);opacity:0;
+.dot{width:1.25cqw;height:1.25cqw;border-radius:50%;background:var(--tint);flex:0 0 auto}
+.axis{
+  height:.42cqw;border-radius:99px;margin-top:.45cqw;
+  background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2));
 }
-.needle.show{opacity:1}
-.needle.split{background:repeating-linear-gradient(to bottom,var(--ink) 0 .38cqw,transparent .38cqw .76cqw)}
-.ticks{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;margin-top:1.3cqw;font-size:1.2cqw;color:var(--muted);text-align:center}
-.vrow{display:flex;align-items:center;gap:1cqw;margin-top:1.6cqw;min-height:2.8cqw}
-.vtext{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.2cqw;letter-spacing:-.02em}
-.chip{
-  font-size:1.25cqw;font-weight:600;padding:.2cqw .8cqw;border-radius:99px;
-  border:.15cqw solid var(--muted);color:var(--muted);opacity:0;
-}
-.chip.in{opacity:1}
-.callout,.hintcard{
-  margin-top:1.3cqw;padding:1.2cqw 1.5cqw;border-radius:.8cqw;font-size:1.65cqw;line-height:1.4;
-}
-.callout{background:var(--surface);border:.15cqw solid var(--line)}
-.hintcard{background:var(--surface);border:.15cqw dashed var(--line)}
-.callout b,.hintcard b{font-weight:600}
+.needle{position:absolute;bottom:-.7cqw;width:.24cqw;height:1.5cqw;border-radius:.2cqw;background:var(--ink)}
+.needle.split{background:repeating-linear-gradient(to bottom,var(--ink) 0 .34cqw,transparent .34cqw .68cqw)}
+.ticks{display:grid;grid-template-columns:repeat(5,1fr);gap:.35cqw;margin-top:1.2cqw;font-size:1.15cqw;color:var(--muted);text-align:center}
+.balbar{display:flex;height:1.1cqw;border-radius:99px;overflow:hidden;gap:.16cqw;background:var(--line-soft);margin-top:1.4cqw}
+.bseg{height:100%}
+.balkey{display:flex;gap:1.3cqw;margin-top:.7cqw;font-size:1.35cqw;color:var(--muted)}
+.balkey b{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:1.7cqw;margin-right:.25cqw}
+.count{font-size:1.3cqw;color:var(--muted);margin-top:.9cqw}
 
-/* Dense: the mock/vote component packed tighter, same tuning as the
-   the densest mock-UI content in this deck. */
-.scene.dense{padding:3cqw 5.5cqw 6cqw;justify-content:flex-start}
-.scene.dense .who{margin-bottom:1.2cqw}
-.scene.dense .who .av{width:3.6cqw;height:3.6cqw;font-size:1.85cqw}
-.scene.dense .mock{padding:1.6cqw 2.6cqw 1.7cqw}
-.scene.dense .mockrow{margin-bottom:1.3cqw}
-.scene.dense .pill{padding:.45cqw 1.1cqw}
-.scene.dense .vbtns{margin-bottom:1.5cqw}
-.scene.dense .vbtn{padding:.6cqw .3cqw .5cqw}
-.scene.dense .bands{height:6.5cqw}
-.scene.dense .ticks{margin-top:1cqw}
-.scene.dense .vrow{margin-top:1.1cqw;min-height:2.5cqw}
-.scene.dense .callout,.scene.dense .hintcard{margin-top:1cqw;padding:.95cqw 1.4cqw;font-size:1.55cqw;line-height:1.35}
+/* ---- big stat ---- */
+.statwrap{display:grid;grid-template-columns:1fr 1.5fr;gap:3cqw;align-items:center;margin-top:1cqw}
+.stat{margin-bottom:2.4cqw}
+.stat:last-child{margin-bottom:0}
+.stat b{
+  font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:5.4cqw;
+  letter-spacing:-.04em;line-height:1;display:block;color:var(--ink);
+}
+.stat.warm b{color:var(--c2)}
+.stat .lab{font-size:1.5cqw;font-weight:700;display:block;margin-top:.5cqw;color:var(--ink)}
+.stat .sub{font-size:1.3cqw;color:var(--muted);display:block;margin-top:.2cqw}
+.verdict{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.7cqw;letter-spacing:-.02em;margin-top:1.6cqw;color:var(--c0)}
+.verdictsub{font-size:1.3cqw;color:var(--muted);margin-top:.5cqw}
+.caption{font-size:1.6cqw;color:var(--c-1);margin-top:2cqw}
 
-.hmwrap{display:grid;grid-template-columns:1.35fr 1fr;gap:2.2cqw;align-items:start}
+/* ---- the split rule ---- */
+.rulecard{
+  background:color-mix(in srgb,var(--c0) 10%,var(--surface));
+  border:.17cqw solid var(--c0);border-radius:1.2cqw;padding:1.4cqw 1.8cqw;
+}
+.rulecard .cap{font-size:1.1cqw;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--c0);margin-bottom:.9cqw}
+.cond{margin-bottom:.95cqw}
+.cond:last-child{margin-bottom:0}
+.cond b{display:block;font-size:1.65cqw;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.cond span{display:block;font-size:1.3cqw;color:var(--muted);margin-top:.15cqw}
+.vrow{display:flex;align-items:center;gap:1cqw;margin-top:1.6cqw}
+.vtext{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.6cqw;letter-spacing:-.02em;color:var(--ink)}
+.chip{font-size:1.25cqw;font-weight:700;padding:.3cqw 1cqw;border-radius:99px;background:var(--ink);color:var(--paper)}
+.vsub{font-size:1.3cqw;font-style:italic;color:var(--muted);margin-top:.5cqw}
+.effects{display:flex;flex-direction:column;gap:.7cqw}
+.effect{display:flex;gap:.8cqw;font-size:1.4cqw;color:var(--ink);line-height:1.38}
+.effect::before{content:"";width:.6cqw;height:.6cqw;border-radius:50%;background:var(--c0);flex:0 0 auto;margin-top:.48cqw}
+.quotecard{
+  background:var(--surface-2);border:.1cqw solid var(--line-soft);border-radius:1cqw;
+  padding:1.1cqw 1.4cqw;margin-top:1.2cqw;font-size:1.3cqw;font-style:italic;
+  color:var(--muted);line-height:1.42;
+}
+
+/* ---- heat map ---- */
+.hmwrap{display:grid;grid-template-columns:1.4fr 1fr;gap:2.4cqw;align-items:start;margin-top:1cqw}
 .plate{
   position:relative;aspect-ratio:16/11;width:100%;
-  background:var(--surface-2);border:.14cqw solid var(--line);
+  background:var(--surface-2);border:.1cqw solid var(--line);
   border-radius:1cqw;overflow:hidden;
 }
 .plate .planart{position:absolute;inset:0;width:100%;height:100%}
-.plate .planart .shell{fill:none;stroke:color-mix(in srgb,var(--ink) 62%,transparent);stroke-width:1.1}
-.plate .planart .room{fill:color-mix(in srgb,var(--ink) 5%,transparent);stroke:color-mix(in srgb,var(--ink) 42%,transparent);stroke-width:.6}
-.plate .planart .fix{fill:color-mix(in srgb,var(--ink) 13%,transparent);stroke:color-mix(in srgb,var(--ink) 36%,transparent);stroke-width:.45}
-.plate .planart .desk{fill:none;stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.4}
-.plate .planart .mull{stroke:color-mix(in srgb,var(--ink) 40%,transparent);stroke-width:.55}
-.plate .planart text{fill:color-mix(in srgb,var(--ink) 62%,transparent);font-size:3.2px;font-family:"Instrument Sans",sans-serif;font-weight:500}
-.heat{position:absolute;inset:0;filter:blur(2.2cqw);opacity:.66;mix-blend-mode:screen}
+.plate .planart .shellrect{fill:none;stroke:color-mix(in srgb,var(--ink) 55%,transparent);stroke-width:1.1}
+.plate .planart .room{fill:color-mix(in srgb,var(--ink) 5%,transparent);stroke:color-mix(in srgb,var(--ink) 34%,transparent);stroke-width:.6}
+.plate .planart .fix{fill:color-mix(in srgb,var(--ink) 12%,transparent);stroke:color-mix(in srgb,var(--ink) 30%,transparent);stroke-width:.45}
+.plate .planart .desk{fill:none;stroke:color-mix(in srgb,var(--ink) 26%,transparent);stroke-width:.4}
+.plate .planart .mull{stroke:color-mix(in srgb,var(--ink) 34%,transparent);stroke-width:.55}
+.plate .planart text{fill:color-mix(in srgb,var(--ink) 55%,transparent);font-size:3.2px;font-family:"Instrument Sans",sans-serif;font-weight:500}
+.heat{position:absolute;inset:0;filter:blur(2.2cqw);opacity:.82;mix-blend-mode:multiply}
+.stage[data-theme="dark"] .heat{mix-blend-mode:screen;opacity:.66}
 .hblob{position:absolute;border-radius:50%;transform:translate(-50%,-50%)}
 .pins{position:absolute;inset:0}
-.hpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.35cqw}
+.hpin{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:.3cqw}
 .hpin .knob{
-  width:1.1cqw;height:1.1cqw;border-radius:50%;
-  background:var(--surface);border:.28cqw solid var(--ink);
-  box-shadow:0 0 0 .3cqw color-mix(in srgb,var(--surface) 70%,transparent);
+  width:1cqw;height:1cqw;border-radius:50%;background:var(--surface);
+  border:.25cqw solid var(--ink);box-shadow:0 0 0 .28cqw color-mix(in srgb,var(--surface) 70%,transparent);
 }
+.hpin.unplaced .knob{border-style:dotted;opacity:.6}
 .hpin .plab{
-  font-size:1.2cqw;font-weight:600;white-space:nowrap;
-  background:color-mix(in srgb,var(--surface) 90%,transparent);
-  border-radius:.35cqw;padding:.15cqw .5cqw;
+  font-size:1.1cqw;font-weight:600;white-space:nowrap;color:var(--ink);
+  background:color-mix(in srgb,var(--surface) 88%,transparent);
+  border-radius:.3cqw;padding:.12cqw .45cqw;
 }
-.hpin .flag{font-size:1.05cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:.3cqw;padding:.1cqw .45cqw}
-.ring{
-  position:absolute;width:15cqw;height:15cqw;border-radius:50%;
-  border:.28cqw solid var(--ink);transform:translate(-50%,-50%);opacity:0;
+.hpin .flag{font-size:.95cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:.28cqw;padding:.08cqw .4cqw}
+.mlegend{display:flex;align-items:center;gap:.8cqw;margin-top:.9cqw;font-size:1.1cqw;color:var(--muted);flex-wrap:wrap}
+.mramp{width:8cqw;height:.5cqw;border-radius:99px;background:linear-gradient(90deg,var(--c-2),var(--c-1) 26%,var(--c0) 50%,var(--c1) 74%,var(--c2))}
+.mswatch{width:2.2cqw;height:.5cqw;border-radius:99px;background:repeating-linear-gradient(45deg,var(--c-2) 0 .32cqw,var(--c2) .32cqw .64cqw)}
+.mlegend .floor{margin-left:auto;font-weight:700;color:var(--ink)}
+.reading{display:flex;flex-direction:column;gap:1.2cqw;margin-top:.4cqw}
+.reading .r{font-size:1.4cqw;line-height:1.4;color:var(--muted)}
+.reading .r b{color:var(--ink)}
+.hmnote{
+  margin-top:1.4cqw;font-size:1.2cqw;color:var(--muted);
+  border:.1cqw dashed var(--line);border-radius:.8cqw;padding:.9cqw 1.1cqw;
 }
-.ring.in{opacity:.7}
-.hmside .line{font-size:1.9cqw;margin-bottom:1.2cqw}
-.hmside .line.pop{font-size:2.3cqw}
-.mlegend{display:flex;align-items:center;gap:.8cqw;margin-top:1cqw;font-size:1.15cqw;color:var(--muted);flex-wrap:wrap}
-.mramp{width:9cqw;height:.55cqw;border-radius:99px;background:linear-gradient(90deg,#2A6DB5,#5FA3C4 26%,#3B9B78 50%,#DE9036 74%,#C64C2C)}
-.mswatch{width:2.4cqw;height:.55cqw;border-radius:99px;background:repeating-linear-gradient(45deg,#2A6DB5 0 .35cqw,#C64C2C .35cqw .7cqw)}
+.hmclose{font-size:1.5cqw;font-style:italic;color:var(--c0);margin-top:1.4cqw;line-height:1.4}
 
-.twoup{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw;margin-top:1.2cqw}
-.col{background:var(--surface-2);border:.14cqw solid var(--line);border-radius:.9cqw;padding:1.6cqw}
-.col h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.9cqw;margin:0 0 .7cqw;letter-spacing:-.02em}
-.col p{font-size:1.5cqw;color:var(--muted);margin:0;line-height:1.4}
-.col .tick{font-size:3.2cqw;line-height:1;margin-bottom:.7cqw;display:block}
+/* ---- 2x2 grid ---- */
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.8cqw;margin-top:1.4cqw}
+.cell{background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:1.2cqw;padding:1.8cqw}
+.cell.accent{background:color-mix(in srgb,var(--c0) 12%,var(--surface));border:.17cqw solid var(--c0)}
+.cell h3{margin-top:0}
 
+/* ---- triage ---- */
+.zrows{display:flex;flex-direction:column;gap:.75cqw}
+.zrow{
+  display:grid;grid-template-columns:1fr auto;gap:1cqw;align-items:center;
+  background:var(--surface);border:.1cqw solid var(--line-soft);border-radius:.8cqw;padding:.85cqw 1.1cqw;
+}
+.zrow.top{background:var(--surface-2)}
+.zname{display:flex;align-items:center;gap:.6cqw;font-size:1.5cqw;font-weight:700;color:var(--ink)}
+.zfloor{font-size:1.05cqw;font-weight:600;color:var(--muted);border:.1cqw solid var(--line);border-radius:.35cqw;padding:.1cqw .5cqw}
+.zflag{font-size:1cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:99px;padding:.12cqw .6cqw}
+.zmeta{font-size:1.2cqw;color:var(--muted);margin-top:.25cqw}
+.zstrip{width:11cqw}
+.zstrip .bands{height:2.6cqw;gap:.22cqw}
+.zstrip .dot{width:.62cqw;height:.62cqw;gap:.18cqw}
+.zstrip .band{gap:.18cqw;padding-bottom:.18cqw}
+.zstrip .axis{height:.3cqw;margin-top:.3cqw}
+.zstrip .needle{bottom:-.5cqw;height:1cqw;width:.2cqw}
+.zquiet{font-size:1.15cqw;font-style:italic;color:var(--muted);width:11cqw;text-align:center}
+.explain{display:flex;flex-direction:column;gap:1cqw}
+.explain .e{font-size:1.3cqw;color:var(--muted);line-height:1.4}
+.explain .e b{color:var(--ink)}
+.statuscard{background:var(--surface-2);border:.1cqw solid var(--line-soft);border-radius:1cqw;padding:1.2cqw 1.3cqw;margin-top:1.4cqw}
+.statuscard .lab{font-size:1.15cqw;color:var(--muted)}
+.statussel{
+  background:var(--surface);border:.1cqw solid var(--line);border-radius:.6cqw;
+  padding:.55cqw .9cqw;font-size:1.3cqw;font-weight:700;color:var(--ink);margin:.55cqw 0;
+}
+.statusopts{font-size:1.05cqw;color:var(--muted)}
+.badges{display:flex;gap:.6cqw;align-items:center;margin-top:.9cqw}
+.badge{font-size:1cqw;font-weight:700;background:var(--ink);color:var(--paper);border-radius:99px;padding:.15cqw .7cqw}
+.badges span.n{font-size:1.15cqw;font-style:italic;color:var(--muted)}
+
+/* ---- checklist ---- */
+.check{display:grid;grid-template-columns:1fr 1fr;gap:1.1cqw 2.4cqw;margin-top:1.6cqw}
+.ci{display:flex;gap:.9cqw;align-items:flex-start}
+.ci .tick{
+  width:1.5cqw;height:1.5cqw;border-radius:50%;background:var(--c0);color:var(--on-accent);
+  display:flex;align-items:center;justify-content:center;font-size:.95cqw;font-weight:700;flex:0 0 auto;margin-top:.25cqw;
+}
+.ci b{display:block;font-size:1.5cqw;color:var(--ink);letter-spacing:-.01em}
+.ci span{display:block;font-size:1.25cqw;color:var(--muted);margin-top:.15cqw;line-height:1.35}
+
+/* ---- deck chrome (hidden when presenting / rendering) ---- */
 .controls{display:flex;align-items:center;gap:12px;margin-top:14px;flex-wrap:wrap}
-.ctrl{font:inherit;font-weight:600;font-size:15px;cursor:pointer;background:var(--ink);color:var(--paper);border:none;border-radius:9px;padding:9px 18px}
-.ctrl.ghost{background:none;color:var(--ink);border:1.5px solid var(--line)}
+.ctrl{font:inherit;font-weight:600;font-size:15px;cursor:pointer;background:#14242C;color:#fff;border:none;border-radius:9px;padding:9px 18px}
+.ctrl.ghost{background:none;color:#14242C;border:1.5px solid #14242C}
 .ctrl:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
-.counter{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted)}
+.counter{font-variant-numeric:tabular-nums;font-size:14px;color:#14242C}
 .marks{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.mk{font:inherit;font-size:13px;cursor:pointer;background:var(--surface-2);color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:4px 11px}
-.mk.cur{color:var(--ink);border-color:var(--ink)}
-.mk:hover{color:var(--ink)}
-.note{color:var(--muted);font-size:14px;margin-top:16px;line-height:1.6}
+.mk{font:inherit;font-size:13px;cursor:pointer;background:rgba(255,255,255,.6);color:#14242C;border:1px solid rgba(20,36,44,.25);border-radius:99px;padding:4px 11px}
+.mk.cur{background:#14242C;color:#fff;border-color:#14242C}
+.note{color:#14242C;font-size:14px;margin-top:16px;line-height:1.6;opacity:.85}
 
-body.presenting{overflow:hidden;background:var(--paper)}
+body.presenting{overflow:hidden;background:#000}
 body.presenting .shell{max-width:none;padding:0}
-body.presenting .controls,
-body.presenting .marks,
-body.presenting .note{display:none}
+body.presenting .controls,body.presenting .marks,body.presenting .note{display:none}
 body.presenting .stage{
   position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
   width:100vw;height:56.25vw;max-height:100vh;max-width:177.78vh;
-  border:none;border-radius:0;
+  border-radius:0;box-shadow:none;
 }
 </style>
 </head>
@@ -219,13 +343,12 @@ body.presenting .stage{
     <button class="ctrl" id="prev">Prev</button>
     <button class="ctrl" id="next">Next</button>
     <button class="ctrl ghost" id="present">Present</button>
-    <span class="counter" id="counter">1 / 21</span>
+    <span class="counter" id="counter"></span>
   </div>
   <div class="marks" id="marks"></div>
-  <p class="note">A static slide deck (not a scrubbable timeline). Each slide holds an authored
-    <code>duration</code> floor and an optional <code>voiceover</code> line; it's rendered with Ken
-    Burns motion, crossfaded into the next, and scored with a Piper voiceover, music bed, and UI
-    sound cues by <code>npm run build-video</code> — see docs/VIDEO-GUIDE.md.</p>
+  <p class="note">The deck, and the script. Each slide carries a <code>voiceover</code> line and a
+    <code>duration</code> floor; <code>npm run build-video</code> screenshots every slide, narrates it
+    with Kokoro, and crossfades the result into an MP4. See CLAUDE.md.</p>
 </div>
 
 <script>
@@ -243,9 +366,44 @@ body.presenting .stage{
   ];
   var HEAT=[[42,109,181],[95,163,196],[59,155,120],[222,144,54],[198,76,44]];
 
+  /* The people the scenario follows. Each carries a temperature colour rather
+     than a face: an invented person should not be given a gendered avatar, and
+     the colour ties them to where they sit. */
+  var CAST={
+    priya:{i:"P",name:"Priya",role:"Level 7 — north window seats",tint:"--c2"},
+    daniel:{i:"D",name:"Daniel",role:"Level 7 — core desks",tint:"--c-2"},
+    marcus:{i:"M",name:"Marcus",role:"Facilities",tint:"--ink"}
+  };
+
+  /* Eleven votes: 3 freezing, 2 chilly, 1 just nice, 2 warm, 3 roasting. Mean
+     exactly 0.0, one comfortable person, and it trips every condition of the
+     split rule in src/app.html. */
+  var SPLIT=[3,2,1,2,3];
+
+  var MAP_BEFORE=[
+    {x:47,y:14,label:"North window seats",mean:1.9,n:6,flag:"HOT"},
+    {x:17,y:44,label:"Core desks",mean:-1.85,n:5,flag:"COLD"},
+    {x:15,y:78,label:"Pantry",mean:.15,n:4},
+    {x:70,y:87,label:"South-east desks",none:true,unplaced:true},
+    {x:47,y:33,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
+  ];
+  var MAP_AFTER=[
+    {x:47,y:14,label:"Window run",mean:.2,n:6,flag:"ADJUSTED"},
+    {x:17,y:44,label:"Core desks",mean:-.15,n:5,flag:"ADJUSTED"},
+    {x:15,y:78,label:"Pantry",mean:.15,n:4},
+    {x:70,y:87,label:"South-east desks",none:true,unplaced:true}
+  ];
+
   function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+  function tally(counts){
+    var n=0,sum=0;
+    counts.forEach(function(c,i){n+=c;sum+=c*(i-2);});
+    var cold=counts[0]+counts[1],hot=counts[3]+counts[4];
+    return {n:n,mean:n?sum/n:0,cold:cold,hot:hot,nice:counts[2],
+      split:n>=4&&Math.min(cold,hot)/n>=.25&&(cold+hot)/n>=.6};
+  }
   function heatColor(mean){
-    var p=clamp(mean,-2,2)+2, i=Math.min(3,Math.floor(p)), f=p-i;
+    var p=clamp(mean,-2,2)+2,i=Math.min(3,Math.floor(p)),f=p-i;
     var a=HEAT[i],b=HEAT[i+1];
     return [0,1,2].map(function(k){return Math.round(a[k]+(b[k]-a[k])*f);});
   }
@@ -254,17 +412,8 @@ body.presenting .stage{
     return '<div class="hblob" style="left:'+x+'%;top:'+y+'%;width:'+size+'%;aspect-ratio:1;'+
       'background:radial-gradient(circle,'+rgba(c,alpha)+' 0%,'+rgba(c,0)+' 70%)"></div>';
   }
-  function verdict(n,mean,split){
-    if(n===0) return "";
-    if(split) return "The room can't agree";
-    if(mean<=-1.2) return "Too cold";
-    if(mean<=-0.4) return "Leaning cold";
-    if(mean<0.4) return "About right";
-    if(mean<1.2) return "Leaning warm";
-    return "Too warm";
-  }
 
-  /* Built-in floor plan, same drawing as src/app.html. */
+  /* Built-in floor plan, the same drawing as src/app.html. */
   function planSvg(){
     function deskRow(y,xs){
       return xs.map(function(x){
@@ -279,7 +428,7 @@ body.presenting .stage{
     }
     for(var y=14;y<=96;y+=8) m+='<line class="mull" x1="4" y1="'+y+'" x2="7.5" y2="'+y+'"/>';
     return '<svg class="planart" viewBox="0 0 160 110" preserveAspectRatio="none" aria-hidden="true">'+
-      '<rect class="shell" x="4" y="4" width="152" height="102" rx="2"/>'+m+
+      '<rect class="shellrect" x="4" y="4" width="152" height="102" rx="2"/>'+m+
       '<rect class="room" x="58" y="38" width="44" height="34"/>'+
       '<rect class="fix" x="61" y="41" width="9" height="13"/>'+
       '<rect class="fix" x="61" y="56" width="9" height="13"/>'+
@@ -304,271 +453,406 @@ body.presenting .stage{
       '</svg>';
   }
 
-  // ---- Slide content -------------------------------------------------
-  // Discrete slides for the parody keynote-style build video (see
-  // video.md and docs/VIDEO-GUIDE.md). Each slide carries an authored
-  // `duration` (seconds, used as a floor/fallback) and an optional
-  // `voiceover` line; scripts/build-video-pipeline.mjs synthesizes that
-  // line with Piper and, when present, stretches the slide's on-screen
-  // hold time to match the synthesized clip instead of the authored value.
-  var SLIDES=[
-    { id:"hook-1", section:"The Question", layout:"statement", duration:4.5,
-      voiceover:"There is a question every office has asked, in one form or another, forever.",
-      data:{ lines:[{text:"Every office has asked the same question, forever.", dim:true}] } },
+  /* ---- shared pieces ------------------------------------------------- */
 
-    { id:"hook-2", section:"The Question", layout:"statement", duration:4.5,
-      voiceover:"Why does something so simple have to be so complicated?",
-      data:{ heading:"Why does something so simple have to be so complicated?" } },
-
-    { id:"intro-title", section:"Meet Thermocracy", layout:"title", duration:5.5,
-      voiceover:"Meet Thermocracy — a simpler way to know how your floor actually feels.",
-      data:{ title:"Thermocracy", subtitle:"Is it you, or is it the room?" } },
-
-    { id:"intro-spec", section:"Meet Thermocracy", layout:"statement", duration:4.2,
-      voiceover:"Five buttons. Two seconds. Absolutely no thermostat wrestling required.",
-      data:{ eyebrow:"Meet Thermocracy", heading:"Five buttons, two seconds, no ticket." } },
-
-    { id:"intro-no-setup", section:"Meet Thermocracy", layout:"statement", duration:4.5,
-      voiceover:"No installation. No app store. No configuration screen designed by a committee.",
-      data:{ lines:[{text:"No installation. No app store. No configuration screen designed by a committee.", dim:true}] } },
-
-    { id:"vote-open", section:"How it works", layout:"mockvote", duration:4.2,
-      voiceover:"Here's how it works. Open Thermocracy. Tap how you feel.",
-      data:{ avatar:"🧑‍💻", name:"You", role:"Level 7 — open floor",
-        spot:"Level 7 — Open floor", spotHot:true, counts:[0,0,0,0,0] } },
-
-    { id:"vote-tapped", section:"How it works", layout:"mockvote", duration:3.6,
-      voiceover:"That's it. That's the whole interaction.",
-      data:{ avatar:"🧑‍💻", name:"You", role:"Level 7 — open floor",
-        spot:"Level 7 — Open floor", tappedIndex:0, counts:[1,0,0,0,0] } },
-
-    { id:"vote-neighbors", section:"How it works", layout:"mockvote", duration:4.0,
-      voiceover:"Everyone else already weighed in.",
-      data:{ avatar:"🧑‍💻", name:"You", role:"Level 7 — open floor",
-        spot:"Level 7 — Open floor", counts:[3,2,1,1,0] } },
-
-    { id:"vote-split", section:"How it works", layout:"mockvote", duration:5.2,
-      voiceover:"Eleven votes. One shape. And it is not the shape you would expect.",
-      data:{ avatar:"🧑‍💻", name:"You", role:"Level 7 — open floor",
-        spot:"Level 7 — Open floor", counts:[3,2,1,2,3] } },
-
-    { id:"shape-callout", section:"The shape of opinion", layout:"calloutcard", duration:6.0,
-      voiceover:"Because the average says everything's fine. The dots say otherwise.",
-      data:{ avatar:"🧑‍💻", name:"You", role:"Level 7 — open floor",
-        callout:"<b>Eleven votes. One comfortable person.</b> The average still lands dead centre — and hides every bit of that.",
-        hint:"<b>Turns out comfort isn’t a number.</b> It’s a distribution — and Thermocracy is the first thing that’s bothered to look." } },
-
-    { id:"shape-simple", section:"The shape of opinion", layout:"statement", duration:4.8,
-      voiceover:"Turns out, comfort isn't a number. It's a distribution — and Thermocracy actually looks at it.",
-      data:{ lines:[
-        {text:"Comfort isn’t a number.", dim:true},
-        {text:"Simple by design.", pop:true}
-      ] } },
-
-    { id:"before-after", section:"Before / After", layout:"twoup", duration:5.8,
-      voiceover:"What once took two furious emails and a facilities ticket now takes about four seconds.",
-      data:{ eyebrow:"Before / After", heading:"The old way took two emails and a grudge.",
-        cards:[
-          {tick:"📧", title:"The old way", body:"Guess the temperature. Send an email. Escalate to a ticket. Wait."},
-          {tick:"✅", title:"The Thermocracy way", body:"Tap a button. See the floor plan. Done in about four seconds."}
-        ] } },
-
-    { id:"before-after-2", section:"Before / After", layout:"statement", duration:4.2,
-      voiceover:"The old way: guess, argue, escalate. The new way: vote, verify, done.",
-      data:{ lines:[
-        {text:"The old way: guess, argue, escalate.", dim:true},
-        {text:"The new way: vote, verify, done.", pop:true}
-      ] } },
-
-    { id:"truth-overview", section:"It refuses to lie", layout:"heatmap", duration:5.5,
-      voiceover:"And when a room genuinely cannot agree, Thermocracy refuses to lie about it.",
-      data:{
-        pins:[
-          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
-          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
-          {x:50,y:22,label:"Open floor",split:true,cold:5,hot:5,n:11,flag:"SPLIT"}
-        ],
-        sideLines:[{text:"Most spots already settled on a new setpoint. This one didn’t."}]
-      } },
-
-    { id:"truth-split", section:"It refuses to lie", layout:"heatmap", duration:6.2,
-      voiceover:"It doesn't average the disagreement away. It names the vent, and calls it what it is: a fault, not a feeling.",
-      data:{
-        pins:[
-          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
-          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
-          {x:50,y:9,label:"Window run",mean:1.9,n:6,flag:"HOT"},
-          {x:50,y:31,label:"Inner core",mean:-1.85,n:5,flag:"COLD"}
-        ],
-        sideLines:[{text:"It doesn’t average the disagreement away — it names the vent instead.",pop:true}]
-      } },
-
-    { id:"truth-resolution", section:"It refuses to lie", layout:"heatmap", duration:4.8,
-      voiceover:"One damper, rebalanced. Two zones, finally telling the truth.",
-      data:{
-        pins:[
-          {x:15,y:83,label:"Pantry",mean:0.25,n:4},
-          {x:86,y:40,label:"Meeting 7-2",mean:-0.4,n:3},
-          {x:50,y:9,label:"Window run",mean:0.2,n:6,flag:"ADJUSTED"},
-          {x:50,y:31,label:"Inner core",mean:-0.15,n:5,flag:"ADJUSTED"}
-        ],
-        sideLines:[{text:"One damper rebalanced later, both spots are green.",pop:true}]
-      } },
-
-    { id:"bigpic-1", section:"The bigger picture", layout:"heatmap", duration:5.5,
-      voiceover:"Every vote. Every zone. Every setpoint. Working together, so facilities spends less time guessing.",
-      data:{
-        pins:[
-          {x:15,y:83,label:"Pantry",mean:0.15,n:4},
-          {x:86,y:40,label:"Meeting 7-2",mean:-0.2,n:3},
-          {x:50,y:9,label:"Window run",mean:0.2,n:6,flag:"ADJUSTED"},
-          {x:50,y:31,label:"Inner core",mean:-0.1,n:5,flag:"ADJUSTED"}
-        ],
-        sideLines:[{text:"Every vote, every zone, every setpoint — working together."}]
-      } },
-
-    { id:"bigpic-2", section:"The bigger picture", layout:"statement", duration:4.5,
-      voiceover:"One board. One floor plan. Every argument settled before it becomes an email chain.",
-      data:{ lines:[{text:"One board. One floor plan. Every argument settled before it becomes an email chain.", dim:true}] } },
-
-    { id:"emotional", section:"Less complexity", layout:"statement", duration:5.5,
-      voiceover:"Less complexity. More possibility. That's the whole pitch.",
-      data:{ heading:"Less complexity. More possibility." } },
-
-    { id:"final-reveal", section:"Thermocracy", layout:"close", duration:4.5,
-      voiceover:"Thermocracy. The temperature, finally honest.",
-      data:{ heading:"Thermocracy.", pop:"The temperature, finally honest." } },
-
-    { id:"final-available", section:"Thermocracy", layout:"statement", duration:4.8,
-      voiceover:"Available now, on every floor that's ever argued about the aircon.",
-      data:{ lines:[{text:"Available now, on every floor that’s ever argued about the aircon.", pop:true}] } }
-  ];
-
-  // ---- Layout renderers ------------------------------------------------
-  function vbtnsHtml(tappedIndex){
-    return SCALE.map(function(s,i){
-      var tap = (i===tappedIndex) ? " tapped" : "";
-      return '<div class="vbtn'+tap+'" style="--tint:var('+s.c+')"><span class="f">'+s.f+'</span><span class="l">'+s.l+'</span></div>';
-    }).join("");
-  }
-  function bandsHtml(counts){
-    return SCALE.map(function(s,i){
+  function dotPlot(counts,opts){
+    opts=opts||{};
+    var t=tally(counts);
+    var bands=SCALE.map(function(s,i){
       var dots="";
       for(var k=0;k<counts[i];k++) dots+='<span class="dot"></span>';
       return '<div class="band" style="--tint:var('+s.c+')">'+dots+'</div>';
     }).join("");
+    var h='<div class="strip"><div class="bands">'+bands+'</div><div class="axis"></div>';
+    if(t.n){
+      var pct=clamp(((t.mean+2)/4)*100,2,98).toFixed(1);
+      h+='<div class="needle'+((t.split&&!opts.solid)?" split":"")+'" style="left:'+pct+'%"></div>';
+    }
+    h+='</div>';
+    if(opts.ticks!==false){
+      h+='<div class="ticks">'+SCALE.map(function(s){return "<span>"+s.l+"</span>";}).join("")+'</div>';
+    }
+    return h;
   }
-  function linesHtml(lines){
-    return (lines||[]).map(function(l){
-      var cls="line"+(l.dim?" dim":"")+(l.pop?" pop":"");
-      return '<p class="'+cls+'">'+esc(l.text)+'</p>';
+
+  function balanceBar(counts){
+    var t=tally(counts);
+    if(!t.n) return "";
+    var parts=[{n:t.cold,c:"--c-2",l:"cold"},{n:t.nice,c:"--c0",l:"comfortable"},{n:t.hot,c:"--c2",l:"warm"}];
+    var segs=parts.filter(function(p){return p.n>0;}).map(function(p){
+      return '<span class="bseg" style="flex:'+p.n+';background:var('+p.c+')"></span>';
     }).join("");
+    var key=parts.map(function(p){
+      return '<span><b style="color:var('+p.c+')">'+p.n+'</b>'+p.l+'</span>';
+    }).join("");
+    return '<div class="balbar">'+segs+'</div><div class="balkey">'+key+'</div>';
   }
+
+  function voteButtons(on){
+    return '<div class="vbtns">'+SCALE.map(function(s,i){
+      return '<div class="vbtn'+(i===on?" on":"")+'" style="--tint:var('+s.c+')">'+
+        '<span class="f">'+s.f+'</span><span class="l">'+s.l+'</span></div>';
+    }).join("")+'</div>';
+  }
+
+  function plate(pins){
+    var H="",P="";
+    pins.forEach(function(p){
+      if(p.none) H+=hblob(p.x,p.y,17,[135,149,160],.35);
+      else if(p.split){
+        H+=hblob(p.x-6,p.y,17,HEAT[0],.85);
+        H+=hblob(p.x+6,p.y,17,HEAT[4],.85);
+      }else{
+        H+=hblob(p.x,p.y,15+Math.min(p.n,10)*.9,heatColor(p.mean),
+          .5+Math.min(Math.abs(p.mean)/2,1)*.45);
+      }
+      P+='<div class="hpin'+(p.unplaced?" unplaced":"")+'" style="left:'+p.x+'%;top:'+p.y+'%">'+
+        '<span class="knob"></span>'+
+        (p.flag?'<span class="flag">'+esc(p.flag)+'</span>':'')+
+        '<span class="plab">'+esc(p.label)+'</span></div>';
+    });
+    return '<div class="plate">'+planSvg()+'<div class="heat">'+H+'</div>'+
+      '<div class="pins">'+P+'</div></div>';
+  }
+
+  function head(d,plain){
+    return (d.eyebrow?'<p class="eyebrow'+(plain?" plain":"")+'">'+esc(d.eyebrow)+'</p>':'')+
+      (d.title?'<h2 class="big">'+esc(d.title)+'</h2>':'')+
+      (d.lead?'<p class="lead">'+esc(d.lead)+'</p>':'');
+  }
+
+  /* ---- slides -------------------------------------------------------- */
+
+  var SLIDES=[
+    { id:"title", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
+      voiceover:"This is Thermocracy. It settles a question every office argues about and nobody can actually answer: is it you, or is it the room?",
+      data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
+        kicker:"A shared board for how the office actually feels — not what the thermostat is set to." } },
+
+    { id:"what", section:"What we built", theme:"light", layout:"cards", duration:5,
+      voiceover:"We built a board where anyone on a floor picks their spot and taps one of five buttons — freezing to roasting. Those votes become a live heat map of the floor, and a board that refuses to average away a room that disagrees with itself. Let us show you what that looks like on a real afternoon.",
+      data:{ title:"What we built",
+        lead:"A board where anyone on a floor taps how it feels where they are sitting — and the building answers back.",
+        cards:[
+          {tick:"1",title:"Five buttons",body:"Freezing to roasting. Pick your spot, tap once. Two seconds, no ticket, no login."},
+          {tick:"2",title:"A live heat map",body:"Those votes land on your floor plan as the warm and cold patches they actually are."},
+          {tick:"3",title:"A board that won't lie",body:"When one spot disagrees with itself, it reports the disagreement instead of averaging it away.",accent:true}
+        ] } },
+
+    { id:"priya", section:"One Tuesday on Level 7", theme:"dark", layout:"person", duration:4,
+      voiceover:"So. One Tuesday, Level 7. At twenty to three, Priya is at the north window seats, and has been quietly writing off half a row of desks every afternoon since the weather turned.",
+      data:{ eyebrow:"2:40pm — one Tuesday on Level 7", person:"priya",
+        quote:"“It's roasting by two every afternoon. We've stopped booking the window desks.”" } },
+
+    { id:"daniel", section:"One Tuesday on Level 7", theme:"dark", layout:"person", duration:4,
+      voiceover:"Forty metres away, at the core desks, Daniel keeps a blanket under the desk. In July. Same floor, same minute, one setpoint — twenty-two degrees — serving both of them. Move that number in either direction and you simply choose which of these two people to upset.",
+      data:{ eyebrow:"2:41pm — forty metres away", person:"daniel",
+        quote:"“I keep a blanket under my desk. In July.”",
+        setpoint:"22.0°C",
+        footer:"Same floor. Same minute. One setpoint, serving both of them." } },
+
+    { id:"why", section:"Why we built it", theme:"light", layout:"rows", duration:5,
+      voiceover:"And this is why we built it. Three people lose here. The person sitting there has no way to report comfort that isn't an awkward email. Facilities get opinions one at a time, with no idea how many people agree. And whoever signs off the repair never sees evidence that the fault is physical — so the duct never gets fixed, and someone just nudges the setpoint again. Back to Tuesday.",
+      data:{ title:"Why we built it",
+        lead:"This happens on every floor, every summer, and nobody in the chain can fix it alone.",
+        rows:[
+          {tick:"1",title:"The person sitting there",body:"Has no way to report comfort that isn't an awkward email about their own cardigan."},
+          {tick:"2",title:"Facilities",body:"Get opinions one at a time, with no idea how many people agree, or whether it is still true an hour later."},
+          {tick:"3",title:"Whoever signs off the fix",body:"Never sees evidence that the fault is physical, so the duct is never funded — someone just nudges the setpoint again."}
+        ] } },
+
+    { id:"vote", section:"One Tuesday on Level 7", theme:"light", layout:"vote", duration:5,
+      voiceover:"So Priya taps. Pick the spot — it is remembered next time — and hit one of five buttons. Two seconds, no ticket, no login. One vote per person per spot, changeable whenever the room changes its mind, and after two hours it expires on its own. Daniel taps too. So do nine other people on that floor.",
+      data:{ eyebrow:"2:42pm", title:"So Priya taps",
+        spot:"Level 7 — North window seats", pressed:4,
+        castline:"You said roasting, just now. Tap again to change it.",
+        note:"Two hours after that tap, the vote expires on its own.",
+        points:[
+          "Five points, freezing to roasting — enough range to be useful, few enough to tap without thinking.",
+          "One vote per person, per spot. Change it any time the room changes its mind.",
+          "After two hours it expires on its own, so the board is always how the floor feels now."
+        ] } },
+
+    { id:"average", section:"One Tuesday on Level 7", theme:"dark", layout:"bigstat", duration:6,
+      voiceover:"Eleven votes are in. Three freezing, three roasting, one person comfortable. And the average lands on exactly zero — about right. Every survey, every sensor, every thermostat in that building would report Level 7 as fine. Ten of those eleven people are not fine. This is the moment a normal tool gets it wrong.",
+      data:{ eyebrow:"2:55pm", title:"Eleven votes. One average.",
+        counts:SPLIT, verdict:"About right",
+        verdictsub:"what an average concludes — and what this board refuses to print",
+        stats:[
+          {value:"0.0",lab:"mean of 11 votes",sub:"which any average reports as “about right”"},
+          {value:"1 of 11",lab:"people actually comfortable",sub:"the other ten are at the ends of the scale",warm:true}
+        ],
+        caption:"Three freezing, three roasting, one comfortable. Every survey, sensor and thermostat in the building calls this floor fine." } },
+
+    { id:"split", section:"One Tuesday on Level 7", theme:"light", layout:"split", duration:7,
+      voiceover:"Because when at least four people have voted, at least a quarter fall on each side, and most of the room is uncomfortable, the board declares that spot split — and then refuses to summarise it. The verdict won't pick a direction. The needle goes dashed, because the average of two camps is a lie. And it tells Priya and Daniel what it actually means: this is not a temperature problem. This is one spot pretending to be two, and turning the thermostat would just move the complaint to the other group. This is the part we are proudest of.",
+      data:{ eyebrow:"2:55pm — the part we are proudest of", title:"The board refuses to say that",
+        counts:SPLIT, verdict:"The room can't agree",
+        vsub:"— instead of a direction it cannot honestly give",
+        conditions:[
+          {rule:"At least 4 votes",why:"below that, disagreement is noise rather than signal"},
+          {rule:"At least a quarter on each side",why:"one outlier in a cardigan is not a constituency"},
+          {rule:"At least 60% uncomfortable",why:"separates a polarised room from a merely mixed one"}
+        ],
+        effects:[
+          "The verdict refuses to pick a direction.",
+          "A “Split” chip appears next to it.",
+          "The needle goes dashed — the mean of two camps is a lie.",
+          "The map draws that spot in two colours at once.",
+          "It explains the likely cause in plain words.",
+          "It offers to create the narrower spot for you."
+        ],
+        quote:"“That usually means this spot is really two spots — a window run and a shaded core, or one vent doing all the work. Turning the thermostat will just move the complaint to the other group.”" } },
+
+    { id:"heatmap", section:"One Tuesday on Level 7", theme:"light", layout:"heatmap", duration:6,
+      voiceover:"All of it lands on Level 7's actual floor plan. The size of a patch is how many people voted — confidence. The intensity is how far from comfortable they are — severity. Grey means nobody has voted there: unknown, not fine. And the open floor is drawn in two colours at once, because there is no honest single colour for a place whose occupants disagree.",
+      data:{ eyebrow:"2:56pm", title:"And on the floor plan, two colours at once",
+        pins:MAP_BEFORE,
+        lead2:"Blue is cold, red is warm, mottled means the spot is arguing with itself.",
+        note:"2 spots need a look. Dotted pins haven't been placed on the plan yet.",
+        reading:[
+          {k:"Size",v:"how many people voted — a big patch is a confident one."},
+          {k:"Intensity",v:"how far from comfortable they are."},
+          {k:"Grey",v:"nobody has voted there. Unknown, not fine."},
+          {k:"Mottled",v:"the spot is arguing with itself — two colours, no blend."}
+        ] } },
+
+    { id:"triage", section:"One Tuesday on Level 7", theme:"light", layout:"triage", duration:6,
+      voiceover:"Marcus, in facilities, opens the board to every spot in the building ranked by what needs looking at. Split spots first, because no setpoint will help them. Then how far off it is and how many people said so. Quiet spots sink. Marcus marks Level 7 as someone's looking at it — and that badge appears on the map, so the floor can see something is happening and stops filing the same ticket.",
+      data:{ eyebrow:"3:05pm", title:"It reaches Marcus first",
+        rows:[
+          {floor:"Level 7",name:"Open floor",meta:"The room can't agree · 11 votes · 2 min ago",counts:SPLIT,flag:"SPLIT"},
+          {floor:"Level 7",name:"North window seats",meta:"Too warm · 6 votes · 8 min ago",counts:[0,0,1,2,3]},
+          {floor:"Level 7",name:"Pantry",meta:"About right · 4 votes · 21 min ago",counts:[0,1,2,1,0]},
+          {floor:"B1",name:"Canteen",meta:"Quiet — no votes in the last two hours",counts:[0,0,0,0,0]}
+        ],
+        explain:[
+          {k:"Split spots first",v:"no setpoint can help them, so they never sit below a merely warm room."},
+          {k:"Then severity × turnout",v:"how far off it is, and how many people said so."},
+          {k:"Quiet spots sink",v:"no votes in two hours means no claim on anyone's attention."}
+        ],
+        status:{lab:"Facilities status",current:"Someone's looking at it",
+          opts:"Nothing logged · Someone's looking at it · Recently adjusted",
+          badges:["ON IT","ADJUSTED"],note:"← and it shows on the map"} } },
+
+    { id:"diagnosis", section:"One Tuesday on Level 7", theme:"light", layout:"grid", duration:5,
+      voiceover:"And the diagnosis is exactly what the board suggested. The window run and the shaded core share one damper — one number was always going to fail one of them. So Marcus splits the spot in two, straight from the warning, and drops each new spot where it really sits on the plan.",
+      data:{ eyebrow:"3:20pm", title:"One damper, two rooms",
+        cells:[
+          {title:"What Marcus finds",body:"The window run and the shaded core share a single damper. One number was always going to fail one of them."},
+          {title:"Split the spot in two",body:"The board offers it directly from the warning, because the fix is usually a narrower spot.",accent:true},
+          {title:"Put them where they really are",body:"Drop each new spot onto the plan. Swap the plan for a better one later and the pins stay put."},
+          {title:"Every floor, its own plan",body:"A tab appears per floor on its own, and facilities can upload the real plan for each one."}
+        ] } },
+
+    { id:"resolved", section:"One Tuesday on Level 7", theme:"light", layout:"heatmap", duration:5,
+      voiceover:"Ninety minutes later. One damper rebalanced — the only physical work anybody did. Two spots where there used to be one that could never be right, both settled, and both still being voted on, so it stays honest. Priya and Daniel never spoke to each other. They both just tapped a button.",
+      data:{ eyebrow:"Ninety minutes later", title:"4:10pm",
+        pins:MAP_AFTER,
+        lead2:"The same floor plan. Nothing on it is arguing with itself any more.",
+        note:"Nothing on this floor is far off.",
+        reading:[
+          {k:"One damper",v:"rebalanced — the only physical work anyone did."},
+          {k:"Two spots",v:"where there used to be one that could never be right."},
+          {k:"Both settled",v:"and both still being voted on, so it stays honest."}
+        ],
+        closing:"Priya and Daniel never spoke to each other. They just both tapped a button." } },
+
+    { id:"recap", section:"What you just saw", theme:"light", layout:"checklist", duration:5,
+      voiceover:"That was seven features, and not one of them had to be explained to Priya, Daniel or Marcus. The vote, the spot picker, the dot plot, split detection, the heat map, the ranked list, and the status everyone on the floor can see.",
+      data:{ title:"What you just saw",
+        lead:"Seven features, and not one of them needed explaining to Priya, Daniel or Marcus.",
+        items:[
+          {k:"The five-point vote",v:"one tap, one vote per person, expires after two hours"},
+          {k:"The spot picker",v:"remembers where you sit, so the next vote is one tap"},
+          {k:"The dot plot",v:"every vote is a dot, so you see the shape, not a score"},
+          {k:"Split detection",v:"the refusal to average a room that disagrees with itself"},
+          {k:"The heat map",v:"your floor plan, with turnout as size and severity as colour"},
+          {k:"The ranked list",v:"what needs a look, worst first, quiet spots last"},
+          {k:"Facilities status",v:"ON IT and ADJUSTED, visible to the whole floor"}
+        ] } },
+
+    { id:"different", section:"What makes it different", theme:"dark", layout:"cards", duration:6,
+      voiceover:"Three things separate this from a survey or a sensor. One: it refuses to average a split room — it detects when a mean would be a lie and reports the disagreement instead. Two: it shows the shape of opinion rather than a score, so three freezing and three roasting can't hide behind a zero. Three: it expires, so this is always a picture of now. A sensor measures the air. This measures the people in it, and they are the ones filing the tickets.",
+      data:{ title:"What makes it different",
+        cards:[
+          {tick:"01",title:"It refuses to average a split room",body:"Every polling tool reports a mean. This one detects when a mean would be a lie, and reports the disagreement instead.",accent:true},
+          {tick:"02",title:"It shows shape, not score",body:"Dots, not a number. Three freezing and three roasting cannot hide behind a 0.0."},
+          {tick:"03",title:"It expires",body:"Two hours and a vote is gone. The board is how the floor feels now — never a survey from March."}
+        ],
+        footer:"A sensor measures the air. This measures the people in it — and they are the ones filing the tickets." } },
+
+    { id:"close", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
+      voiceover:"Thermocracy. Is it you, or is it the room? Now the floor can answer. Thank you.",
+      data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
+        kicker:"Now the floor can answer.", kickerStrong:true,
+        note:"Level 7 settled its own argument in ninety minutes." } }
+  ];
+
+  /* ---- layout renderers ---------------------------------------------- */
 
   var RENDER={
     title:function(d){
       return '<h1 class="title">'+esc(d.title)+'</h1>'+
-        (d.subtitle?'<p class="subtitle">'+esc(d.subtitle)+'</p>':'')+
-        '<div class="bigramp"></div>';
+        '<p class="tagline">'+esc(d.tagline)+'</p>'+
+        '<div class="bigramp"></div>'+
+        '<div class="ramplabels"><span>freezing</span><span>roasting</span></div>'+
+        '<p class="kicker'+(d.kickerStrong?" strong":"")+'">'+esc(d.kicker)+'</p>'+
+        (d.note?'<p class="note2 kicker" style="margin-top:.8cqw;font-size:1.4cqw">'+esc(d.note)+'</p>':'');
     },
-    close:function(d){
-      return '<h2 class="big" style="font-size:5.6cqw">'+esc(d.heading)+'</h2>'+
-        '<p class="line pop" style="font-size:3.2cqw">'+esc(d.pop)+'</p>';
+
+    cards:function(d){
+      return head(d)+'<div class="body"><div class="cards">'+d.cards.map(function(c){
+        return '<div class="card'+(c.accent?" accent":"")+'">'+
+          '<span class="disc">'+esc(c.tick)+'</span>'+
+          '<h3>'+esc(c.title)+'</h3><p>'+esc(c.body)+'</p></div>';
+      }).join("")+'</div>'+
+      (d.footer?'<p class="cardsfoot">'+esc(d.footer)+'</p>':'')+'</div>';
     },
-    statement:function(d){
-      return (d.eyebrow?'<p class="eyebrow">'+esc(d.eyebrow)+'</p>':'')+
-        (d.heading?'<h2 class="big">'+esc(d.heading)+'</h2>':'')+
-        linesHtml(d.lines);
-    },
+
     person:function(d){
-      return '<div class="who">'+
-        '<span class="av" aria-hidden="true">'+d.avatar+'</span>'+
-        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
-        '<p class="line pop">'+esc(d.line)+'</p>';
+      var p=CAST[d.person];
+      return '<p class="eyebrow plain">'+esc(d.eyebrow)+'</p>'+
+        '<div class="who">'+
+          '<span class="av" style="background:var('+p.tint+')">'+esc(p.i)+'</span>'+
+          '<span><span class="wn">'+esc(p.name)+'</span><br><span class="wr">'+esc(p.role)+'</span></span>'+
+          (d.setpoint?'<span class="setpoint"><b>'+esc(d.setpoint)+'</b><span>the whole floor</span></span>':'')+
+        '</div>'+
+        '<p class="quote" style="color:var('+p.tint+')">'+esc(d.quote)+'</p>'+
+        (d.footer?'<p class="personfoot">'+esc(d.footer)+'</p>':'');
     },
-    mockvote:function(d){
-      var counts=d.counts, n=0, sum=0;
-      counts.forEach(function(c,i){ n+=c; sum+=c*SCALE[i].n; });
-      var mean=n?sum/n:0;
-      var cold=counts[0]+counts[1], hot=counts[3]+counts[4];
-      var split=n>=4 && Math.min(cold,hot)/n>=0.25 && (cold+hot)/n>=0.6;
-      var needleLeft=clamp(((mean+2)/4)*100,2,98).toFixed(1);
-      return '<div class="who"><span class="av" aria-hidden="true">'+d.avatar+'</span>'+
-        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
-        '<div class="mock">'+
-          '<div class="mockrow"><span class="mocklab">I\'m at</span>'+
-            '<span class="pill'+(d.spotHot?' hot':'')+'">'+esc(d.spot)+'</span></div>'+
-          '<div class="vbtns">'+vbtnsHtml(d.tappedIndex)+'</div>'+
-          '<div class="strip">'+
-            '<div class="bands">'+bandsHtml(counts)+'</div>'+
-            '<div class="axis"></div>'+
-            '<div class="needle'+(n>0?' show':'')+(split?' split':'')+'" style="left:'+needleLeft+'%"></div>'+
-            '<div class="ticks"><span>Freezing</span><span>Chilly</span><span>Just nice</span><span>Warm</span><span>Roasting</span></div>'+
-          '</div>'+
-          '<div class="vrow"><span class="vtext">'+verdict(n,mean,split)+'</span>'+
-            '<span class="chip'+(split?' in':'')+'">Split</span></div>'+
-        '</div>';
+
+    rows:function(d){
+      return head(d)+'<div class="body"><div class="rows">'+d.rows.map(function(r,i){
+        var tints=["--c-2","--c0","--c1"];
+        return '<div class="row"><span class="disc" style="background:var('+tints[i%3]+');color:var(--on-accent)">'+
+          esc(r.tick)+'</span><div><h3>'+esc(r.title)+'</h3><p>'+esc(r.body)+'</p></div></div>';
+      }).join("")+'</div></div>';
     },
-    calloutcard:function(d){
-      return '<div class="who"><span class="av" aria-hidden="true">'+d.avatar+'</span>'+
-        '<span><span class="wn">'+esc(d.name)+'</span><br><span class="wr">'+esc(d.role)+'</span></span></div>'+
-        '<div class="mock" style="background:none;border:none;padding:0">'+
-          '<div class="callout">'+d.callout+'</div>'+
-          '<div class="hintcard">'+d.hint+'</div>'+
-        '</div>';
+
+    vote:function(d){
+      return head(d)+'<div class="body"><div class="split2">'+
+        '<div class="panel">'+
+          '<div class="pickrow"><span class="picklab">I\'m at</span><span class="pick">'+esc(d.spot)+'</span></div>'+
+          voteButtons(d.pressed)+
+          '<p class="castline">'+esc(d.castline)+'</p>'+
+          '<p class="castnote">'+esc(d.note)+'</p>'+
+        '</div>'+
+        '<div class="points">'+d.points.map(function(p){
+          return '<p class="point">'+esc(p)+'</p>';
+        }).join("")+'</div>'+
+      '</div></div>';
     },
+
+    bigstat:function(d){
+      return head(d)+'<div class="body"><div class="statwrap">'+
+        '<div>'+d.stats.map(function(s){
+          return '<div class="stat'+(s.warm?" warm":"")+'"><b>'+esc(s.value)+'</b>'+
+            '<span class="lab">'+esc(s.lab)+'</span><span class="sub">'+esc(s.sub)+'</span></div>';
+        }).join("")+'</div>'+
+        '<div>'+dotPlot(d.counts,{solid:true})+
+          '<p class="verdict">'+esc(d.verdict)+'</p>'+
+          '<p class="verdictsub">'+esc(d.verdictsub)+'</p></div>'+
+      '</div><p class="caption">'+esc(d.caption)+'</p></div>';
+    },
+
+    split:function(d){
+      return head(d)+'<div class="body"><div class="split2">'+
+        '<div>'+
+          '<div class="rulecard"><div class="cap">When all three are true</div>'+
+          d.conditions.map(function(c){
+            return '<div class="cond"><b>'+esc(c.rule)+'</b><span>'+esc(c.why)+'</span></div>';
+          }).join("")+'</div>'+
+          '<div class="vrow"><span class="vtext">'+esc(d.verdict)+'</span><span class="chip">Split</span></div>'+
+          '<p class="vsub">'+esc(d.vsub)+'</p>'+
+          balanceBar(d.counts)+
+        '</div>'+
+        '<div>'+
+          '<p class="eyebrow plain">What changes the moment it fires</p>'+
+          '<div class="effects">'+d.effects.map(function(e){
+            return '<p class="effect">'+esc(e)+'</p>';
+          }).join("")+'</div>'+
+          '<div class="quotecard">'+esc(d.quote)+'</div>'+
+        '</div>'+
+      '</div></div>';
+    },
+
     heatmap:function(d){
-      var H="",P="";
-      d.pins.forEach(function(p){
-        if(p.split){
-          H+=hblob(p.x-6,p.y,(13+p.cold*2.1)*2,HEAT[0],.82);
-          H+=hblob(p.x+6,p.y,(13+p.hot*2.1)*2,HEAT[4],.82);
-        }else{
-          var c=heatColor(p.mean);
-          var w=20+Math.min(p.n,10)*2.4;
-          var strength=.26+Math.min(Math.abs(p.mean)/2,1)*.62;
-          H+=hblob(p.x,p.y,w*2,c,strength);
-        }
-        P+='<div class="hpin" style="left:'+p.x+'%;top:'+p.y+'%">'+
-           '<span class="knob"></span>'+
-           (p.flag?'<span class="flag">'+p.flag+'</span>':'')+
-           '<span class="plab">'+esc(p.label)+'</span></div>';
-      });
-      var ring = d.ring ? '<div class="ring in" style="left:'+d.ring.x+'%;top:'+d.ring.y+'%"></div>' : '';
-      return '<div class="hmwrap">'+
-        '<div><div class="plate"><div class="planart-wrap">'+planSvg()+'</div>'+
-          '<div class="heat">'+H+'</div><div class="pins">'+P+'</div>'+ring+'</div>'+
-          '<div class="mlegend"><span class="mramp" aria-hidden="true"></span><span>freezing to roasting</span>'+
-          '<span class="mswatch" aria-hidden="true"></span><span>split</span>'+
-          '<span style="margin-left:auto;font-weight:600">Level 7</span></div></div>'+
-        '<div class="hmside">'+linesHtml(d.sideLines)+'</div>'+
-      '</div>';
+      return head(d)+'<div class="body"><div class="hmwrap">'+
+        '<div>'+plate(d.pins)+
+          '<div class="mlegend"><span class="mramp"></span><span>freezing to roasting</span>'+
+          '<span class="mswatch"></span><span>split</span><span class="floor">Level 7</span></div>'+
+        '</div>'+
+        '<div>'+
+          '<p class="lead" style="margin-top:0">'+esc(d.lead2)+'</p>'+
+          '<div class="reading">'+d.reading.map(function(r){
+            return '<p class="r"><b>'+esc(r.k)+'</b> — '+esc(r.v)+'</p>';
+          }).join("")+'</div>'+
+          (d.closing?'<p class="hmclose">'+esc(d.closing)+'</p>':'')+
+          '<p class="hmnote">'+esc(d.note)+'</p>'+
+        '</div>'+
+      '</div></div>';
     },
-    twoup:function(d){
-      return (d.eyebrow?'<p class="eyebrow">'+esc(d.eyebrow)+'</p>':'')+
-        (d.heading?'<h2 class="big">'+esc(d.heading)+'</h2>':'')+
-        '<div class="twoup">'+d.cards.map(function(c){
-          return '<div class="col"><span class="tick" aria-hidden="true">'+c.tick+'</span>'+
-            '<h3>'+esc(c.title)+'</h3><p>'+esc(c.body)+'</p></div>';
-        }).join("")+'</div>';
+
+    grid:function(d){
+      return head(d)+'<div class="body"><div class="grid2">'+d.cells.map(function(c){
+        return '<div class="cell'+(c.accent?" accent":"")+'"><h3>'+esc(c.title)+'</h3><p>'+esc(c.body)+'</p></div>';
+      }).join("")+'</div></div>';
+    },
+
+    triage:function(d){
+      return head(d)+'<div class="body"><div class="split2">'+
+        '<div class="zrows">'+d.rows.map(function(r,i){
+          var t=tally(r.counts);
+          return '<div class="zrow'+(i===0?" top":"")+'">'+
+            '<div><div class="zname"><span class="zfloor">'+esc(r.floor)+'</span>'+esc(r.name)+
+              (r.flag?'<span class="zflag">'+esc(r.flag)+'</span>':'')+'</div>'+
+              '<div class="zmeta">'+esc(r.meta)+'</div></div>'+
+            (t.n?'<div class="zstrip">'+dotPlot(r.counts,{ticks:false})+'</div>'
+               :'<div class="zquiet">no votes</div>')+
+          '</div>';
+        }).join("")+'</div>'+
+        '<div>'+
+          '<p class="eyebrow plain">How the order is decided</p>'+
+          '<div class="explain">'+d.explain.map(function(e){
+            return '<p class="e"><b>'+esc(e.k)+'</b> — '+esc(e.v)+'</p>';
+          }).join("")+'</div>'+
+          '<div class="statuscard"><div class="lab">'+esc(d.status.lab)+'</div>'+
+            '<div class="statussel">'+esc(d.status.current)+'</div>'+
+            '<div class="statusopts">'+esc(d.status.opts)+'</div>'+
+            '<div class="badges">'+d.status.badges.map(function(b){
+              return '<span class="badge">'+esc(b)+'</span>';
+            }).join("")+'<span class="n">'+esc(d.status.note)+'</span></div>'+
+          '</div>'+
+        '</div>'+
+      '</div></div>';
+    },
+
+    checklist:function(d){
+      return head(d)+'<div class="body"><div class="check">'+d.items.map(function(it){
+        return '<div class="ci"><span class="tick">✓</span>'+
+          '<div><b>'+esc(it.k)+'</b><span>'+esc(it.v)+'</span></div></div>';
+      }).join("")+'</div></div>';
     }
   };
 
-  var LAYOUT_CLASS={ title:"hero", mockvote:"dense", calloutcard:"dense" };
+  var LAYOUT_CLASS={ title:"hero", person:"person" };
 
   var idx=0;
-
   function renderSlide(i){
     idx=clamp(i,0,SLIDES.length-1);
     var s=SLIDES[idx];
-    var slideEl=$("slide");
-    slideEl.className="scene"+(LAYOUT_CLASS[s.layout]?" "+LAYOUT_CLASS[s.layout]:"");
-    slideEl.innerHTML=RENDER[s.layout](s.data);
+    var el=$("slide");
+    $("stage").dataset.theme=s.theme;
+    el.className="scene"+(LAYOUT_CLASS[s.layout]?" "+LAYOUT_CLASS[s.layout]:"");
+    el.innerHTML=RENDER[s.layout](s.data)+'<span class="pageno">'+(idx+1)+'</span>';
     $("counter").textContent=(idx+1)+" / "+SLIDES.length;
-    [].forEach.call($("marks").children,function(b,i2){ b.classList.toggle("cur", i2===idx); });
+    [].forEach.call($("marks").children,function(b,k){ b.classList.toggle("cur",k===idx); });
     document.body.dataset.ready="0";
-    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function(){
-      requestAnimationFrame(function(){ requestAnimationFrame(function(){ document.body.dataset.ready="1"; }); });
+    (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(function(){
+      requestAnimationFrame(function(){ requestAnimationFrame(function(){
+        document.body.dataset.ready="1";
+      }); });
     });
   }
 
@@ -582,16 +866,16 @@ body.presenting .stage{
   $("next").addEventListener("click",function(){ renderSlide(idx+1); });
   $("present").addEventListener("click",function(){
     document.body.classList.toggle("presenting");
-    $("present").textContent = document.body.classList.contains("presenting") ? "Exit" : "Present";
+    $("present").textContent=document.body.classList.contains("presenting")?"Exit":"Present";
   });
   document.addEventListener("keydown",function(e){
-    if(e.key==="ArrowRight"){ renderSlide(idx+1); }
-    else if(e.key==="ArrowLeft"){ renderSlide(idx-1); }
+    if(e.key==="ArrowRight") renderSlide(idx+1);
+    else if(e.key==="ArrowLeft") renderSlide(idx-1);
     else if(e.key==="Escape"){ document.body.classList.remove("presenting"); $("present").textContent="Present"; }
   });
 
-  // Playwright contract: window.SLIDES for content extraction,
-  // window.__renderSlide(i) to paint a given slide before screenshotting.
+  /* Build contract: window.SLIDES for content and timings,
+     window.__renderSlide(i) to paint a slide before screenshotting it. */
   window.SLIDES=SLIDES;
   window.__renderSlide=renderSlide;
 

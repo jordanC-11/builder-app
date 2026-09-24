@@ -1,18 +1,14 @@
 {
-  "name": "thermocracy-video-pipeline",
+  "name": "thermocracy-video",
   "private": true,
   "type": "module",
-  "description": "Build pipeline for src/slides.html: renders slides, synthesizes an offline Piper voiceover, applies Ken Burns motion and crossfades, scores it with assets/audio/soundtrack.mp3 plus synthesized UI cues, and assembles build/thermocracy-slides.mp4. Does not affect src/app.html, which remains a plain file with no dependencies.",
+  "description": "Build pipeline for src/slides.html: screenshots every slide, narrates it with Kokoro, and assembles build/thermocracy.mp4. Does not affect src/app.html, which is a plain file with no dependencies.",
   "scripts": {
     "postinstall": "playwright install chromium",
-    "build-video": "node scripts/build-video-pipeline.mjs",
-    "build-presentation": "node scripts/build-presentation.mjs",
-    "build-presentation-video": "node scripts/build-presentation-video.mjs"
+    "build-video": "node scripts/build-video.mjs"
   },
   "devDependencies": {
-    "ffmpeg-static": "^5.2.0",
-    "music-metadata": "^10.5.1",
     "playwright": "^1.48.0",
-    "pptxgenjs": "^4.0.1"
+    "ffmpeg-static": "^5.2.0"
   }
 }
