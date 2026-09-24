@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 /* The deck is themed per slide, never from prefers-color-scheme: a render must
-   not depend on the OS the screenshot happened to be taken on. Dark cards open,
-   close and carry the problem; the walkthrough runs light. */
+   not depend on the OS the screenshot happened to be taken on. Every slide
+   now runs light. */
 .stage{
   --paper:#E7EDF0; --surface:#FFFFFF; --surface-2:#F3F7F9;
   --ink:#14242C; --muted:#5F737D; --line:#CDD9DF; --line-soft:#E1E9ED;
@@ -480,9 +480,9 @@ body.presenting .stage{
   /* ---- slides -------------------------------------------------------- */
 
   var SLIDES=[
-    { id:"title", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
-      voiceover:"This is Thermocracy. It settles a question every office argues about and nobody can actually answer: is it you, or is it the room?",
-      data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
+    { id:"title", section:"Thermocracy", theme:"light", layout:"title", duration:4,
+      voiceover:"This is Thermocracy. It takes every cold take, and every hot take, about the office thermostat — and finally settles them.",
+      data:{ title:"Thermocracy", tagline:"Cold takes. Hot takes. Settled.",
         kicker:"A shared app for how the office actually feels — not what the thermostat is set to." } },
 
     { id:"what", section:"What we built", theme:"light", layout:"showcase", duration:6,
@@ -504,12 +504,12 @@ body.presenting .stage{
           {tick:"3",title:"Whoever sets the temperature",body:"Has no concrete evidence or aggregated opinion to go on, so the setpoint gets guessed at — then guessed at again next week."}
         ] } },
 
-    { id:"faceoff", section:"One Tuesday on L3", theme:"dark", layout:"duo", duration:8,
-      voiceover:"So. One Tuesday, L3. At twenty to three, Priya is at the window run, right against the glass — and has been quietly writing off half a row of desks every afternoon since the weather turned. Forty metres away, in the shaded corner of that very same floor, Daniel keeps a blanket under the desk. In July. Same floor, same spot on the app, same minute — one setpoint, twenty-two degrees, serving both of them. Move that number in either direction and you simply choose which of these two people to upset.",
+    { id:"faceoff", section:"One Tuesday on L3", theme:"light", layout:"duo", duration:8,
+      voiceover:"So. One Tuesday, L3. At twenty to three, Priya is at the window run, right against the glass — and has been quietly writing off half a row of desks every afternoon since the weather turned. Forty metres away, in the shaded corner of that very same floor, Daniel keeps a blanket under the desk. Same floor, same spot on the app, same minute — one setpoint, twenty-two degrees, serving both of them. Move that number in either direction and you simply choose which of these two people to upset.",
       data:{ eyebrow:"One Tuesday, L3 — forty metres apart",
         people:[
           {key:"priya", time:"2:40pm", quote:"“It's roasting by two every afternoon. We've stopped booking the window desks.”"},
-          {key:"daniel", time:"2:41pm", quote:"“I keep a blanket under my desk. In July.”"}
+          {key:"daniel", time:"2:41pm", quote:"“I keep a blanket under my desk.”"}
         ],
         setpoint:"22.0°C",
         footer:"Same floor. Same spot on the app. One setpoint, serving both of them." } },
@@ -528,7 +528,7 @@ body.presenting .stage{
           "After two hours it expires on its own, so the app is always how the floor feels now."
         ] } },
 
-    { id:"average", section:"One Tuesday on L3", theme:"dark", layout:"boardrow", duration:8,
+    { id:"average", section:"One Tuesday on L3", theme:"light", layout:"boardrow", duration:8,
       voiceover:"Eleven votes are in now — Priya's, Daniel's, and nine more from L3. The list on its own just says L3, about right, eleven votes. But Marcus has more than the list. He has the counts — three freezing, three roasting, one comfortable — and he has the floor plan, where those same votes fall into two clear clusters: warm by the window, cold toward the back. Together, that's not a broken thermostat, that's one damper serving two zones. Marcus doesn't need to wait for a rule to tell him — he can already send facilities straight to the window-seat vent.",
       data:{ eyebrow:"2:55pm — reading the room", title:"Enough to act on",
         row:{ floor:"L3", meta:"About right · 11 votes · 2 min ago", counts:SPLIT },
@@ -590,9 +590,9 @@ body.presenting .stage{
         ],
         closing:"Priya and Daniel never spoke to each other. They both just tapped a button." } },
 
-    { id:"close", section:"Thermocracy", theme:"dark", layout:"title", duration:4,
-      voiceover:"Thermocracy. Is it you, or is it the room? Now the floor can answer. Thank you.",
-      data:{ title:"Thermocracy", tagline:"Is it you, or is it the room?",
+    { id:"close", section:"Thermocracy", theme:"light", layout:"title", duration:4,
+      voiceover:"Thermocracy. Cold takes. Hot takes. Settled. With this app, no more air-conditioning complaints during the company Q and A sessions. Thank you.",
+      data:{ title:"Thermocracy", tagline:"Cold takes. Hot takes. Settled.",
         kicker:"Now the floor can answer.", kickerStrong:true,
         note:"L3 settled its own argument in ninety minutes." } }
   ];
